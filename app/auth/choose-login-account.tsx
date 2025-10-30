@@ -1,21 +1,22 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState} from "react";
-import { Image, Text, TouchableOpacity, View} from "react-native";
+import React, { useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 export default function ChooseLoginAccount() {
 
-    const [ selectedAccount, setSelectedAccount ] = useState<string | null>( "student" );
+    const [ selectedAccount, setSelectedAccount ] = useState<string | null>( null );
     const router = useRouter();
 
-    const handleNext = () => {
-        router.push(`/auth/${selectedAccount}/login` as any);
-    }
+    // const handleNext = () => {
+    //     if (selectedAccount) {
+    //         router.push(`/auth/${selectedAccount}/login` as any);
+    //     }
+    // }
 
     const accounts = [
         {
             id: "student",
-            title: "Studdent"
+            title: "Student"
         },
         {
             id: "parent",
@@ -45,10 +46,15 @@ export default function ChooseLoginAccount() {
                 {accounts.map((acc) => (
                     <TouchableOpacity
                         key={acc.id}
-                        onPress={() => { setSelectedAccount(acc.id); handleNext(); }}
-                        className="w-full mt-10 space-y-6"
+                        onPress={() => { 
+                            setSelectedAccount(acc.id); 
+                            router.push(`/auth/${acc.id}/login` as any);
+                        }}
+                        className={`w-full mt-10 space-y-6 ${selectedAccount === acc.id ? 'opacity-100' : ''}`}
                     >
-                        <Text className="bg-blue-600 text-white text-xl py-4 rounded-full text-center w-full">{acc.title}</Text>
+                        <Text className={`${selectedAccount === acc.id ? 'bg-blue-800' : 'bg-blue-700'} text-white text-xl py-4 rounded-full text-center w-full`}>
+                            {acc.title}
+                        </Text>
                     </TouchableOpacity>
                 ))}
             </View>
