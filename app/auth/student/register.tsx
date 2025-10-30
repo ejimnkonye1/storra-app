@@ -25,6 +25,10 @@ const StudentAccountScreen = () => {
     agreeToTerms: false
   });
 
+  const handleNext = () => {
+    router.push('/auth/choose-login-account');
+  }
+
   const updateFormData = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -201,7 +205,7 @@ const StudentAccountScreen = () => {
           <View className="flex-row justify-center items-center mb-8">
             <Text className="text-gray-600">Already have an account? </Text>
 <TouchableOpacity onPress={() => router.push("/auth/student/login")}>
-              <Text className="text-blue-500 font-semibold">Login</Text>
+              <Text className="text-blue-500 font-semibold" onPress={handleNext}>Login</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
