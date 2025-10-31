@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function StudentLogin() {
+export default function TeacherLogin() {
     const [ showPassword, setShowPassword ] = useState( false );
     const [ isGoogleHovered, setIsGoogleHovered ] = useState( false );
     const router = useRouter();
@@ -29,7 +29,7 @@ export default function StudentLogin() {
                     </TouchableOpacity>
                     {/* Title */}
                     <Text className='text-2xl text-black font-semibold'>
-                        Student Account
+                        Teacher Account
                     </Text>  
                 </View>
                 {/* Login Form */}
