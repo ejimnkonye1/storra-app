@@ -76,10 +76,11 @@ export default function StudentLogin() {
                     </View>
                     {/* Login Button */}
                     <TouchableOpacity
-                        onPress={() => { /* Handle login action */ }}
+                        onPress={() => router.push('/screens/home')}
                         className="mt-12 bg-blue-600 py-4 rounded-full"
                     >
-                        <Text className="text-center text-white text-lg font-semibold">
+                        <Text 
+                            className="text-center text-white text-lg font-semibold">
                             Login
                         </Text>
                     </TouchableOpacity>
@@ -122,7 +123,8 @@ export default function StudentLogin() {
                             Don&apos;t have an account? 
                         </Text>
                         <TouchableOpacity onPress={() => router.push('/auth/student/register')}>
-                            <Text className="text-blue-600 font-semibold ml-1">
+                            <Text 
+                                className="text-blue-600 font-semibold ml-1">
                                 Sign Up
                             </Text>
                         </TouchableOpacity>
