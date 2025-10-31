@@ -3,14 +3,14 @@ import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 const ParentAccountScreen = () => {
@@ -26,7 +26,7 @@ const ParentAccountScreen = () => {
   });
 
   const handleNext = () => {
-    router.push('/auth/choose-login-account');
+    router.push('/auth/parent/register');
   }
   const updateFormData = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));

@@ -70,7 +70,7 @@ export default function ParentLogin() {
                                 />
                             </TouchableOpacity>
                         </View>
-                        <Text className=" mt-2 absolute right-0 top-12 font-light hover:underline cursor-pointer">
+                        <Text onPress={()=> router.push('/screens/wallet')} className=" mt-2 absolute right-0 top-12 font-light hover:underline cursor-pointer">
                             Forget Password?
                         </Text>
                     </View>
