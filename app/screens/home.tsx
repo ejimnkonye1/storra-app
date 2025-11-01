@@ -1,18 +1,60 @@
 import { View, Text, ScrollView, Image, Pressable } from 'react-native'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
 export default function HomeScreen() {
-    const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+    const [selectedSubject, setSelectedSubject] = useState(0);
+    const scrollViewRef = useRef<ScrollView>(null);
+
+    const handlePress = (index: number) => {
+        setSelectedSubject(index);
+
+        const ITEM_WIDTH = 50;
+        scrollViewRef.current?.scrollTo({ 
+            x: Math.max(0, ITEM_WIDTH * index - 1),
+            animated: true
+        });
+
+    }
 
     const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'];
-
-    const handleSubjectPress = (subject: string) => {
-        setSelectedSubject(subject);
-        if (subject) {
-            
+    const subjectCards = [
+        {
+            id: 1,
+            subject: 'Mathematics',
+            topics: [
+                { 
+                    id: 1, 
+                    title: 'Whole Numbers(1-5)', 
+                    paragraph: 'Whole numbers are the set of non negative integers, including zero.', 
+                    progress: 45, 
+                    coverImage: require('@/assets/images/whole-numbers.png') 
+                },
+                { 
+                    id: 2, 
+                    title: '', 
+                    paragraph: 'Explore the properties of shapes, angles, and theorems in geometry.', 
+                    progress: 30, 
+                    coverImage: require('@/assets/images/ordering-numbers.png') 
+                },
+                {
+                    id: 3,
+                    title: 'Calculus Introduction',
+                    paragraph: 'Understand the basics of limits, derivatives, and integrals in calculus.',
+                    progress: 60,
+                    coverImage: require('@/assets/images/shapes.png')
+                },
+                {
+                    id: 4,
+                    title: 'Whole Numbers(6-10)',
+                    progress: 20,
+                    paragraph: 'Whole numbers are the set of non negative integers, including zero',
+                    coverImage: require('@/assets/images/numbers2.png')
+                }
+            ]
         }
-    }
+    ];
+
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView>
@@ -152,30 +194,36 @@ export default function HomeScreen() {
                        All subjects
                     </Text>
                 </View>
-                <View className=" px-6 mb-6">
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className=" bg-gray-100 p-2 rounded-lg">
+                <View className='flex-1 bg-gray-50'>
+                    <View className=" px-6 mb-6">
+                    <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}  className=" bg-gray-100 p-2 rounded-lg">
                         <View className="flex-row gap-4">
-                            <View className="bg-white rounded-lg p-2 w-40">
-                                <Text className="text-gray-900 text-center text-lg font-semibold">Mathematics</Text>
-                            </View>
-                            <View className="bg-white rounded-lg p-2 w-40">
-                                <Text className="text-gray-900 text-center text-lg font-semibold">Physics</Text>
-                            </View>
-                            <View className="bg-white rounded-lg p-2 w-40">
-                                <Text className="text-gray-900 text-center text-lg font-semibold">Chemistry</Text>
-                            </View>
-                            <View className="bg-white rounded-lg p-2 w-40">
-                                <Text className="text-gray-900 text-center text-lg font-semibold">Biology</Text>
-                            </View>
-                            <View className="bg-white rounded-lg p-2 w-40">
-                                <Text className="text-gray-900 text-center text-lg font-semibold">History</Text>
-                            </View>
-                            <View className="bg-white rounded-lg p-2 w-40">
-                                <Text className="text-gray-900 text-center text-lg font-semibold">Geography</Text>
-                            </View>
+                            {subjects.map((subject, index) => {
+                                const isActive = selectedSubject === index || (!selectedSubject && index === 0);
+                                return (
+                                    <Pressable
+                                        key={index}
+                                        onPress={() => handlePress(index)}
+                                        className={`px-4 py-2 rounded-lg ${isActive ? 'bg-blue-600' : 'transparent'} `}
+                                    >
+                                        <Text className={`text-lg font-medium ${isActive ? 'text-white' : 'text-gray-800'}`}>
+                                            {subject}
+                                        </Text>
+                                    </Pressable>
+                                )
+                            })}
                         </View>
-                        
                     </ScrollView>
+                </View>
+                </View>
+                <View className="px-6 mb-10">
+                    <View className="grid grid-cols-2 gap-4">
+                        {/* Subject Cards */}
+                        {
+                            subjectCards.
+                        }
+                        
+                    </View>
                 </View>
             </ScrollView>
         </SafeAreaView>
