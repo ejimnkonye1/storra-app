@@ -1,7 +1,18 @@
 import { View, Text, ScrollView, Image, Pressable } from 'react-native'
+import { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
 export default function HomeScreen() {
+    const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+
+    const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'];
+
+    const handleSubjectPress = (subject: string) => {
+        setSelectedSubject(subject);
+        if (subject) {
+            
+        }
+    }
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView>
@@ -69,9 +80,11 @@ export default function HomeScreen() {
                 </View>
                 
                 <View className="px-6 mx-6 border border-solid rounded-xl border-gray-300 p-4">
+                    <View className="p-2 bg-blue-100 rounded-full w-12 h-12 items-center">
                     <Image
                         source={require('@/assets/images/uim_analytics.png')}
                     />
+                    </View>
                     <View className="flex-row mt-4 items-center">
                         <View className="flex justify-between mb-2">
                             <Text className="text-gray-800 text-xl font-semibold">In Progress</Text>
@@ -92,9 +105,11 @@ export default function HomeScreen() {
 
                 <View className=" flex-row justify-between px-6 mt-6 mb-6 ">
                     <View className=" items-start border border-solid rounded-xl border-gray-300 py-4 px-5">
-                        <Image
-                            source={require('@/assets/images/completed.png')}
-                        />
+                        <View className="bg-green-100 p-2 rounded-full">
+                            <Image
+                                source={require('@/assets/images/completed.png')}
+                            />
+                        </View>
                         <Text className="text-gray-800 text-lg font-semibold ">Completed Lessons</Text>
                         <Text className="text-gray-500 text-sm">2 courses completed</Text>
                         <Pressable className="flex-row gap-3 mt-4 bg-green-200 hover:bg-blue-800 px-4 py-1 rounded-full">
@@ -129,7 +144,39 @@ export default function HomeScreen() {
                         
                     </View>
                 </View>
-
+                <View className="flex-row justify-between mx-6 mt-2" >
+                    <Text className="text-gray-800 text-2xl font-semibold mb-4">
+                        Subject
+                    </Text>
+                    <Text className="text-blue-500 text-lg font-bold mb-6">
+                       All subjects
+                    </Text>
+                </View>
+                <View className=" px-6 mb-6">
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className=" bg-gray-100 p-2 rounded-lg">
+                        <View className="flex-row gap-4">
+                            <View className="bg-white rounded-lg p-2 w-40">
+                                <Text className="text-gray-900 text-center text-lg font-semibold">Mathematics</Text>
+                            </View>
+                            <View className="bg-white rounded-lg p-2 w-40">
+                                <Text className="text-gray-900 text-center text-lg font-semibold">Physics</Text>
+                            </View>
+                            <View className="bg-white rounded-lg p-2 w-40">
+                                <Text className="text-gray-900 text-center text-lg font-semibold">Chemistry</Text>
+                            </View>
+                            <View className="bg-white rounded-lg p-2 w-40">
+                                <Text className="text-gray-900 text-center text-lg font-semibold">Biology</Text>
+                            </View>
+                            <View className="bg-white rounded-lg p-2 w-40">
+                                <Text className="text-gray-900 text-center text-lg font-semibold">History</Text>
+                            </View>
+                            <View className="bg-white rounded-lg p-2 w-40">
+                                <Text className="text-gray-900 text-center text-lg font-semibold">Geography</Text>
+                            </View>
+                        </View>
+                        
+                    </ScrollView>
+                </View>
             </ScrollView>
         </SafeAreaView>
     )
