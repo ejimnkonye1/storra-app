@@ -459,30 +459,31 @@ export default function HomeScreen() {
                 </View>
                 </View>
                 <View className="px-4 mb-10">
-                    <View className="flex-row flex-wrap justify-between items-center">
+                    <View className="flex-row flex-wrap justify-between">
                         {subjectCards[selectedSubject].topics.map((topic) => (
                         <View
                             key={topic.id}
                             className="bg-white w-[48%] mb-5 p-3 rounded-2xl shadow-sm border border-gray-100"
+                            style={{ height: 200 }}
                         >
                             <Image
                             source={topic.coverImage}
                             className="w-full h-24 rounded-lg mb-3"
                             resizeMode="cover"
                             />
-                            <Text className="text-gray-900 font-semibold text-base mb-1">
+                            <Text className="text-gray-900 font-semibold text-base mb-2" numberOfLines={2}>
                             {topic.title}
                             </Text>
-                            <Text className="text-gray-500 text-sm mb-3">
+                            <Text className="text-gray-500 text-sm flex-1" numberOfLines={3}>
                             {topic.paragraph}
                             </Text>
-                            <View className='flex-row w-full items-center justify-between'>
+                            <View className='flex-row w-full items-center justify-between mt-3'>
                                 <Pressable className="bg-blue-600 py-2 rounded-full">
                                 <Text className="text-white text-center font-semibold text-sm px-4">
                                 Learn More
                                 </Text>
                                 </Pressable>
-                                    <View className="flex-row gap-3 mt-2">
+                                    <View className="flex-row gap-3">
                                         {/* Heart Icon */}
                                         <Pressable onPress={() => {
                                             const key = `${selectedSubject}-${topic.id}`;
@@ -513,7 +514,6 @@ export default function HomeScreen() {
                         ))}
                     </View>
                     </View>
-
             </ScrollView>
         </SafeAreaView>
     )
