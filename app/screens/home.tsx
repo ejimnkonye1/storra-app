@@ -2,14 +2,17 @@ import { View, Text, ScrollView, Image, Pressable } from 'react-native'
 import { useState, useRef } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
+
 export default function HomeScreen() {
     const [selectedSubject, setSelectedSubject] = useState(0);
+    const [likedTopics, setLikedTopics] = useState<{[key: string]: boolean}>({})
+    const [checkedTopics, setCheckedTopics] = useState<{[key: string]: boolean}>({})
     const scrollViewRef = useRef<ScrollView>(null);
 
     const handlePress = (index: number) => {
         setSelectedSubject(index);
 
-        const ITEM_WIDTH = 50;
+        const ITEM_WIDTH = 100;
         scrollViewRef.current?.scrollTo({ 
             x: Math.max(0, ITEM_WIDTH * index - 1),
             animated: true
@@ -17,43 +20,282 @@ export default function HomeScreen() {
 
     }
 
-    const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography'];
+    const subjects = ['Mathematics', 'English Language', 'Basic Science', 'Quantitative Reasoning', 'Verbal Reasoning', 'Health Education', 'Social Studies', 'Home Economics'];
     const subjectCards = [
-        {
-            id: 1,
-            subject: 'Mathematics',
-            topics: [
-                { 
-                    id: 1, 
-                    title: 'Whole Numbers(1-5)', 
-                    paragraph: 'Whole numbers are the set of non negative integers, including zero.', 
-                    progress: 45, 
-                    coverImage: require('@/assets/images/whole-numbers.png') 
-                },
-                { 
-                    id: 2, 
-                    title: '', 
-                    paragraph: 'Explore the properties of shapes, angles, and theorems in geometry.', 
-                    progress: 30, 
-                    coverImage: require('@/assets/images/ordering-numbers.png') 
-                },
-                {
-                    id: 3,
-                    title: 'Calculus Introduction',
-                    paragraph: 'Understand the basics of limits, derivatives, and integrals in calculus.',
-                    progress: 60,
-                    coverImage: require('@/assets/images/shapes.png')
-                },
-                {
-                    id: 4,
-                    title: 'Whole Numbers(6-10)',
-                    progress: 20,
-                    paragraph: 'Whole numbers are the set of non negative integers, including zero',
-                    coverImage: require('@/assets/images/numbers2.png')
-                }
-            ]
-        }
-    ];
+  {
+    id: 1,
+    subject: 'Mathematics',
+    topics: [
+      { 
+        id: 1, 
+        title: 'Whole Numbers (1–5)', 
+        paragraph: 'Whole numbers are the set of non-negative integers, including zero.', 
+        progress: 45, 
+        coverImage: require('@/assets/images/whole-numbers.png') 
+      },
+      { 
+        id: 2, 
+        title: 'Ordering Numbers', 
+        paragraph: 'Learn how to arrange numbers in ascending and descending order.', 
+        progress: 30, 
+        coverImage: require('@/assets/images/ordering-numbers.png') 
+      },
+      {
+        id: 3,
+        title: 'Basic Shapes',
+        paragraph: 'Explore the properties of shapes, angles, and patterns in geometry.',
+        progress: 60,
+        coverImage: require('@/assets/images/shapes.png')
+      },
+      {
+        id: 4,
+        title: 'Whole Numbers (6–10)',
+        progress: 20,
+        paragraph: 'Practice counting and identifying whole numbers from 6 to 10.',
+        coverImage: require('@/assets/images/numbers2.png')
+      }
+    ]
+  },
+  {
+    id: 2,
+    subject: 'English Language',
+    topics: [
+      { 
+        id: 1, 
+        title: 'Grammar Basics', 
+        paragraph: 'Learn about nouns, verbs, adjectives, and how they form sentences.', 
+        progress: 70, 
+        coverImage: require('@/assets/images/whole-numbers.png') 
+      },
+      { 
+        id: 2, 
+        title: 'Comprehension Skills', 
+        paragraph: 'Understand how to read and answer comprehension passages correctly.', 
+        progress: 40, 
+        coverImage: require('@/assets/images/ordering-numbers.png') 
+      },
+      {
+        id: 3,
+        title: 'Vocabulary Building',
+        paragraph: 'Improve your English vocabulary with common words and meanings.',
+        progress: 55,
+        coverImage: require('@/assets/images/shapes.png')
+      },
+      {
+        id: 4,
+        title: 'Creative Writing',
+        paragraph: 'Learn how to write simple sentences, stories, and short essays.',
+        progress: 30,
+        coverImage: require('@/assets/images/numbers2.png')
+      }
+    ]
+  },
+  {
+    id: 3,
+    subject: 'Basic Science',
+    topics: [
+      { 
+        id: 1, 
+        title: 'Living and Non-living Things', 
+        paragraph: 'Understand what makes something living or non-living.', 
+        progress: 25, 
+        coverImage: require('@/assets/images/whole-numbers.png') 
+      },
+      { 
+        id: 2, 
+        title: 'The Human Body', 
+        paragraph: 'Learn about body parts, functions, and the five senses.', 
+        progress: 50, 
+        coverImage: require('@/assets/images/ordering-numbers.png') 
+      },
+      {
+        id: 3,
+        title: 'The Solar System',
+        paragraph: 'Explore the planets, sun, and moon in our solar system.',
+        progress: 35,
+        coverImage: require('@/assets/images/shapes.png')
+      },
+      {
+        id: 4,
+        title: 'Materials Around Us',
+        paragraph: 'Identify solid, liquid, and gas materials in our environment.',
+        progress: 15,
+        coverImage: require('@/assets/images/numbers2.png')
+      }
+    ]
+  },
+  {
+    id: 4,
+    subject: 'Quantitative Reasoning',
+    topics: [
+      { 
+        id: 1, 
+        title: 'Patterns and Sequences', 
+        paragraph: 'Learn how to identify and complete number patterns.', 
+        progress: 40, 
+        coverImage: require('@/assets/images/whole-numbers.png') 
+      },
+      { 
+        id: 2, 
+        title: 'Comparing Quantities', 
+        paragraph: 'Understand how to compare numbers and find differences.', 
+        progress: 20, 
+        coverImage: require('@/assets/images/ordering-numbers.png') 
+      },
+      {
+        id: 3,
+        title: 'Simple Word Problems',
+        paragraph: 'Apply reasoning to solve real-world number problems.',
+        progress: 55,
+        coverImage: require('@/assets/images/shapes.png')
+      },
+      {
+        id: 4,
+        title: 'Logical Thinking',
+        paragraph: 'Build problem-solving and analytical reasoning skills.',
+        progress: 30,
+        coverImage: require('@/assets/images/numbers2.png')
+      }
+    ]
+  },
+  {
+    id: 5,
+    subject: 'Verbal Reasoning',
+    topics: [
+      { 
+        id: 1, 
+        title: 'Opposites and Synonyms', 
+        paragraph: 'Learn words with opposite and similar meanings.', 
+        progress: 45, 
+        coverImage: require('@/assets/images/whole-numbers.png') 
+      },
+      { 
+        id: 2, 
+        title: 'Word Pairs', 
+        paragraph: 'Understand how related words connect logically.', 
+        progress: 25, 
+        coverImage: require('@/assets/images/ordering-numbers.png') 
+      },
+      {
+        id: 3,
+        title: 'Sentence Completion',
+        paragraph: 'Find the best word to complete a sentence meaningfully.',
+        progress: 60,
+        coverImage: require('@/assets/images/shapes.png')
+      },
+      {
+        id: 4,
+        title: 'Analogies',
+        paragraph: 'Practice solving verbal reasoning analogies and relationships.',
+        progress: 35,
+        coverImage: require('@/assets/images/numbers2.png')
+      }
+    ]
+  },
+  {
+    id: 6,
+    subject: 'Health Education',
+    topics: [
+      { 
+        id: 1, 
+        title: 'Personal Hygiene', 
+        paragraph: 'Learn the importance of keeping your body clean and healthy.', 
+        progress: 70, 
+        coverImage: require('@/assets/images/whole-numbers.png') 
+      },
+      { 
+        id: 2, 
+        title: 'Nutrition and Food', 
+        paragraph: 'Understand food groups and balanced diet essentials.', 
+        progress: 45, 
+        coverImage: require('@/assets/images/ordering-numbers.png') 
+      },
+      {
+        id: 3,
+        title: 'Exercise and Rest',
+        paragraph: 'Know how physical activity and rest help your body grow.',
+        progress: 60,
+        coverImage: require('@/assets/images/shapes.png')
+      },
+      {
+        id: 4,
+        title: 'Common Diseases',
+        paragraph: 'Identify common illnesses and learn simple prevention methods.',
+        progress: 20,
+        coverImage: require('@/assets/images/numbers2.png')
+      }
+    ]
+  },
+  {
+    id: 7,
+    subject: 'Social Studies',
+    topics: [
+      { 
+        id: 1, 
+        title: 'Family and Community', 
+        paragraph: 'Understand family types and roles in a community.', 
+        progress: 50, 
+        coverImage: require('@/assets/images/whole-numbers.png') 
+      },
+      { 
+        id: 2, 
+        title: 'Culture and Traditions', 
+        paragraph: 'Learn about different Nigerian cultures and customs.', 
+        progress: 30, 
+        coverImage: require('@/assets/images/ordering-numbers.png') 
+      },
+      {
+        id: 3,
+        title: 'Civic Responsibilities',
+        paragraph: 'Know your duties and responsibilities as a citizen.',
+        progress: 40,
+        coverImage: require('@/assets/images/shapes.png')
+      },
+      {
+        id: 4,
+        title: 'Government and Leadership',
+        paragraph: 'Understand how government works and why leaders are important.',
+        progress: 25,
+        coverImage: require('@/assets/images/numbers2.png')
+      }
+    ]
+  },
+  {
+    id: 8,
+    subject: 'Home Economics',
+    topics: [
+      { 
+        id: 1, 
+        title: 'Introduction to Home Economics', 
+        paragraph: 'Learn the basics of managing home and resources effectively.', 
+        progress: 55, 
+        coverImage: require('@/assets/images/whole-numbers.png') 
+      },
+      { 
+        id: 2, 
+        title: 'Food and Nutrition', 
+        paragraph: 'Understand food preparation, hygiene, and dietary balance.', 
+        progress: 35, 
+        coverImage: require('@/assets/images/ordering-numbers.png') 
+      },
+      {
+        id: 3,
+        title: 'Clothing and Sewing',
+        paragraph: 'Discover how to care for clothes and basic hand-sewing techniques.',
+        progress: 40,
+        coverImage: require('@/assets/images/shapes.png')
+      },
+      {
+        id: 4,
+        title: 'Household Management',
+        paragraph: 'Learn about budgeting, saving, and home maintenance.',
+        progress: 30,
+        coverImage: require('@/assets/images/numbers2.png')
+      }
+    ]
+  }
+];
+
 
     return (
         <SafeAreaView className="flex-1 bg-white">
@@ -216,15 +458,62 @@ export default function HomeScreen() {
                     </ScrollView>
                 </View>
                 </View>
-                <View className="px-6 mb-10">
-                    <View className="grid grid-cols-2 gap-4">
-                        {/* Subject Cards */}
-                        {
-                            subjectCards.
-                        }
-                        
+                <View className="px-4 mb-10">
+                    <View className="flex-row flex-wrap justify-between items-center">
+                        {subjectCards[selectedSubject].topics.map((topic) => (
+                        <View
+                            key={topic.id}
+                            className="bg-white w-[48%] mb-5 p-3 rounded-2xl shadow-sm border border-gray-100"
+                        >
+                            <Image
+                            source={topic.coverImage}
+                            className="w-full h-24 rounded-lg mb-3"
+                            resizeMode="cover"
+                            />
+                            <Text className="text-gray-900 font-semibold text-base mb-1">
+                            {topic.title}
+                            </Text>
+                            <Text className="text-gray-500 text-sm mb-3">
+                            {topic.paragraph}
+                            </Text>
+                            <View className='flex-row w-full items-center justify-between'>
+                                <Pressable className="bg-blue-600 py-2 rounded-full">
+                                <Text className="text-white text-center font-semibold text-sm px-4">
+                                Learn More
+                                </Text>
+                                </Pressable>
+                                    <View className="flex-row gap-3 mt-2">
+                                        {/* Heart Icon */}
+                                        <Pressable onPress={() => {
+                                            const key = `${selectedSubject}-${topic.id}`;
+                                            setLikedTopics(prev => ({...prev, [key]: !prev[key]}));
+                                        }}>
+                                            <Ionicons
+                                            name={likedTopics[`${selectedSubject}-${topic.id}`] ? 'heart' : 'heart-outline'}
+                                            size={20}
+                                            color={likedTopics[`${selectedSubject}-${topic.id}`] ? 'red' : 'gray'}
+                                            />
+                                        </Pressable>
+
+                                        {/* Checkmark Icon */}
+                                        <Pressable onPress={() => {
+                                            const key = `${selectedSubject}-${topic.id}`;
+                                            setCheckedTopics(prev => ({...prev, [key]: !prev[key]}));
+                                        }}>
+                                            <Ionicons
+                                            name={checkedTopics[`${selectedSubject}-${topic.id}`] ? 'checkmark-circle' : 'checkmark-circle-outline'}
+                                            size={20}
+                                            color={checkedTopics[`${selectedSubject}-${topic.id}`] ? '#60A5FA' : 'gray'}
+                                            />
+                                        </Pressable>
+                                        </View>
+                                
+                            </View> 
+                        </View>
+                        ))}
                     </View>
-                </View>
+                    </View>
+
             </ScrollView>
         </SafeAreaView>
     )
