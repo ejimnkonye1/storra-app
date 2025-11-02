@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import "./global.css";
 import { NavigationProvider } from "./context/NavigationContext";
 
+
 export default function RootLayout() {
 
 
