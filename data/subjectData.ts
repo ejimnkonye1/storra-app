@@ -12,11 +12,11 @@ export interface SubjectCard {
     topics: Topic[]
 }
 
-export interface CourseCards {
-    id: number
-    course: string
-    topics: Topic[]
-}
+// export interface CourseCards {
+//     id: number
+//     course: string
+//     topics: Topic[]
+// }
 
 export const subjects = [
     'Mathematics', 
@@ -29,17 +29,17 @@ export const subjects = [
     'Home Economics'
 ]
 
-export const cards = [
-    'Ongoing',
-    'Completed'
-]
-
-
-// export const coursesCards: CourseCards[] = [
-//     {
-//         id: 
-//     }
+// export const cards = [
+//     'Ongoing',
+//     'Completed'
 // ]
+
+
+// // export const coursesCards: CourseCards[] = [
+// //     {
+// //         id: 
+// //     }
+// // ]
 
 export const subjectCards: SubjectCard[] = [
     {

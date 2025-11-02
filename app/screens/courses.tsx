@@ -5,22 +5,25 @@ import { useRouter } from 'expo-router'
 import Header from '../components/home/Header'
 import CourseTabs from '../components/courses/CourseTabs'
 import CourseCard from '../components/courses/CourseCard'
-import { subjectCards } from '../../data/subjectData'
+import { subjectCards } from '@/data/subjectData'
 
 export default function CoursesScreen() {
     const [activeTab, setActiveTab] = useState<'ongoing' | 'completed'>('ongoing')
     const router = useRouter()
 
     // Transform subject data into course format
-    const allCourses = subjectCards.map(subject => ({
-        id: subject.id,
-        subject: subject.subject,
-        title: subject.subject,
-        subtitle: `Congratulations! You've completed the lessons for this topic`,
-        coverImage: subject.topics[0].coverImage, // Use first topic's image
-        progress: Math.floor(Math.random() * 100), // Random progress for demo
-        isCompleted: Math.random() > 0.5 // Random completion for demo
-    }))
+    const allCourses = subjectCards.map(subject => {
+        const randomTopicIndex = Math.floor(Math.random() * subject.topics.length)
+        return {
+            id: subject.id,
+            subject: subject.subject,
+            title: subject.subject,
+            subtitle: `Congratulations! You've completed the lessons for this topic`,
+            coverImage: subject.topics[randomTopicIndex].coverImage, // Random topic image
+            progress: Math.floor(Math.random() * 100), // Random progress for demo
+            isCompleted: Math.random() > 0.5 // Random completion for demo
+        }
+    })
 
     const ongoingCourses = allCourses.filter(course => !course.isCompleted)
     const completedCourses = allCourses.filter(course => course.isCompleted)

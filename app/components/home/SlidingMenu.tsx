@@ -6,14 +6,16 @@ import { useRouter } from 'expo-router'
 interface SlidingMenuProps {
     visible: boolean
     onClose: () => void
+    activeRoute: string
+    setActiveRoute: (route: string) => void
 }
 
-export default function SlidingMenu({ visible, onClose }: SlidingMenuProps) {
+export default function SlidingMenu({ visible, onClose, activeRoute, setActiveRoute }: SlidingMenuProps) {
     const router = useRouter()
     const slideAnim = useRef(new Animated.Value(-320)).current // Start off-screen to the left
 
     const menuItems = [
-        { icon: 'home-outline', label: 'Home', route: '' },
+        { icon: 'home-outline', label: 'Home', route: '/screens/home' },
         { icon: 'book-outline', label: 'Courses', route: '/screens/courses' },
         { icon: 'help-circle-outline', label: 'Quizzes', route: '/screens/quizzes' },
         { icon: 'wallet-outline', label: 'Wallet', route: '/screens/wallet' },
@@ -30,7 +32,7 @@ export default function SlidingMenu({ visible, onClose }: SlidingMenuProps) {
                 toValue: 0,
                 useNativeDriver: true,
                 speed: 12,
-                bounciness: 8,
+                bounciness: 3,
             }).start()
         } else {
             Animated.timing(slideAnim, {
@@ -42,13 +44,18 @@ export default function SlidingMenu({ visible, onClose }: SlidingMenuProps) {
     }, [visible])
 
     const handleMenuPress = (route: string, label: string) => {
-        onClose()
+        console.log('Clicked:', label, 'Route:', route)
+        console.log('Before update - activeRoute:', activeRoute)
+        setActiveRoute(route)
+        console.log('After update - should be:', route)
+        
         if (label === 'Logout') {
             console.log('Logging out...')
             // router.replace('/login')
         } else {
             router.push(route as any)
         }
+        onClose()
     }
 
     return (
@@ -91,7 +98,8 @@ export default function SlidingMenu({ visible, onClose }: SlidingMenuProps) {
                         {/* Menu Items */}
                         <View className="flex-1">
                             {menuItems.map((item, index) => {
-                                const isActive = index === 0; // Set active state based on your logic
+                                const isActive = activeRoute === item.route;
+                                console.log(`${item.label}: activeRoute=${activeRoute}, item.route=${item.route}, isActive=${isActive}`)
                                 return (
                                     <Pressable
                                         key={index}
@@ -105,13 +113,13 @@ export default function SlidingMenu({ visible, onClose }: SlidingMenuProps) {
                                             <Ionicons 
                                                 name={item.icon as any} 
                                                 size={24} 
-                                                color={isActive ? 'white' : ''}
+                                                color={isActive ? 'white' : '#000'}
                                             />
                                         </View>
                                         <Text 
                                             className="text-lg font-medium flex-1"
                                             style={{ 
-                                                color: isActive ? 'white' : '',
+                                                color: isActive ? 'white' : '#000',
                                                 fontWeight: isActive ? '600' : '400'
                                             }}
                                         >
