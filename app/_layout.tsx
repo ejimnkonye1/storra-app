@@ -3,6 +3,8 @@ import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import "./global.css";
+import { NavigationProvider } from "./context/NavigationContext";
+
 
 export default function RootLayout() {
      const [loaded, setLoaded] = useState(false);

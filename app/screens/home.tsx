@@ -1,4 +1,5 @@
 import { View, ScrollView } from 'react-native'
+import { useRouter } from 'expo-router'
 import { useState, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -16,6 +17,8 @@ import TopicsGrid from '../components/home/TopicsGrid'
 import { subjects, subjectCards } from '../../data/subjectData'
 
 export default function HomeScreen() {
+
+    const router = useRouter()
     const [selectedSubject, setSelectedSubject] = useState(0)
     const [likedTopics, setLikedTopics] = useState<{[key: string]: boolean}>({})
     const [checkedTopics, setCheckedTopics] = useState<{[key: string]: boolean}>({})
@@ -97,21 +100,29 @@ export default function HomeScreen() {
                     />
                 </View>
 
-                <TopicsGrid 
+                <TopicsGrid
                     topics={subjectCards[selectedSubject].topics}
                     likedTopics={Object.fromEntries(
-                        subjectCards[selectedSubject].topics.map(topic => 
-                            [topic.id, getLikedState(topic.id)]
+                        subjectCards[selectedSubject].topics.map(topic =>
+                        [topic.id, getLikedState(topic.id)]
                         )
                     )}
                     checkedTopics={Object.fromEntries(
-                        subjectCards[selectedSubject].topics.map(topic => 
-                            [topic.id, getCheckedState(topic.id)]
+                        subjectCards[selectedSubject].topics.map(topic =>
+                        [topic.id, getCheckedState(topic.id)]
                         )
                     )}
                     onLike={handleLike}
                     onCheck={handleCheck}
-                    onLearnMore={(topicId) => console.log('Learn more:', topicId)}
+                    onLearnMore={(topicId) => {
+                        const topic = subjectCards[selectedSubject].topics.find(t => t.id === topicId)
+                        if (topic) {
+                            router.push({
+                                pathname: '/screens/TopicDetailScreen',
+                                params: { topic: JSON.stringify(topic) }
+                            })
+                        }
+                    }}
                 />
             </ScrollView>
         </SafeAreaView>
