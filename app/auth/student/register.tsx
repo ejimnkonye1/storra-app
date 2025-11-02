@@ -3,14 +3,14 @@ import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 const StudentAccountScreen = () => {
@@ -26,7 +26,7 @@ const StudentAccountScreen = () => {
   });
 
   const handleNext = () => {
-    router.push('/auth/choose-login-account');
+    router.push('/auth/student/login');
   }
 
   const updateFormData = (field, value) => {
