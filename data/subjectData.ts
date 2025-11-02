@@ -6,10 +6,34 @@ export interface Topic {
     coverImage: any
 }
 
+export interface Faqs {
+    question: string
+    answer: string
+}
+
+export interface Reviews {
+    user: string
+    rating: number
+    comment: string
+}
+
+export interface Lessons {
+    id: number
+    title: string
+    lessonNumber: string
+}
+
 export interface SubjectCard {
     id: number
     subject: string
     topics: Topic[]
+    rating: number
+    numberOfStudents: number
+    lastUpdated: string
+    about: string
+    faqs: Faqs[]
+    reviews: Reviews[]
+    lessons: Lessons[]
 }
 
 // export interface CourseCards {
@@ -45,6 +69,57 @@ export const subjectCards: SubjectCard[] = [
     {
         id: 1,
         subject: 'Mathematics',
+        rating: 3.1,
+        numberOfStudents: 124,
+        lastUpdated: "July, 2025",
+        about: "Shapes and spatial understanding are fundamental concept that helps us understand the world around us. Shapes are the basic building blocks of objects and spatial understanding involves how those objects are positioned, arranged and related to each other in space. These concepts are crucial for cognitive development, problem solving and navigating our environment.",
+        faqs: [
+                { 
+                    question: "What will I learn?", 
+                    answer: "You'll learn fundamental concepts, practical skills, and how to build real-world projects that strengthen your understanding." 
+                },
+                { 
+                    question: "How long is this course?", 
+                    answer: "The course takes approximately 4–6 weeks to complete, depending on your pace and schedule." 
+                },
+                { 
+                    question: "Do I need any prior experience?", 
+                    answer: "No prior experience is required. The course is beginner-friendly and starts from the basics before advancing gradually." 
+                },
+                { 
+                    question: "Will I get a certificate?", 
+                    answer: "Yes, you'll receive a certificate of completion once you finish all the lessons and assessments." 
+                },
+                { 
+                    question: "Can I learn at my own pace?", 
+                    answer: "Absolutely. You can take lessons whenever it suits you—there’s no fixed schedule." 
+                },
+                { 
+                    question: "Is there support if I get stuck?", 
+                    answer: "Yes, you’ll have access to discussion forums and community support to help you with any questions or challenges." 
+                }
+                ],
+                lessons: [
+                { id: 1, title: "Identify and draw straight lines", lessonNumber: "Lesson 1" },
+                { id: 2, title: "Draw horizontal and vertical lines", lessonNumber: "Lesson 2" },
+                { id: 3, title: "Distinguish straight and curved lines", lessonNumber: "Lesson 3" },
+                { id: 4, title: "Identify 2-D shapes", lessonNumber: "Lesson 4" },
+                { id: 5, title: "Identify 3-D shapes", lessonNumber: "Lesson 5" },
+                { id: 6, title: "Identify right angles and corners", lessonNumber: "Lesson 6" },
+                { id: 7, title: "Recognize parallel and perpendicular lines", lessonNumber: "Lesson 7" },
+                { id: 8, title: "Draw and label basic geometric figures", lessonNumber: "Lesson 8" },
+                { id: 9, title: "Understand symmetry in shapes", lessonNumber: "Lesson 9" },
+                { id: 10, title: "Identify shapes in real-life objects", lessonNumber: "Lesson 10" }
+                ],
+                reviews: [
+                { user: "John D.", rating: 4, comment: "Great learning experience!" },
+                { user: "Sarah M.", rating: 5, comment: "Very helpful content." },
+                { user: "Michael R.", rating: 5, comment: "Well-structured lessons and easy to follow. Highly recommend!" },
+                { user: "Aisha K.", rating: 4, comment: "Good course! I just wish there were more examples for advanced topics." },
+                { user: "David L.", rating: 5, comment: "Learned more here in a week than I did from YouTube in a month!" },
+                { user: "Emily T.", rating: 5, comment: "The visuals and explanations made everything so clear. Loved it!" }
+                ],
+
         topics: [
             { 
                 id: 1, 
@@ -79,6 +154,57 @@ export const subjectCards: SubjectCard[] = [
     {
         id: 2,
         subject: 'English Language',
+                rating: 3.1,
+        numberOfStudents: 124,
+        lastUpdated: "July, 2025",
+        about: "Shapes and spatial understanding are fundamental concept that helps us understand the world around us. Shapes are the basic building blocks of objects and spatial understanding involves how those objects are positioned, arranged and related to each other in space. These concepts are crucial for cognitive development, problem solving and navigating our environment.",
+        faqs: [
+                { 
+                    question: "What will I learn?", 
+                    answer: "You'll learn fundamental concepts, practical skills, and how to build real-world projects that strengthen your understanding." 
+                },
+                { 
+                    question: "How long is this course?", 
+                    answer: "The course takes approximately 4–6 weeks to complete, depending on your pace and schedule." 
+                },
+                { 
+                    question: "Do I need any prior experience?", 
+                    answer: "No prior experience is required. The course is beginner-friendly and starts from the basics before advancing gradually." 
+                },
+                { 
+                    question: "Will I get a certificate?", 
+                    answer: "Yes, you'll receive a certificate of completion once you finish all the lessons and assessments." 
+                },
+                { 
+                    question: "Can I learn at my own pace?", 
+                    answer: "Absolutely. You can take lessons whenever it suits you—there’s no fixed schedule." 
+                },
+                { 
+                    question: "Is there support if I get stuck?", 
+                    answer: "Yes, you’ll have access to discussion forums and community support to help you with any questions or challenges." 
+                }
+                ],
+                lessons: [
+                { id: 1, title: "Identify and draw straight lines", lessonNumber: "Lesson 1" },
+                { id: 2, title: "Draw horizontal and vertical lines", lessonNumber: "Lesson 2" },
+                { id: 3, title: "Distinguish straight and curved lines", lessonNumber: "Lesson 3" },
+                { id: 4, title: "Identify 2-D shapes", lessonNumber: "Lesson 4" },
+                { id: 5, title: "Identify 3-D shapes", lessonNumber: "Lesson 5" },
+                { id: 6, title: "Identify right angles and corners", lessonNumber: "Lesson 6" },
+                { id: 7, title: "Recognize parallel and perpendicular lines", lessonNumber: "Lesson 7" },
+                { id: 8, title: "Draw and label basic geometric figures", lessonNumber: "Lesson 8" },
+                { id: 9, title: "Understand symmetry in shapes", lessonNumber: "Lesson 9" },
+                { id: 10, title: "Identify shapes in real-life objects", lessonNumber: "Lesson 10" }
+                ],
+                reviews: [
+                { user: "John D.", rating: 4, comment: "Great learning experience!" },
+                { user: "Sarah M.", rating: 5, comment: "Very helpful content." },
+                { user: "Michael R.", rating: 5, comment: "Well-structured lessons and easy to follow. Highly recommend!" },
+                { user: "Aisha K.", rating: 4, comment: "Good course! I just wish there were more examples for advanced topics." },
+                { user: "David L.", rating: 5, comment: "Learned more here in a week than I did from YouTube in a month!" },
+                { user: "Emily T.", rating: 5, comment: "The visuals and explanations made everything so clear. Loved it!" }
+                ],
+
         topics: [
             { 
                 id: 1, 
@@ -113,6 +239,57 @@ export const subjectCards: SubjectCard[] = [
     {
         id: 3,
         subject: 'Basic Science',
+                rating: 3.1,
+        numberOfStudents: 124,
+        lastUpdated: "July, 2025",
+        about: "Shapes and spatial understanding are fundamental concept that helps us understand the world around us. Shapes are the basic building blocks of objects and spatial understanding involves how those objects are positioned, arranged and related to each other in space. These concepts are crucial for cognitive development, problem solving and navigating our environment.",
+        faqs: [
+                { 
+                    question: "What will I learn?", 
+                    answer: "You'll learn fundamental concepts, practical skills, and how to build real-world projects that strengthen your understanding." 
+                },
+                { 
+                    question: "How long is this course?", 
+                    answer: "The course takes approximately 4–6 weeks to complete, depending on your pace and schedule." 
+                },
+                { 
+                    question: "Do I need any prior experience?", 
+                    answer: "No prior experience is required. The course is beginner-friendly and starts from the basics before advancing gradually." 
+                },
+                { 
+                    question: "Will I get a certificate?", 
+                    answer: "Yes, you'll receive a certificate of completion once you finish all the lessons and assessments." 
+                },
+                { 
+                    question: "Can I learn at my own pace?", 
+                    answer: "Absolutely. You can take lessons whenever it suits you—there’s no fixed schedule." 
+                },
+                { 
+                    question: "Is there support if I get stuck?", 
+                    answer: "Yes, you’ll have access to discussion forums and community support to help you with any questions or challenges." 
+                }
+                ],
+                lessons: [
+                { id: 1, title: "Identify and draw straight lines", lessonNumber: "Lesson 1" },
+                { id: 2, title: "Draw horizontal and vertical lines", lessonNumber: "Lesson 2" },
+                { id: 3, title: "Distinguish straight and curved lines", lessonNumber: "Lesson 3" },
+                { id: 4, title: "Identify 2-D shapes", lessonNumber: "Lesson 4" },
+                { id: 5, title: "Identify 3-D shapes", lessonNumber: "Lesson 5" },
+                { id: 6, title: "Identify right angles and corners", lessonNumber: "Lesson 6" },
+                { id: 7, title: "Recognize parallel and perpendicular lines", lessonNumber: "Lesson 7" },
+                { id: 8, title: "Draw and label basic geometric figures", lessonNumber: "Lesson 8" },
+                { id: 9, title: "Understand symmetry in shapes", lessonNumber: "Lesson 9" },
+                { id: 10, title: "Identify shapes in real-life objects", lessonNumber: "Lesson 10" }
+                ],
+                reviews: [
+                { user: "John D.", rating: 4, comment: "Great learning experience!" },
+                { user: "Sarah M.", rating: 5, comment: "Very helpful content." },
+                { user: "Michael R.", rating: 5, comment: "Well-structured lessons and easy to follow. Highly recommend!" },
+                { user: "Aisha K.", rating: 4, comment: "Good course! I just wish there were more examples for advanced topics." },
+                { user: "David L.", rating: 5, comment: "Learned more here in a week than I did from YouTube in a month!" },
+                { user: "Emily T.", rating: 5, comment: "The visuals and explanations made everything so clear. Loved it!" }
+                ],
+
         topics: [
             { 
                 id: 1, 
@@ -147,6 +324,57 @@ export const subjectCards: SubjectCard[] = [
     {
         id: 4,
         subject: 'Quantitative Reasoning',
+                rating: 3.1,
+        numberOfStudents: 124,
+        lastUpdated: "July, 2025",
+        about: "Shapes and spatial understanding are fundamental concept that helps us understand the world around us. Shapes are the basic building blocks of objects and spatial understanding involves how those objects are positioned, arranged and related to each other in space. These concepts are crucial for cognitive development, problem solving and navigating our environment.",
+        faqs: [
+                { 
+                    question: "What will I learn?", 
+                    answer: "You'll learn fundamental concepts, practical skills, and how to build real-world projects that strengthen your understanding." 
+                },
+                { 
+                    question: "How long is this course?", 
+                    answer: "The course takes approximately 4–6 weeks to complete, depending on your pace and schedule." 
+                },
+                { 
+                    question: "Do I need any prior experience?", 
+                    answer: "No prior experience is required. The course is beginner-friendly and starts from the basics before advancing gradually." 
+                },
+                { 
+                    question: "Will I get a certificate?", 
+                    answer: "Yes, you'll receive a certificate of completion once you finish all the lessons and assessments." 
+                },
+                { 
+                    question: "Can I learn at my own pace?", 
+                    answer: "Absolutely. You can take lessons whenever it suits you—there’s no fixed schedule." 
+                },
+                { 
+                    question: "Is there support if I get stuck?", 
+                    answer: "Yes, you’ll have access to discussion forums and community support to help you with any questions or challenges." 
+                }
+                ],
+                lessons: [
+                { id: 1, title: "Identify and draw straight lines", lessonNumber: "Lesson 1" },
+                { id: 2, title: "Draw horizontal and vertical lines", lessonNumber: "Lesson 2" },
+                { id: 3, title: "Distinguish straight and curved lines", lessonNumber: "Lesson 3" },
+                { id: 4, title: "Identify 2-D shapes", lessonNumber: "Lesson 4" },
+                { id: 5, title: "Identify 3-D shapes", lessonNumber: "Lesson 5" },
+                { id: 6, title: "Identify right angles and corners", lessonNumber: "Lesson 6" },
+                { id: 7, title: "Recognize parallel and perpendicular lines", lessonNumber: "Lesson 7" },
+                { id: 8, title: "Draw and label basic geometric figures", lessonNumber: "Lesson 8" },
+                { id: 9, title: "Understand symmetry in shapes", lessonNumber: "Lesson 9" },
+                { id: 10, title: "Identify shapes in real-life objects", lessonNumber: "Lesson 10" }
+                ],
+                reviews: [
+                { user: "John D.", rating: 4, comment: "Great learning experience!" },
+                { user: "Sarah M.", rating: 5, comment: "Very helpful content." },
+                { user: "Michael R.", rating: 5, comment: "Well-structured lessons and easy to follow. Highly recommend!" },
+                { user: "Aisha K.", rating: 4, comment: "Good course! I just wish there were more examples for advanced topics." },
+                { user: "David L.", rating: 5, comment: "Learned more here in a week than I did from YouTube in a month!" },
+                { user: "Emily T.", rating: 5, comment: "The visuals and explanations made everything so clear. Loved it!" }
+                ],
+
         topics: [
             { 
                 id: 1, 
@@ -181,6 +409,57 @@ export const subjectCards: SubjectCard[] = [
     {
         id: 5,
         subject: 'Verbal Reasoning',
+                rating: 3.1,
+        numberOfStudents: 124,
+        lastUpdated: "July, 2025",
+        about: "Shapes and spatial understanding are fundamental concept that helps us understand the world around us. Shapes are the basic building blocks of objects and spatial understanding involves how those objects are positioned, arranged and related to each other in space. These concepts are crucial for cognitive development, problem solving and navigating our environment.",
+        faqs: [
+                { 
+                    question: "What will I learn?", 
+                    answer: "You'll learn fundamental concepts, practical skills, and how to build real-world projects that strengthen your understanding." 
+                },
+                { 
+                    question: "How long is this course?", 
+                    answer: "The course takes approximately 4–6 weeks to complete, depending on your pace and schedule." 
+                },
+                { 
+                    question: "Do I need any prior experience?", 
+                    answer: "No prior experience is required. The course is beginner-friendly and starts from the basics before advancing gradually." 
+                },
+                { 
+                    question: "Will I get a certificate?", 
+                    answer: "Yes, you'll receive a certificate of completion once you finish all the lessons and assessments." 
+                },
+                { 
+                    question: "Can I learn at my own pace?", 
+                    answer: "Absolutely. You can take lessons whenever it suits you—there’s no fixed schedule." 
+                },
+                { 
+                    question: "Is there support if I get stuck?", 
+                    answer: "Yes, you’ll have access to discussion forums and community support to help you with any questions or challenges." 
+                }
+                ],
+                lessons: [
+                { id: 1, title: "Identify and draw straight lines", lessonNumber: "Lesson 1" },
+                { id: 2, title: "Draw horizontal and vertical lines", lessonNumber: "Lesson 2" },
+                { id: 3, title: "Distinguish straight and curved lines", lessonNumber: "Lesson 3" },
+                { id: 4, title: "Identify 2-D shapes", lessonNumber: "Lesson 4" },
+                { id: 5, title: "Identify 3-D shapes", lessonNumber: "Lesson 5" },
+                { id: 6, title: "Identify right angles and corners", lessonNumber: "Lesson 6" },
+                { id: 7, title: "Recognize parallel and perpendicular lines", lessonNumber: "Lesson 7" },
+                { id: 8, title: "Draw and label basic geometric figures", lessonNumber: "Lesson 8" },
+                { id: 9, title: "Understand symmetry in shapes", lessonNumber: "Lesson 9" },
+                { id: 10, title: "Identify shapes in real-life objects", lessonNumber: "Lesson 10" }
+                ],
+                reviews: [
+                { user: "John D.", rating: 4, comment: "Great learning experience!" },
+                { user: "Sarah M.", rating: 5, comment: "Very helpful content." },
+                { user: "Michael R.", rating: 5, comment: "Well-structured lessons and easy to follow. Highly recommend!" },
+                { user: "Aisha K.", rating: 4, comment: "Good course! I just wish there were more examples for advanced topics." },
+                { user: "David L.", rating: 5, comment: "Learned more here in a week than I did from YouTube in a month!" },
+                { user: "Emily T.", rating: 5, comment: "The visuals and explanations made everything so clear. Loved it!" }
+                ],
+
         topics: [
             { 
                 id: 1, 
@@ -215,6 +494,57 @@ export const subjectCards: SubjectCard[] = [
     {
         id: 6,
         subject: 'Health Education',
+                rating: 3.1,
+        numberOfStudents: 124,
+        lastUpdated: "July, 2025",
+        about: "Shapes and spatial understanding are fundamental concept that helps us understand the world around us. Shapes are the basic building blocks of objects and spatial understanding involves how those objects are positioned, arranged and related to each other in space. These concepts are crucial for cognitive development, problem solving and navigating our environment.",
+        faqs: [
+                { 
+                    question: "What will I learn?", 
+                    answer: "You'll learn fundamental concepts, practical skills, and how to build real-world projects that strengthen your understanding." 
+                },
+                { 
+                    question: "How long is this course?", 
+                    answer: "The course takes approximately 4–6 weeks to complete, depending on your pace and schedule." 
+                },
+                { 
+                    question: "Do I need any prior experience?", 
+                    answer: "No prior experience is required. The course is beginner-friendly and starts from the basics before advancing gradually." 
+                },
+                { 
+                    question: "Will I get a certificate?", 
+                    answer: "Yes, you'll receive a certificate of completion once you finish all the lessons and assessments." 
+                },
+                { 
+                    question: "Can I learn at my own pace?", 
+                    answer: "Absolutely. You can take lessons whenever it suits you—there’s no fixed schedule." 
+                },
+                { 
+                    question: "Is there support if I get stuck?", 
+                    answer: "Yes, you’ll have access to discussion forums and community support to help you with any questions or challenges." 
+                }
+                ],
+                lessons: [
+                { id: 1, title: "Identify and draw straight lines", lessonNumber: "Lesson 1" },
+                { id: 2, title: "Draw horizontal and vertical lines", lessonNumber: "Lesson 2" },
+                { id: 3, title: "Distinguish straight and curved lines", lessonNumber: "Lesson 3" },
+                { id: 4, title: "Identify 2-D shapes", lessonNumber: "Lesson 4" },
+                { id: 5, title: "Identify 3-D shapes", lessonNumber: "Lesson 5" },
+                { id: 6, title: "Identify right angles and corners", lessonNumber: "Lesson 6" },
+                { id: 7, title: "Recognize parallel and perpendicular lines", lessonNumber: "Lesson 7" },
+                { id: 8, title: "Draw and label basic geometric figures", lessonNumber: "Lesson 8" },
+                { id: 9, title: "Understand symmetry in shapes", lessonNumber: "Lesson 9" },
+                { id: 10, title: "Identify shapes in real-life objects", lessonNumber: "Lesson 10" }
+                ],
+                reviews: [
+                { user: "John D.", rating: 4, comment: "Great learning experience!" },
+                { user: "Sarah M.", rating: 5, comment: "Very helpful content." },
+                { user: "Michael R.", rating: 5, comment: "Well-structured lessons and easy to follow. Highly recommend!" },
+                { user: "Aisha K.", rating: 4, comment: "Good course! I just wish there were more examples for advanced topics." },
+                { user: "David L.", rating: 5, comment: "Learned more here in a week than I did from YouTube in a month!" },
+                { user: "Emily T.", rating: 5, comment: "The visuals and explanations made everything so clear. Loved it!" }
+                ],
+
         topics: [
             { 
                 id: 1, 
@@ -249,6 +579,57 @@ export const subjectCards: SubjectCard[] = [
     {
         id: 7,
         subject: 'Social Studies',
+               rating: 3.1,
+        numberOfStudents: 124,
+        lastUpdated: "July, 2025",
+        about: "Shapes and spatial understanding are fundamental concept that helps us understand the world around us. Shapes are the basic building blocks of objects and spatial understanding involves how those objects are positioned, arranged and related to each other in space. These concepts are crucial for cognitive development, problem solving and navigating our environment.",
+        faqs: [
+                { 
+                    question: "What will I learn?", 
+                    answer: "You'll learn fundamental concepts, practical skills, and how to build real-world projects that strengthen your understanding." 
+                },
+                { 
+                    question: "How long is this course?", 
+                    answer: "The course takes approximately 4–6 weeks to complete, depending on your pace and schedule." 
+                },
+                { 
+                    question: "Do I need any prior experience?", 
+                    answer: "No prior experience is required. The course is beginner-friendly and starts from the basics before advancing gradually." 
+                },
+                { 
+                    question: "Will I get a certificate?", 
+                    answer: "Yes, you'll receive a certificate of completion once you finish all the lessons and assessments." 
+                },
+                { 
+                    question: "Can I learn at my own pace?", 
+                    answer: "Absolutely. You can take lessons whenever it suits you—there’s no fixed schedule." 
+                },
+                { 
+                    question: "Is there support if I get stuck?", 
+                    answer: "Yes, you’ll have access to discussion forums and community support to help you with any questions or challenges." 
+                }
+                ],
+                lessons: [
+                { id: 1, title: "Identify and draw straight lines", lessonNumber: "Lesson 1" },
+                { id: 2, title: "Draw horizontal and vertical lines", lessonNumber: "Lesson 2" },
+                { id: 3, title: "Distinguish straight and curved lines", lessonNumber: "Lesson 3" },
+                { id: 4, title: "Identify 2-D shapes", lessonNumber: "Lesson 4" },
+                { id: 5, title: "Identify 3-D shapes", lessonNumber: "Lesson 5" },
+                { id: 6, title: "Identify right angles and corners", lessonNumber: "Lesson 6" },
+                { id: 7, title: "Recognize parallel and perpendicular lines", lessonNumber: "Lesson 7" },
+                { id: 8, title: "Draw and label basic geometric figures", lessonNumber: "Lesson 8" },
+                { id: 9, title: "Understand symmetry in shapes", lessonNumber: "Lesson 9" },
+                { id: 10, title: "Identify shapes in real-life objects", lessonNumber: "Lesson 10" }
+                ],
+                reviews: [
+                { user: "John D.", rating: 4, comment: "Great learning experience!" },
+                { user: "Sarah M.", rating: 5, comment: "Very helpful content." },
+                { user: "Michael R.", rating: 5, comment: "Well-structured lessons and easy to follow. Highly recommend!" },
+                { user: "Aisha K.", rating: 4, comment: "Good course! I just wish there were more examples for advanced topics." },
+                { user: "David L.", rating: 5, comment: "Learned more here in a week than I did from YouTube in a month!" },
+                { user: "Emily T.", rating: 5, comment: "The visuals and explanations made everything so clear. Loved it!" }
+                ],
+
         topics: [
             { 
                 id: 1, 
@@ -283,6 +664,56 @@ export const subjectCards: SubjectCard[] = [
     {
         id: 8,
         subject: 'Home Economics',
+        rating: 3.1,
+        numberOfStudents: 124,
+        lastUpdated: "July, 2025",
+        about: "Shapes and spatial understanding are fundamental concept that helps us understand the world around us. Shapes are the basic building blocks of objects and spatial understanding involves how those objects are positioned, arranged and related to each other in space. These concepts are crucial for cognitive development, problem solving and navigating our environment.",
+        faqs: [
+                { 
+                    question: "What will I learn?", 
+                    answer: "You'll learn fundamental concepts, practical skills, and how to build real-world projects that strengthen your understanding." 
+                },
+                { 
+                    question: "How long is this course?", 
+                    answer: "The course takes approximately 4–6 weeks to complete, depending on your pace and schedule." 
+                },
+                { 
+                    question: "Do I need any prior experience?", 
+                    answer: "No prior experience is required. The course is beginner-friendly and starts from the basics before advancing gradually." 
+                },
+                { 
+                    question: "Will I get a certificate?", 
+                    answer: "Yes, you'll receive a certificate of completion once you finish all the lessons and assessments." 
+                },
+                { 
+                    question: "Can I learn at my own pace?", 
+                    answer: "Absolutely. You can take lessons whenever it suits you—there’s no fixed schedule." 
+                },
+                { 
+                    question: "Is there support if I get stuck?", 
+                    answer: "Yes, you’ll have access to discussion forums and community support to help you with any questions or challenges." 
+                }
+                ],
+                lessons: [
+                { id: 1, title: "Identify and draw straight lines", lessonNumber: "Lesson 1" },
+                { id: 2, title: "Draw horizontal and vertical lines", lessonNumber: "Lesson 2" },
+                { id: 3, title: "Distinguish straight and curved lines", lessonNumber: "Lesson 3" },
+                { id: 4, title: "Identify 2-D shapes", lessonNumber: "Lesson 4" },
+                { id: 5, title: "Identify 3-D shapes", lessonNumber: "Lesson 5" },
+                { id: 6, title: "Identify right angles and corners", lessonNumber: "Lesson 6" },
+                { id: 7, title: "Recognize parallel and perpendicular lines", lessonNumber: "Lesson 7" },
+                { id: 8, title: "Draw and label basic geometric figures", lessonNumber: "Lesson 8" },
+                { id: 9, title: "Understand symmetry in shapes", lessonNumber: "Lesson 9" },
+                { id: 10, title: "Identify shapes in real-life objects", lessonNumber: "Lesson 10" }
+                ],
+                reviews: [
+                { user: "John D.", rating: 4, comment: "Great learning experience!" },
+                { user: "Sarah M.", rating: 5, comment: "Very helpful content." },
+                { user: "Michael R.", rating: 5, comment: "Well-structured lessons and easy to follow. Highly recommend!" },
+                { user: "Aisha K.", rating: 4, comment: "Good course! I just wish there were more examples for advanced topics." },
+                { user: "David L.", rating: 5, comment: "Learned more here in a week than I did from YouTube in a month!" },
+                { user: "Emily T.", rating: 5, comment: "The visuals and explanations made everything so clear. Loved it!" }
+                ],
         topics: [
             { 
                 id: 1, 
