@@ -11,7 +11,7 @@ import {
     View,
 } from "react-native";
 
-export default function ReferralScreen() {
+export default function RewardScreen() {
   const router = useRouter();
   const referralCode = "1587-9758-8582-0472-1587";
   const totalReferred = 12;
@@ -25,7 +25,7 @@ export default function ReferralScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Join EduWallet using my referral code: ${referralCode}`,
+        message: `Complete activities to earn points and money for your wallet: ${referralCode}`,
       });
     } catch (error) {
       console.log(error);
@@ -37,7 +37,7 @@ export default function ReferralScreen() {
       {/* Header */}
       <View className="flex-row justify-between items-center mb-6">
         <Text className="text-2xl font-bold text-gray-900">
-          Referral Program
+          Earn Rewards
         </Text>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="close" size={26} color="black" />
@@ -46,7 +46,7 @@ export default function ReferralScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text className="text-gray-500 mb-6">
-          Invite friends and earn rewards when they join EduWallet.
+  Complete activities to earn points and money for your wallet.
         </Text>
 
         {/* Referral Code */}

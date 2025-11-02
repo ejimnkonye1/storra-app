@@ -19,7 +19,7 @@ export default function Cards() {
       desc: "Complete tasks and Earn",
       icon: <Ionicons name="gift-outline" size={24} color="#7C3AED" />,
       bg: "bg-purple-100",
-      // route: "/wallet/rewards",
+      route: "/wallet/reward",
     },
     {
       title: "Withdraw Money",
