@@ -5,7 +5,13 @@ module.exports = {
   ],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+  extend: {
+  fontFamily: {
+    grotesk: ["SpaceGrotesk_400Regular"],
+    groteskMedium: ["SpaceGrotesk_500Medium"],
+    groteskBold: ["SpaceGrotesk_700Bold"],
+  },
+},
   },
   plugins: [],
 }

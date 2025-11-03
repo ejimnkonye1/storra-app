@@ -36,7 +36,7 @@ export default function ChooseAccount() {
   };
 
   return (
-    <View className="flex-1 bg-white px-6 pt-16">
+    <View className="flex-1 bg-white px-6 pt-16 font-grotesk ">
       {/* Logo */}
       <View className="items-center mb-10">
         <Image

@@ -35,7 +35,7 @@ export default function Onboarding() {
   };
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-white font-grotesk">
       {/* Header Controls (Back + Skip) */}
       <View className="flex-row justify-between items-center px-6 pt-12">
         {currentIndex > 0 ? (
@@ -78,7 +78,7 @@ export default function Onboarding() {
             className="w-80 h-80 w-full mb-8"
             resizeMode="contain"
           />
-          <Text className="font-semibold text-[25px] text-gray-800 mb-4 text-center">
+          <Text className=" font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
             Fun, gamified learning for every age group.
           </Text>
           <Text className="text-[15px] text-gray-500 text-center">
@@ -93,7 +93,7 @@ export default function Onboarding() {
             className="w-80 h-80 w-full mb-8"
             resizeMode="contain"
           />
-          <Text className="font-semibold text-[25px] text-gray-800 mb-4 text-center">
+          <Text className=" font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
             Earn & Collect Rewards As You Earn
           </Text>
           <Text className="text-[15px] text-gray-500 text-center">
@@ -109,7 +109,7 @@ export default function Onboarding() {
             className="w-80 h-80 w-full mb-8"
             resizeMode="contain"
           />
-          <Text className="font-semibold text-[25px] text-gray-800 mb-4 text-center">
+          <Text className=" font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
             Play, Compete, Win
           </Text>
           <Text className="text-[15px] text-gray-500 text-center">
