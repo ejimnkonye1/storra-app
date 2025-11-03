@@ -1,62 +1,184 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
+import { Feather, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import React from "react";
+import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
-export default function WalletScreen() {
-  const transactions = [
-    { id: 1, type: 'Earned', amount: '+₦500', date: 'Nov 1, 2025' },
-    { id: 2, type: 'Withdrawn', amount: '-₦200', date: 'Oct 28, 2025' },
-    { id: 3, type: 'Reward', amount: '+₦300', date: 'Oct 25, 2025' },
-  ]
-
+const WalletScreen = () => {
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="px-6 pt-6">
-        {/* Header */}
-        <View className="flex-row items-center justify-between mb-8">
-          <Text className="text-2xl font-bold text-gray-900">My Wallet</Text>
-          <Ionicons name="wallet-outline" size={26} color="#2563eb" />
-        </View>
+    <SafeAreaView className="flex-1 bg-gray-50 px-5 pt-8 font-grotesk">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* --- HEADER --- */}
+        <View className="flex-row justify-between items-center mb-6 mt-4">
+          <TouchableOpacity className="p-2 rounded-full bg-gray-100">
+            <Ionicons name="menu" size={22} color="black" />
+          </TouchableOpacity>
 
-        {/* Balance Card */}
-        <View className="bg-blue-600 rounded-3xl p-6 mb-8 shadow-md">
-          <Text className="text-white text-lg mb-2">Current Balance</Text>
-          <Text className="text-white text-4xl font-bold mb-4">₦5,200</Text>
+          <View className="flex-row space-x-3">
+     <TouchableOpacity className="p-[2px] rounded-full bg-gray-100 overflow-hidden">
+  <Image
+    source={require("@/assets/images/pro.jpg")} // replace with your user image URL
+    className="w-10 h-10 rounded-full"
+  />
+</TouchableOpacity>
 
-          <View className="flex-row justify-between">
-            <TouchableOpacity className="bg-white/20 px-5 py-2 rounded-full">
-              <Text className="text-white font-medium">Withdraw</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-white/20 px-5 py-2 rounded-full">
-              <Text className="text-white font-medium">Add Funds</Text>
-            </TouchableOpacity>
+      <View className="relative">
+  <TouchableOpacity className="p-2 rounded-full bg-gray-100">
+    <Ionicons name="notifications-outline" size={22} color="black" />
+  </TouchableOpacity>
+
+  {/* Red Badge */}
+  <View className="absolute -top-1 -right-1 bg-red-500 rounded-full w-5 h-5  items-center justify-center border-2 border-full border-white">
+    <Text className="text-white text-[10px] font-bold">3</Text>
+  </View>
+</View>
+
           </View>
         </View>
 
-        {/* Recent Transactions */}
-        <Text className="text-lg font-semibold text-gray-800 mb-4">
-          Recent Transactions
+        {/* --- ACTION BUTTONS --- */}
+
+
+        {/* --- ACCOUNT CARD --- */}
+        <View className="bg-blue-700 rounded-xl p-5 mb-6 shadow-lg">
+          <View className="flex-row justify-between items-center mb-2">
+            <Text className="text-white text-sm">Account balance</Text>
+            <Ionicons name="eye-outline" size={18} color="white" />
+          </View>
+          <Text className="text-white text-2xl font-semibold mb-2">₦250,000</Text>
+          <Text className="text-white text-xs">
+            Account number 01023455678{" "}
+            <Ionicons name="copy-outline" size={14} color="white" />
+          </Text>
+        </View>
+
+        {/* --- FEATURE CARDS --- */}
+    
+<View className="flex flex-row flex-wrap justify-between mb-1">
+  {[
+{
+  title: "Send Money",
+  desc: "Instant transfers ",
+  icon: <Feather name="send" size={24} color="#2563EB" />,
+  bg: "bg-blue-100",
+},
+    {
+      title: "Earn Rewards",
+      desc: "Complete task and Earn",
+      icon: <Ionicons name="gift-outline" size={24} color="#7C3AED" />,
+      bg: "bg-purple-100",
+    },
+    // {
+    //   title: "Daily Spin",
+    //   desc: "Spin the wheel for daily rewards",
+    //   icon: <FontAwesome5 name="cog" size={20} color="#2563EB" />,
+    //   bg: "bg-blue-100",
+    // },
+    {
+      title: "Withdraw Money",
+      desc: "Cash out to Bank",
+      icon: <Feather name="arrow-down-circle" size={24} color="#F97316" />,
+      bg: "bg-orange-100",
+    },
+    {
+      title: "Buy Airtime",
+      desc: "Top-up easily",
+      icon: <FontAwesome5 name="mobile-alt" size={22} color="#10B981" />,
+      bg: "bg-green-100",
+    },
+    {
+      title: "Pay Bills",
+      desc: "Electricity, Data & More",
+      icon: <MaterialIcons name="payment" size={22} color="#3B82F6" />,
+      bg: "bg-indigo-100",
+    },
+    {
+      title: "Referral Program",
+      desc: "Invite & Earn",
+      icon: <Ionicons name="people-outline" size={22} color="#8B5CF6" />,
+      bg: "bg-purple-100",
+    },
+  ].map((item, index) => (
+    <TouchableOpacity
+      key={index}
+      className="bg-white w-[31%] rounded-xl shadow-sm p-4 items-center mb-4"
+      activeOpacity={0.8}
+    >
+      <View className={`${item.bg} p-3 rounded-full mb-2`}>
+        {item.icon}
+      </View>
+      <Text className="text-gray-800 font-semibold text-sm text-center mb-1">
+        {item.title}
+      </Text>
+      <Text className="text-gray-500 text-xs text-center">{item.desc}</Text>
+    </TouchableOpacity>
+  ))}
+</View>
+
+
+{/* --- RECENT TRANSACTIONS --- */}
+<View className="mb-4">
+  {/* Header */}
+  <View className="flex-row justify-between items-center mb-3">
+    <Text className="text-md font-semibold text-gray-800">Recent Transactions</Text>
+    <TouchableOpacity activeOpacity={0.7}>
+      <Text className="text-blue-600 text-sm font-medium">See all</Text>
+    </TouchableOpacity>
+  </View>
+
+  {/* Transactions List */}
+  <View className="bg-white rounded-2xl shadow-sm p-4">
+    {[
+      {
+        title: "Added Money",
+        desc: "Bank Transfer",
+        amount: "+₦16,900",
+        icon: <Feather name="arrow-down-circle" size={20} color="#10B981" />,
+      },
+      {
+        title: "John Doe",
+        desc: "Lunch Payment",
+        amount: "-₦25.50",
+        icon: <Feather name="arrow-up-circle" size={20} color="#EF4444" />,
+      },
+      {
+        title: "Referral Bonus",
+        desc: "Friend Joined",
+        amount: "+₦500",
+        icon: <Ionicons name="gift-outline" size={20} color="#8B5CF6" />,
+      },
+    ].map((item, index) => (
+      <TouchableOpacity
+        key={index}
+        activeOpacity={0.8}
+        className="flex-row items-center justify-between py-3 px-2 mb-1 rounded-xl"
+      >
+        {/* Left section: icon + text */}
+        <View className="flex-row items-center flex-1">
+          <View className="bg-gray-100 p-3 rounded-full mr-3">
+            {item.icon}
+          </View>
+          <View>
+            <Text className="text-gray-800 font-semibold text-sm">{item.title}</Text>
+            <Text className="text-gray-500 text-xs">{item.desc}</Text>
+          </View>
+        </View>
+
+        {/* Amount */}
+        <Text
+          className={`font-semibold ${
+            item.amount.startsWith('+') ? 'text-green-600' : 'text-red-500'
+          }`}
+        >
+          {item.amount}
         </Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+</View>
 
-        {transactions.map((item) => (
-          <View
-            key={item.id}
-            className="flex-row justify-between items-center bg-gray-50 p-4 mb-3 rounded-xl"
-          >
-            <View>
-              <Text className="font-semibold text-gray-800">{item.type}</Text>
-              <Text className="text-gray-500 text-sm">{item.date}</Text>
-            </View>
-            <Text
-              className={`text-lg font-bold ${
-                item.amount.startsWith('+') ? 'text-green-600' : 'text-red-500'
-              }`}
-            >
-              {item.amount}
-            </Text>
-          </View>
-        ))}
+    
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
+
+export default WalletScreen;

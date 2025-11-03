@@ -1,21 +1,12 @@
 import { View, Text, ScrollView, Image, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
-import { useRouter, useLocalSearchParams } from 'expo-router'
+import { useRouter } from 'expo-router'
+import { dummyLesson } from '../../data/subjectLessons'
 
 export default function Learning() {
   const router = useRouter()
-  const { lesson } = useLocalSearchParams()
-  const parsedLesson = lesson ? JSON.parse(lesson as string) : null
   const [activeTab, setActiveTab] = useState('Text')
-
-  if (!parsedLesson) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <Text>Lesson not found</Text>
-      </View>
-    )
-  }
 
   const renderTabButton = (tabName: string, icon: string) => (
     <Pressable
@@ -42,7 +33,7 @@ export default function Learning() {
   return (
     <ScrollView className="flex-1 bg-white">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-200">
+      <View className="flex-row items-center justify-between px-4 pt-12 pb-4 mt-8 border-b border-gray-200">
         <View className="flex-row items-center flex-1">
           <Pressable onPress={() => router.back()} className="mr-4">
             <Ionicons name="arrow-back" size={24} color="#000" />
@@ -67,9 +58,9 @@ export default function Learning() {
 
       {/* Lesson Cover Image */}
       <View className="px-4 mb-4">
-        <View className="bg-gradient-to-r from-purple-400 to-blue-400 rounded-lg overflow-hidden">
+        <View className="rounded-lg overflow-hidden bg-purple-100">
           <Image
-            source={parsedLesson.coverImage}
+            source={dummyLesson.coverImage}
             className="w-full h-48"
             resizeMode="cover"
           />
@@ -81,7 +72,7 @@ export default function Learning() {
         <View className="flex-row justify-between items-start mb-3">
           <View className="flex-1 mr-4">
             <Text className="text-xl font-bold text-gray-900 mb-2">
-              {parsedLesson.title}
+              {dummyLesson.title}
             </Text>
           </View>
           <Pressable className="bg-blue-50 p-3 rounded-lg">
@@ -93,19 +84,19 @@ export default function Learning() {
           <View className="flex-row items-center mr-4 mb-2">
             <Ionicons name="eye-outline" size={16} color="#F59E0B" />
             <Text className="text-gray-600 text-sm ml-1">
-              {parsedLesson.views}
+              {dummyLesson.views}
             </Text>
           </View>
           <View className="flex-row items-center mr-4 mb-2">
             <Ionicons name="download-outline" size={16} color="#3B82F6" />
             <Text className="text-gray-600 text-sm ml-1">
-              {parsedLesson.downloads}
+              {dummyLesson.downloads}
             </Text>
           </View>
           <View className="flex-row items-center mb-2">
             <Ionicons name="calendar-outline" size={16} color="#6B7280" />
             <Text className="text-gray-600 text-sm ml-1">
-              Last updated {parsedLesson.lastUpdated}
+              Last updated {dummyLesson.lastUpdated}
             </Text>
           </View>
         </View>
@@ -116,9 +107,9 @@ export default function Learning() {
         {/* Introduction Section */}
         <View className="mb-6">
           <Text className="text-lg font-bold text-blue-700 mb-3">
-            {parsedLesson.content.introduction.title}
+            {dummyLesson.content.introduction.title}
           </Text>
-          {parsedLesson.content.introduction.points.map((point: string, index: number) => (
+          {dummyLesson.content.introduction.points.map((point, index) => (
             <View key={index} className="flex-row mb-2">
               <Text className="text-blue-600 mr-2">•</Text>
               <Text className="text-gray-700 flex-1">{point}</Text>
@@ -129,9 +120,9 @@ export default function Learning() {
         {/* Properties Section */}
         <View className="mb-6">
           <Text className="text-lg font-bold text-blue-700 mb-3">
-            {parsedLesson.content.properties.title}
+            {dummyLesson.content.properties.title}
           </Text>
-          {parsedLesson.content.properties.points.map((point: string, index: number) => (
+          {dummyLesson.content.properties.points.map((point, index) => (
             <View key={index} className="flex-row mb-2">
               <Text className="text-blue-600 mr-2">•</Text>
               <Text className="text-gray-700 flex-1">{point}</Text>
@@ -142,9 +133,9 @@ export default function Learning() {
         {/* Types Section */}
         <View className="mb-6">
           <Text className="text-lg font-bold text-blue-700 mb-3">
-            {parsedLesson.content.types.title}
+            {dummyLesson.content.types.title}
           </Text>
-          {parsedLesson.content.types.points.map((point: string, index: number) => (
+          {dummyLesson.content.types.points.map((point, index) => (
             <View key={index} className="flex-row mb-2">
               <Text className="text-blue-600 mr-2">•</Text>
               <Text className="text-gray-700 flex-1">{point}</Text>
@@ -155,9 +146,9 @@ export default function Learning() {
         {/* How to Identify Section */}
         <View className="mb-6">
           <Text className="text-lg font-bold text-blue-700 mb-3">
-            {parsedLesson.content.howToIdentify.title}
+            {dummyLesson.content.howToIdentify.title}
           </Text>
-          {parsedLesson.content.howToIdentify.points.map((point: string, index: number) => (
+          {dummyLesson.content.howToIdentify.points.map((point, index) => (
             <View key={index} className="flex-row mb-2">
               <Text className="text-blue-600 mr-2">•</Text>
               <Text className="text-gray-700 flex-1">{point}</Text>
