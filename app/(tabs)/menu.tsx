@@ -8,8 +8,8 @@ export default function MenuPage() {
   const activeRoute = usePathname()
 
   const menuItems = [
-    { icon: 'home-outline', label: 'Home', route: '/(tabs)/home' },
-    { icon: 'book-outline', label: 'Courses', route: '/screens/courses' },
+    { icon: 'home-outline', label: 'Home', route: '/home' },
+    { icon: 'book-outline', label: 'Courses', route: '/courses' },
     { icon: 'help-circle-outline', label: 'Quizzes', route: '/screens/quizzes' },
     { icon: 'wallet-outline', label: 'Wallet', route: '/screens/wallet' },
     { icon: 'trophy-outline', label: 'Leaderboard', route: '/screens/leaderboard' },
@@ -23,7 +23,7 @@ export default function MenuPage() {
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-gray-200">
       {/* Header */}
       <View className="px-6 pt-14 pb-8 flex-row items-center justify-between">
         <Image
@@ -31,7 +31,6 @@ export default function MenuPage() {
           className="w-24 h-24"
           resizeMode="contain"
         />
-        <Ionicons name="menu-outline" size={30} color="#374151" />
       </View>
 
       {/* Menu Items */}

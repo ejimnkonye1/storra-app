@@ -118,7 +118,7 @@ export default function HomeScreen() {
                         const topic = subjectCards[selectedSubject].topics.find(t => t.id === topicId)
                         if (topic) {
                             router.push({
-                                pathname: '/screens/TopicDetailScreen',
+                                pathname: '/screens/topicDetailScreen',
                                 params: { topic: JSON.stringify(topic) }
                             })
                         }

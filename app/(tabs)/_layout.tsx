@@ -7,8 +7,9 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         tabBarActiveTintColor: '#1d4ed8',
+        tabBarStyle: { backgroundColor: '#fff', borderTopWidth: 0, elevation: 0 },
       }}
     >
       {/* Home Tab */}

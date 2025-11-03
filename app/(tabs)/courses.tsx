@@ -1,77 +1,85 @@
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
+import { useState } from 'react'
+import { useRouter } from 'expo-router'
+import Header from '../components/home/Header'
+import CourseTabs from '../components/courses/CourseTabs'
+import CourseCard from '../components/courses/CourseCard'
+import { subjectCards } from '@/data/subjectData'
 
 export default function CoursesScreen() {
-  const courses = [
-    {
-      id: 1,
-      title: 'Introduction to Mathematics',
-      lessons: 12,
-      progress: 70,
-      image: require('@/assets/images/whole-numbers.png'),
-    },
-    {
-      id: 2,
-      title: 'Basic Science for Beginners',
-      lessons: 9,
-      progress: 30,
-      image: require('@/assets/images/whole-numbers.png'),
-    },
-    {
-      id: 3,
-      title: 'English Grammar Basics',
-      lessons: 14,
-      progress: 50,
-      image: require('@/assets/images/whole-numbers.png'),
-    },
-  ]
+    const [activeTab, setActiveTab] = useState<'ongoing' | 'completed'>('ongoing')
+    const router = useRouter()
 
-  return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="px-6 pt-6">
-        {/* Header */}
-        <View className="flex-row items-center justify-between mb-6">
-          <Text className="text-2xl font-bold text-gray-900">My Courses</Text>
-          <Ionicons name="search-outline" size={24} color="#374151" />
-        </View>
+    // Transform subject data into course format
+    const allCourses = subjectCards.map(subject => {
+        const randomTopicIndex = Math.floor(Math.random() * subject.topics.length)
+        return {
+            id: subject.id,
+            subject: subject.subject,
+            title: subject.subject,
+            subtitle: `Congratulations! You've completed the lessons for this topic`,
+            coverImage: subject.topics[randomTopicIndex].coverImage, // Random topic image
+            progress: Math.floor(Math.random() * 100), // Random progress for demo
+            isCompleted: Math.random() > 0.5 // Random completion for demo
+        }
+    })
 
-        {/* Course Cards */}
-        {courses.map((course) => (
-          <TouchableOpacity
-            key={course.id}
-            activeOpacity={0.8}
-            className="mb-5 bg-white rounded-2xl shadow-sm border border-gray-100"
-          >
-            <Image
-              source={course.image}
-              className="w-full h-40 rounded-t-2xl"
-              resizeMode="cover"
-            />
+    const ongoingCourses = allCourses.filter(course => !course.isCompleted)
+    const completedCourses = allCourses.filter(course => course.isCompleted)
 
-            <View className="p-4">
-              <Text className="text-lg font-semibold text-gray-800">
-                {course.title}
-              </Text>
-              <Text className="text-gray-500 text-sm mb-2">
-                {course.lessons} lessons
-              </Text>
+    const displayedCourses = activeTab === 'ongoing' ? ongoingCourses : completedCourses
 
-              {/* Progress bar */}
-              <View className="h-2 w-full bg-gray-200 rounded-full">
-                <View
-                  className="h-2 bg-blue-600 rounded-full"
-                  style={{ width: `${course.progress}%` }}
+    const handleStartQuiz = (courseId: number) => {
+        console.log('Start quiz for course:', courseId)
+        // router.push(`/quiz/${courseId}`)
+    }
+
+    const handleContinue = (courseId: number) => {
+        console.log('Continue course:', courseId)
+        // router.push(`/course/${courseId}`)
+    }
+
+    return (
+        <SafeAreaView className="flex-1 bg-gray-50">
+            <Header />
+            
+            <ScrollView className="flex-1 px-6 pt-6">
+                {/* Page Title */}
+                <Text className="text-gray-900 text-3xl font-bold mb-6">
+                    Courses
+                </Text>
+
+                {/* Course Tabs */}
+                <CourseTabs 
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                    ongoingCount={ongoingCourses.length}
+                    completedCount={completedCourses.length}
                 />
-              </View>
 
-              <Text className="mt-2 text-gray-500 text-sm">
-                Progress: {course.progress}%
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
-  )
+                {/* Course List */}
+                {displayedCourses.length > 0 ? (
+                    displayedCourses.map((course) => (
+                        <CourseCard
+                            key={course.id}
+                            title={course.title}
+                            subtitle={course.subtitle}
+                            coverImage={course.coverImage}
+                            progress={course.progress}
+                            isCompleted={course.isCompleted}
+                            onStartQuiz={() => handleStartQuiz(course.id)}
+                            onContinue={() => handleContinue(course.id)}
+                        />
+                    ))
+                ) : (
+                    <View className="items-center justify-center py-16">
+                        <Text className="text-gray-500 text-lg">
+                            No {activeTab} courses yet
+                        </Text>
+                    </View>
+                )}
+            </ScrollView>
+        </SafeAreaView>
+    )
 }

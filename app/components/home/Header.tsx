@@ -1,12 +1,9 @@
 import { View, Image, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
-import SlidingMenu from './SlidingMenu'
-import { useNavigation } from '../../context/NavigationContext'
+// import SlidingMenu from './SlidingMenu'
 
 export default function Header() {
-    const [menuVisible, setMenuVisible] = useState(false)
-    const { activeRoute, setActiveRoute } = useNavigation()
 
     return (
         <>
@@ -24,22 +21,16 @@ export default function Header() {
                             color="black"  
                         />
                     </Pressable>
-                    <Pressable onPress={() => setMenuVisible(true)}>
-                        <Ionicons 
-                            name='menu' 
-                            size={28} 
-                            color="black"
-                        />
-                    </Pressable>
+            
                 </View>
             </View>
 
-            <SlidingMenu 
+            {/* <SlidingMenu 
                 visible={menuVisible} 
                 onClose={() => setMenuVisible(false)}
                 activeRoute={activeRoute}
                 setActiveRoute={setActiveRoute}
-            />
+            /> */}
         </>
     )
 }
