@@ -1,14 +1,21 @@
-import { Feather, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import React from "react";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import SlidingMenu from "../components/home/SlidingMenu";
+
+import AccountCard from "../components/wallet/accountcard";
+import Cards from "../components/wallet/cards";
+import Transaction from "../components/wallet/transaction";
 
 const WalletScreen = () => {
+      const [menuVisible, setMenuVisible] = useState(false)
+  
   return (
     <SafeAreaView className="flex-1 bg-gray-50 px-5 pt-8 font-grotesk">
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* --- HEADER --- */}
-        <View className="flex-row justify-between items-center mb-6 mt-4">
-          <TouchableOpacity className="p-2 rounded-full bg-gray-100">
+        <View  className="flex-row justify-between items-center mb-6 mt-4">
+          <TouchableOpacity onPress={() => setMenuVisible(true)} className="p-2 rounded-full bg-gray-100">
             <Ionicons name="menu" size={22} color="black" />
           </TouchableOpacity>
 
@@ -38,144 +45,19 @@ const WalletScreen = () => {
 
 
         {/* --- ACCOUNT CARD --- */}
-        <View className="bg-blue-700 rounded-xl p-5 mb-6 shadow-lg">
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-white text-sm">Account balance</Text>
-            <Ionicons name="eye-outline" size={18} color="white" />
-          </View>
-          <Text className="text-white text-2xl font-semibold mb-2">₦250,000</Text>
-          <Text className="text-white text-xs">
-            Account number 01023455678{" "}
-            <Ionicons name="copy-outline" size={14} color="white" />
-          </Text>
-        </View>
+   <AccountCard />
 
         {/* --- FEATURE CARDS --- */}
     
-<View className="flex flex-row flex-wrap justify-between mb-1">
-  {[
-{
-  title: "Send Money",
-  desc: "Instant transfers ",
-  icon: <Feather name="send" size={24} color="#2563EB" />,
-  bg: "bg-blue-100",
-},
-    {
-      title: "Earn Rewards",
-      desc: "Complete task and Earn",
-      icon: <Ionicons name="gift-outline" size={24} color="#7C3AED" />,
-      bg: "bg-purple-100",
-    },
-    // {
-    //   title: "Daily Spin",
-    //   desc: "Spin the wheel for daily rewards",
-    //   icon: <FontAwesome5 name="cog" size={20} color="#2563EB" />,
-    //   bg: "bg-blue-100",
-    // },
-    {
-      title: "Withdraw Money",
-      desc: "Cash out to Bank",
-      icon: <Feather name="arrow-down-circle" size={24} color="#F97316" />,
-      bg: "bg-orange-100",
-    },
-    {
-      title: "Buy Airtime",
-      desc: "Top-up easily",
-      icon: <FontAwesome5 name="mobile-alt" size={22} color="#10B981" />,
-      bg: "bg-green-100",
-    },
-    {
-      title: "Pay Bills",
-      desc: "Electricity, Data & More",
-      icon: <MaterialIcons name="payment" size={22} color="#3B82F6" />,
-      bg: "bg-indigo-100",
-    },
-    {
-      title: "Referral Program",
-      desc: "Invite & Earn",
-      icon: <Ionicons name="people-outline" size={22} color="#8B5CF6" />,
-      bg: "bg-purple-100",
-    },
-  ].map((item, index) => (
-    <TouchableOpacity
-      key={index}
-      className="bg-white w-[31%] rounded-xl shadow-sm p-4 items-center mb-4"
-      activeOpacity={0.8}
-    >
-      <View className={`${item.bg} p-3 rounded-full mb-2`}>
-        {item.icon}
-      </View>
-      <Text className="text-gray-800 font-semibold text-sm text-center mb-1">
-        {item.title}
-      </Text>
-      <Text className="text-gray-500 text-xs text-center">{item.desc}</Text>
-    </TouchableOpacity>
-  ))}
-</View>
-
+<Cards />
 
 {/* --- RECENT TRANSACTIONS --- */}
-<View className="mb-4">
-  {/* Header */}
-  <View className="flex-row justify-between items-center mb-3">
-    <Text className="text-md font-semibold text-gray-800">Recent Transactions</Text>
-    <TouchableOpacity activeOpacity={0.7}>
-      <Text className="text-blue-600 text-sm font-medium">See all</Text>
-    </TouchableOpacity>
-  </View>
+<Transaction />
 
-  {/* Transactions List */}
-  <View className="bg-white rounded-2xl shadow-sm p-4">
-    {[
-      {
-        title: "Added Money",
-        desc: "Bank Transfer",
-        amount: "+₦16,900",
-        icon: <Feather name="arrow-down-circle" size={20} color="#10B981" />,
-      },
-      {
-        title: "John Doe",
-        desc: "Lunch Payment",
-        amount: "-₦25.50",
-        icon: <Feather name="arrow-up-circle" size={20} color="#EF4444" />,
-      },
-      {
-        title: "Referral Bonus",
-        desc: "Friend Joined",
-        amount: "+₦500",
-        icon: <Ionicons name="gift-outline" size={20} color="#8B5CF6" />,
-      },
-    ].map((item, index) => (
-      <TouchableOpacity
-        key={index}
-        activeOpacity={0.8}
-        className="flex-row items-center justify-between py-3 px-2 mb-1 rounded-xl"
-      >
-        {/* Left section: icon + text */}
-        <View className="flex-row items-center flex-1">
-          <View className="bg-gray-100 p-3 rounded-full mr-3">
-            {item.icon}
-          </View>
-          <View>
-            <Text className="text-gray-800 font-semibold text-sm">{item.title}</Text>
-            <Text className="text-gray-500 text-xs">{item.desc}</Text>
-          </View>
-        </View>
-
-        {/* Amount */}
-        <Text
-          className={`font-semibold ${
-            item.amount.startsWith('+') ? 'text-green-600' : 'text-red-500'
-          }`}
-        >
-          {item.amount}
-        </Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-</View>
-
-    
+         <SlidingMenu
+                    visible={menuVisible} 
+                    onClose={() => setMenuVisible(false)} 
+                />
       </ScrollView>
     </SafeAreaView>
   );
