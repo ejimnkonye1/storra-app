@@ -1,6 +1,7 @@
-import { Ionicons } from "@expo/vector-icons"; // 👈 back arrow icon
+//index.tsx
+import { Ionicons } from "@expo/vector-icons"; 
 import { useNavigation } from "@react-navigation/native";
-import { useRouter } from "expo-router"; // 👈 so we can navigate after onboarding
+import { useRouter } from "expo-router"; 
 import React, { useRef, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Swiper from "react-native-swiper";

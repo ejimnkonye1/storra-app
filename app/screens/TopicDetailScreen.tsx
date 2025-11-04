@@ -149,7 +149,7 @@ export default function TopicDetail() {
           <Pressable
             key={lesson.id}
             className="bg-gray-50 p-4 rounded-lg mb-3 flex-row justify-between items-center"
-            onPress={() => console.log('Lesson clicked:', lesson.id)}
+            onPress={() => router.push('/screens/learning')}
           >
             <View>
               <Text className="text-gray-900 font-semibold mb-1">

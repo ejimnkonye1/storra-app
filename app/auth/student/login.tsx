@@ -76,7 +76,7 @@ export default function StudentLogin() {
                     </View>
                     {/* Login Button */}
                     <TouchableOpacity
-                        onPress={() => router.push('/screens/home')}
+                        onPress={() => router.push('/(tabs)/home')}
                         className="mt-12 bg-blue-600 py-4 rounded-full"
                     >
                         <Text 

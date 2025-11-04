@@ -27,7 +27,7 @@ export default function TopicsGrid({
     onLearnMore
 }: TopicsGridProps) {
     return (
-        <View className="px-4 mb-10">
+        <View className="px-4">
             <View className="flex-row flex-wrap justify-between">
                 {topics.map((topic) => (
                     <TopicCard
