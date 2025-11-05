@@ -10,7 +10,7 @@ export default function MenuPage() {
   const menuItems = [
     { icon: 'home-outline', label: 'Home', route: '/home' },
     { icon: 'book-outline', label: 'Courses', route: '/courses' },
-    { icon: 'help-circle-outline', label: 'Quizzes', route: '/screens/quizzes' },
+    { icon: 'help-circle-outline', label: 'Quizzes', route: '/screens/QuizListScreen' },
     { icon: 'wallet-outline', label: 'Wallet', route: '/screens/wallet' },
     { icon: 'trophy-outline', label: 'Leaderboard', route: '/screens/leaderboard' },
     { icon: 'logo-game-controller-b', label: 'Spin the Wheel', route: '/screens/spin-wheel' },
