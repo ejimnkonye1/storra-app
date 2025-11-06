@@ -83,28 +83,28 @@ export default function SettingsScreen() {
 
         {/* Account */}
         <Section title="ACCOUNT">
-          <Row icon="person-outline" label="Manage Account" onPress={() => {}} />
-          <Row icon="card-outline" label="Payment & Rewards" onPress={() => {}} />
+          <Row icon="person-outline" label="Manage Account" onPress={() => router.push("/screens/ManageAccountScreen")} />
+          <Row icon="card-outline" label="Payment & Rewards" onPress={() => router.push("/screens/WalletPaymentScreen")} />
         </Section>
 
         {/* Preferences */}
         <Section title="PREFERENCES">
-          <Row icon="notifications-outline" label="Notifications" onPress={() => {}} />
+          <Row icon="notifications-outline" label="Notifications" onPress={() => router.push("/screens/NotificationPrefrencesScreen")} />
           <Row icon="moon-outline" label="Dark Mode" showSwitch />
-          <Row icon="globe-outline" label="Language" value="English" onPress={() => {}} />
+          <Row icon="globe-outline" label="Language" value="English" onPress={() => router.push("/screens/LanguageScreen")} />
         </Section>
 
         {/* Security */}
         <Section title="SECURITY & PRIVACY">
-          <Row icon="lock-closed-outline" label="Login & Security" onPress={() => {}} />
-          <Row icon="shield-checkmark-outline" label="Privacy Policy" onPress={() => {}} />
+          <Row icon="lock-closed-outline" label="Login & Security" onPress={() => router.push("/screens/LoginSecurityScreen")} />
+          <Row icon="shield-checkmark-outline" label="Privacy Policy" onPress={() => router.push("/screens/PrivacyPolicyScreen")} />
         </Section>
 
         {/* Support */}
         <Section title="SUPPORT & LEGAL">
-          <Row icon="help-circle-outline" label="Help Center" onPress={() => {}} />
-          <Row icon="document-text-outline" label="Terms of Service" onPress={() => {}} />
-          <Row icon="information-circle-outline" label="About Storra" value="v1.0.0" />
+          <Row icon="help-circle-outline" label="Help Center" onPress={() => router.push("/screens/HelpCenterScreen")} />
+          <Row icon="document-text-outline" label="Terms of Service" onPress={() => router.push("/screens/TermsOfServiceScreen")} />
+          <Row icon="information-circle-outline" label="About Storra" value="v1.0.0" onPress={() => router.push("/screens/AboutScreen")} />
         </Section>
 
         {/* Logout */}
