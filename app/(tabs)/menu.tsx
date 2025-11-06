@@ -1,7 +1,7 @@
 // app/(tabs)/menu.tsx
-import { View, Text, Pressable, Image, ScrollView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { useRouter, usePathname } from 'expo-router'
+import { usePathname, useRouter } from 'expo-router'
+import { Image, Pressable, ScrollView, Text, View } from 'react-native'
 
 export default function MenuPage() {
   const router = useRouter()

@@ -1,184 +1,117 @@
-import { Feather, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import React from "react";
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { Image, ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
 
-const SettingScreen = () => {
-  return (
-    <SafeAreaView className="flex-1 bg-gray-50 px-5 pt-8 font-grotesk">
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* --- HEADER --- */}
-        <View className="flex-row justify-between items-center mb-6 mt-4">
-          <TouchableOpacity className="p-2 rounded-full bg-gray-100">
-            <Ionicons name="menu" size={22} color="black" />
-          </TouchableOpacity>
+export default function SettingsScreen() {
+  const router = useRouter();
+  const [darkMode, setDarkMode] = useState(false);
 
-          <View className="flex-row space-x-3">
-     <TouchableOpacity className="p-[2px] rounded-full bg-gray-100 overflow-hidden">
-  <Image
-    source={require("@/assets/images/pro.jpg")} // replace with your user image URL
-    className="w-10 h-10 rounded-full"
-  />
-</TouchableOpacity>
-
-      <View className="relative">
-  <TouchableOpacity className="p-2 rounded-full bg-gray-100">
-    <Ionicons name="notifications-outline" size={22} color="black" />
-  </TouchableOpacity>
-
-  {/* Red Badge */}
-  <View className="absolute -top-1 -right-1 bg-red-500 rounded-full w-5 h-5  items-center justify-center border-2 border-full border-white">
-    <Text className="text-white text-[10px] font-bold">3</Text>
-  </View>
-</View>
-
-          </View>
-        </View>
-
-        {/* --- ACTION BUTTONS --- */}
-
-
-        {/* --- ACCOUNT CARD --- */}
-        <View className="bg-blue-700 rounded-xl p-5 mb-6 shadow-lg">
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-white text-sm">Account balance</Text>
-            <Ionicons name="eye-outline" size={18} color="white" />
-          </View>
-          <Text className="text-white text-2xl font-semibold mb-2">₦250,000</Text>
-          <Text className="text-white text-xs">
-            Account number 01023455678{" "}
-            <Ionicons name="copy-outline" size={14} color="white" />
-          </Text>
-        </View>
-
-        {/* --- FEATURE CARDS --- */}
-    
-<View className="flex flex-row flex-wrap justify-between mb-1">
-  {[
-{
-  title: "Send Money",
-  desc: "Instant transfers ",
-  icon: <Feather name="send" size={24} color="#2563EB" />,
-  bg: "bg-blue-100",
-},
-    {
-      title: "Earn Rewards",
-      desc: "Complete task and Earn",
-      icon: <Ionicons name="gift-outline" size={24} color="#7C3AED" />,
-      bg: "bg-purple-100",
-    },
-    // {
-    //   title: "Daily Spin",
-    //   desc: "Spin the wheel for daily rewards",
-    //   icon: <FontAwesome5 name="cog" size={20} color="#2563EB" />,
-    //   bg: "bg-blue-100",
-    // },
-    {
-      title: "Withdraw Money",
-      desc: "Cash out to Bank",
-      icon: <Feather name="arrow-down-circle" size={24} color="#F97316" />,
-      bg: "bg-orange-100",
-    },
-    {
-      title: "Buy Airtime",
-      desc: "Top-up easily",
-      icon: <FontAwesome5 name="mobile-alt" size={22} color="#10B981" />,
-      bg: "bg-green-100",
-    },
-    {
-      title: "Pay Bills",
-      desc: "Electricity, Data & More",
-      icon: <MaterialIcons name="payment" size={22} color="#3B82F6" />,
-      bg: "bg-indigo-100",
-    },
-    {
-      title: "Referral Program",
-      desc: "Invite & Earn",
-      icon: <Ionicons name="people-outline" size={22} color="#8B5CF6" />,
-      bg: "bg-purple-100",
-    },
-  ].map((item, index) => (
-    <TouchableOpacity
-      key={index}
-      className="bg-white w-[31%] rounded-xl shadow-sm p-4 items-center mb-4"
-      activeOpacity={0.8}
-    >
-      <View className={`${item.bg} p-3 rounded-full mb-2`}>
-        {item.icon}
+  const Section: React.FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
+    <View className="mt-6">
+      <Text className="text-xs font-semibold text-gray-500 mb-2 px-1">{title}</Text>
+      <View className="bg-white rounded-2xl overflow-hidden border border-gray-100">
+        {children}
       </View>
-      <Text className="text-gray-800 font-semibold text-sm text-center mb-1">
-        {item.title}
-      </Text>
-      <Text className="text-gray-500 text-xs text-center">{item.desc}</Text>
+    </View>
+  );
+
+  type RowProps = {
+    icon: any;
+    label: string;
+    value?: string;
+    onPress?: () => void;
+    showSwitch?: boolean;
+  };
+
+  const Row: React.FC<RowProps> = ({ icon, label, value, onPress, showSwitch }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.8}
+      className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100"
+    >
+      <View className="flex-row items-center">
+        <View className="w-8 h-8 bg-blue-50 rounded-full items-center justify-center mr-3">
+          <Ionicons name={icon} size={18} color="#2563eb" />
+        </View>
+        <Text className="text-gray-800 font-medium">{label}</Text>
+      </View>
+      {showSwitch ? (
+        <Switch
+          value={darkMode}
+          onValueChange={setDarkMode}
+          trackColor={{ false: "#ccc", true: "#2563eb" }}
+        />
+      ) : (
+        <View className="flex-row items-center">
+          {value && <Text className="text-gray-500 text-sm mr-1">{value}</Text>}
+          <Ionicons name="chevron-forward" size={18} color="#9ca3af" />
+        </View>
+      )}
     </TouchableOpacity>
-  ))}
-</View>
+  );
 
+  return (
+    <View className="flex-1 bg-gray-50 pt-12">
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-5 mb-4">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={26} color="black" />
+        </TouchableOpacity>
+        <Text className="text-xl font-bold text-gray-900">Settings</Text>
+        <View className="w-6" />
+      </View>
 
-{/* --- RECENT TRANSACTIONS --- */}
-<View className="mb-4">
-  {/* Header */}
-  <View className="flex-row justify-between items-center mb-3">
-    <Text className="text-md font-semibold text-gray-800">Recent Transactions</Text>
-    <TouchableOpacity activeOpacity={0.7}>
-      <Text className="text-blue-600 text-sm font-medium">See all</Text>
-    </TouchableOpacity>
-  </View>
-
-  {/* Transactions List */}
-  <View className="bg-white rounded-2xl shadow-sm p-4">
-    {[
-      {
-        title: "Added Money",
-        desc: "Bank Transfer",
-        amount: "+₦16,900",
-        icon: <Feather name="arrow-down-circle" size={20} color="#10B981" />,
-      },
-      {
-        title: "John Doe",
-        desc: "Lunch Payment",
-        amount: "-₦25.50",
-        icon: <Feather name="arrow-up-circle" size={20} color="#EF4444" />,
-      },
-      {
-        title: "Referral Bonus",
-        desc: "Friend Joined",
-        amount: "+₦500",
-        icon: <Ionicons name="gift-outline" size={20} color="#8B5CF6" />,
-      },
-    ].map((item, index) => (
-      <TouchableOpacity
-        key={index}
-        activeOpacity={0.8}
-        className="flex-row items-center justify-between py-3 px-2 mb-1 rounded-xl"
-      >
-        {/* Left section: icon + text */}
-        <View className="flex-row items-center flex-1">
-          <View className="bg-gray-100 p-3 rounded-full mr-3">
-            {item.icon}
+      <ScrollView showsVerticalScrollIndicator={false} className="px-5">
+        {/* Profile */}
+        <View className="bg-white rounded-2xl px-4 py-4 flex-row items-center justify-between shadow-sm">
+          <View className="flex-row items-center">
+            <Image
+              source={require("../../assets/images/pro.jpg")}
+              className="w-12 h-12 rounded-full mr-3"
+              resizeMode="cover"
+            />
+            <View>
+              <Text className="font-semibold text-gray-800 text-base">Alex Morgan</Text>
+              <Text className="text-gray-500 text-sm">alex.morgan@example.com</Text>
+            </View>
           </View>
-          <View>
-            <Text className="text-gray-800 font-semibold text-sm">{item.title}</Text>
-            <Text className="text-gray-500 text-xs">{item.desc}</Text>
-          </View>
+          <TouchableOpacity>
+            <Text className="text-blue-600 font-semibold text-sm">Edit</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Amount */}
-        <Text
-          className={`font-semibold ${
-            item.amount.startsWith('+') ? 'text-green-600' : 'text-red-500'
-          }`}
-        >
-          {item.amount}
-        </Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-</View>
+        {/* Account */}
+        <Section title="ACCOUNT">
+          <Row icon="person-outline" label="Manage Account" onPress={() => {}} />
+          <Row icon="card-outline" label="Payment & Rewards" onPress={() => {}} />
+        </Section>
 
-    
+        {/* Preferences */}
+        <Section title="PREFERENCES">
+          <Row icon="notifications-outline" label="Notifications" onPress={() => {}} />
+          <Row icon="moon-outline" label="Dark Mode" showSwitch />
+          <Row icon="globe-outline" label="Language" value="English" onPress={() => {}} />
+        </Section>
+
+        {/* Security */}
+        <Section title="SECURITY & PRIVACY">
+          <Row icon="lock-closed-outline" label="Login & Security" onPress={() => {}} />
+          <Row icon="shield-checkmark-outline" label="Privacy Policy" onPress={() => {}} />
+        </Section>
+
+        {/* Support */}
+        <Section title="SUPPORT & LEGAL">
+          <Row icon="help-circle-outline" label="Help Center" onPress={() => {}} />
+          <Row icon="document-text-outline" label="Terms of Service" onPress={() => {}} />
+          <Row icon="information-circle-outline" label="About Storra" value="v1.0.0" />
+        </Section>
+
+        {/* Logout */}
+        <TouchableOpacity className="bg-red-50 py-4 rounded-2xl mt-8 mb-8">
+          <Text className="text-center text-red-600 font-semibold">Log Out</Text>
+        </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
-};
-
-export default SettingScreen;
+}
