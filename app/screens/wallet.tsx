@@ -1,23 +1,24 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import SlidingMenu from "../components/home/SlidingMenu";
 
+import { useRouter } from "expo-router";
 import AccountCard from "../components/wallet/accountcard";
 import Cards from "../components/wallet/cards";
 import Transaction from "../components/wallet/transaction";
 
 const WalletScreen = () => {
       const [menuVisible, setMenuVisible] = useState(false)
-  
+  const router = useRouter();
   return (
     <SafeAreaView className="flex-1 bg-gray-50 px-5 pt-8 font-grotesk">
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* --- HEADER --- */}
         <View  className="flex-row justify-between items-center mb-6 mt-4">
-          <TouchableOpacity onPress={() => setMenuVisible(true)} className="p-2 rounded-full bg-gray-100">
-            <Ionicons name="menu" size={22} color="black" />
+          <TouchableOpacity onPress={() => router.back()} className="p-2 rounded-full bg-gray-100">
+            <Ionicons name="arrow-back" size={22} color="black" />
           </TouchableOpacity>
+         
 
           <View className="flex-row space-x-3">
      <TouchableOpacity className="p-[2px] rounded-full bg-gray-100 overflow-hidden">
@@ -54,10 +55,7 @@ const WalletScreen = () => {
 {/* --- RECENT TRANSACTIONS --- */}
 <Transaction />
 
-         <SlidingMenu
-                    visible={menuVisible} 
-                    onClose={() => setMenuVisible(false)} 
-                />
+      
       </ScrollView>
     </SafeAreaView>
   );
