@@ -5,7 +5,7 @@ export default function AboutScreen() {
     <ScrollView className="flex-1 bg-white px-5 py-6">
       <View className="items-center mb-6">
         <Image
-          source={require("../assets/storra-logo.png")}
+          source={require("@/assets/images/storra.png")}
           className="w-24 h-24 mb-3"
           resizeMode="contain"
         />
