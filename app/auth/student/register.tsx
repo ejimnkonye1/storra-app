@@ -1,8 +1,10 @@
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -25,6 +27,32 @@ const StudentAccountScreen = () => {
     agreeToTerms: false
   });
 
+
+  const handleRegister = async () => {
+  if (!formData.email || !formData.password) {
+    Alert.alert('Error', 'Email and password are required');
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://192.168.0.187:7001/api/v1/student/registeruser', {
+      fullName: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      phoneNumber: formData.phoneNumber,
+      parentPhoneNumber: formData.phoneNumber,
+      agreeToTerms: formData.agreeToTerms,
+    });
+
+    console.log('Registration successful:', response.data);
+    Alert.alert('Success', 'Account created successfully!');
+    router.push('/auth/student/login'); // navigate to login
+
+  } catch (error) {
+    console.error('Registration failed:', error.response?.data || error.message);
+    Alert.alert('Error', error.response?.data?.message || 'Failed to register');
+  }
+};
   const handleNext = () => {
     router.push('/auth/student/login');
   }
@@ -166,9 +194,8 @@ const StudentAccountScreen = () => {
           <TouchableOpacity 
             className={`py-4 rounded-full mb-4 ${
               formData.agreeToTerms ? 'bg-blue-500' : 'bg-gray-300'
-            }`}
-            disabled={!formData.agreeToTerms}
-            onPress={() => router.push('/auth/student/login')}
+            }`} disabled={!formData.agreeToTerms}
+  onPress={handleRegister} 
           >
             <Text className="text-white font-semibold text-center">
               Create My Account
@@ -204,7 +231,9 @@ const StudentAccountScreen = () => {
           {/* Login Link */}
           <View className="flex-row justify-center items-center mb-8">
             <Text className="text-gray-600">Already have an account? </Text>
-<TouchableOpacity onPress={() => router.push("/auth/student/login")}>
+<TouchableOpacity
+ onPress={() => router.push("/auth/student/login")}
+ >
               <Text className="text-blue-500 font-semibold" onPress={handleNext}>Login</Text>
             </TouchableOpacity>
           </View>
