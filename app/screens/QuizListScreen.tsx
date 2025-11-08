@@ -51,49 +51,52 @@ export default function Quizzes() {
       </View>
 
       {/* Filter Tabs */}
-      <View className="px-4 mb-6">
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View className="flex-row gap-3">
-            {filters.map(filter => (
-              <Pressable
-                key={filter.key}
-                onPress={() => setActiveFilter(filter.key)}
-                className={`flex-row items-center px-4 py-2 rounded-full ${
-                  activeFilter === filter.key
-                    ? 'bg-blue-50 border border-blue-600'
-                    : 'bg-gray-100 border border-gray-200'
+      {/* Filter Tabs */}
+<View className="px-4 mb-6">
+  <View className="bg-gray-100 p-2 rounded-lg">
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <View className="flex-row gap-3">
+        {filters.map(filter => (
+          <Pressable
+            key={filter.key}
+            onPress={() => setActiveFilter(filter.key)}
+            className={`flex-row items-center px-4 py-2 rounded-lg ${
+              activeFilter === filter.key
+                ? 'bg-white'
+                : 'transparent'
+            }`}
+          >
+            <Ionicons
+              name={getFilterIcon(filter.key) as any}
+              size={16}
+              color={activeFilter === filter.key ? '#2563EB' : '#6B7280'}
+            />
+            <Text
+              className={`ml-2 font-medium ${
+                activeFilter === filter.key ? 'text-blue-600' : 'text-gray-700'
+              }`}
+            >
+              {filter.label}
+            </Text>
+            <View
+              className={`ml-2 px-2 py-0.5 rounded-full ${
+                activeFilter === filter.key ? 'bg-blue-600' : 'bg-gray-300'
+              }`}
+            >
+              <Text
+                className={`text-xs font-medium ${
+                  activeFilter === filter.key ? 'text-white' : 'text-gray-700'
                 }`}
               >
-                <Ionicons
-                  name={getFilterIcon(filter.key) as any}
-                  size={16}
-                  color={activeFilter === filter.key ? '#2563EB' : '#6B7280'}
-                />
-                <Text
-                  className={`ml-2 font-medium ${
-                    activeFilter === filter.key ? 'text-blue-600' : 'text-gray-700'
-                  }`}
-                >
-                  {filter.label}
-                </Text>
-                <View
-                  className={`ml-2 px-2 py-0.5 rounded-full ${
-                    activeFilter === filter.key ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                >
-                  <Text
-                    className={`text-xs ${
-                      activeFilter === filter.key ? 'text-white' : 'text-gray-700'
-                    }`}
-                  >
-                    {filterCounts[filter.key as keyof typeof filterCounts]}
-                  </Text>
-                </View>
-              </Pressable>
-            ))}
-          </View>
-        </ScrollView>
+                {filterCounts[filter.key as keyof typeof filterCounts]}
+              </Text>
+            </View>
+          </Pressable>
+        ))}
       </View>
+    </ScrollView>
+  </View>
+</View>
 
       {/* Description */}
       <View className="px-4 mb-6">
