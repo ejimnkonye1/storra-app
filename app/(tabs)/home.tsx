@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUserStore } from '../../store/userStore';
 import { getCurrentUser } from '../../services/userService';
+import { moderateScale } from '../../utils/responsive';
 
 // Import components
 import Header from '../components/home/Header';
@@ -25,15 +26,12 @@ export default function HomeScreen() {
     const [checkedTopics, setCheckedTopics] = useState<{[key: string]: boolean}>({});
     const scrollViewRef = useRef<ScrollView>(null);
 
-    // Get user data from Zustand
     const { user, token, isLoading, setUser, loadUser } = useUserStore();
 
     useEffect(() => {
-        // Load user data on mount
         const fetchUserData = async () => {
             await loadUser();
 
-            // If we have a token but no user data, fetch it
             if (token && !user) {
                 try {
                     const userResponse = await getCurrentUser(token);
@@ -41,12 +39,10 @@ export default function HomeScreen() {
                     setUser(userData);
                 } catch (error) {
                     console.error('Failed to fetch user data:', error);
-                    // If token is invalid, redirect to login
                     router.replace('/auth/student/login');
                 }
             }
 
-            // If no token, redirect to login
             if (!isLoading && !token) {
                 router.replace('/auth/student/login');
             }
@@ -82,19 +78,21 @@ export default function HomeScreen() {
         return checkedTopics[`${selectedSubject}-${topicId}`] || false;
     };
 
-    // Show loading state while fetching user data
     if (isLoading || !user) {
         return (
-            <SafeAreaView className="flex-1 bg-white justify-center items-center">
+            <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#3b82f6" />
-                <Text className="mt-4 text-gray-600">Loading...</Text>
+                <Text style={{ marginTop: moderateScale(16), color: '#6b7280' }}>Loading...</Text>
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
-            <ScrollView>
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+            <ScrollView 
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: moderateScale(20) }}
+            >
                 <Header />
                 
                 <WelcomeBanner 
@@ -108,7 +106,7 @@ export default function HomeScreen() {
                     onContinue={() => console.log('Continue learning')}
                 />
 
-                <View className="px-6 mb-6">
+                <View style={{ paddingHorizontal: moderateScale(24), marginBottom: moderateScale(24) }}>
                     <SectionHeader title="Your Progress" />
                 </View>
                 
@@ -132,7 +130,7 @@ export default function HomeScreen() {
                     onAction={() => console.log('View all subjects')}
                 />
 
-                <View className='flex-1 bg-gray-50'>
+                <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
                     <SubjectTabs 
                         ref={scrollViewRef}
                         subjects={subjects}

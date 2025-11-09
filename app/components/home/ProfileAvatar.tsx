@@ -1,5 +1,6 @@
 import { View, Text, Image } from 'react-native';
-import { getInitials } from '@/utils/userUtils';
+import { getInitials } from '../../../utils/userUtils';
+import { scaleFont } from '../../../utils/responsive';
 
 interface ProfileAvatarProps {
   fullname: string;
@@ -18,7 +19,11 @@ export default function ProfileAvatar({
     return (
       <Image
         source={{ uri: profileImage }}
-        style={{ width: size, height: size, borderRadius: size / 2 }}
+        style={{ 
+          width: size, 
+          height: size, 
+          borderRadius: size / 2 
+        }}
         resizeMode="cover"
       />
     );
@@ -38,7 +43,7 @@ export default function ProfileAvatar({
       <Text 
         style={{ 
           color: 'white', 
-          fontSize: size * 0.4,
+          fontSize: scaleFont(size * 0.4),
           fontWeight: '600'
         }}
       >
