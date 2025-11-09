@@ -23,8 +23,8 @@ export default function DashboardCard({ points, onContinue }: DashboardCardProps
             <Image 
                 source={require('@/assets/images/home-book.png')} 
                 style={{
-                    width: scaleWidth(SCREEN.isSmall ? 80 : 100),
-                    height: scaleWidth(SCREEN.isSmall ? 80 : 100),
+                    width: scaleWidth(SCREEN.isSmall ? 100 : 120),
+                    height: scaleWidth(SCREEN.isSmall ? 100 : 120),
                 }}
                 resizeMode="contain"
             />
@@ -32,7 +32,7 @@ export default function DashboardCard({ points, onContinue }: DashboardCardProps
                 <Text 
                     style={{
                         color: 'white',
-                        fontSize: scaleFont(SCREEN.isSmall ? 18 : 22),
+                        fontSize: scaleFont(SCREEN.isSmall ? 16 : 20),
                         fontWeight: '600',
                         lineHeight: scaleFont(SCREEN.isSmall ? 24 : 30),
                     }}
@@ -44,7 +44,7 @@ export default function DashboardCard({ points, onContinue }: DashboardCardProps
                 <Text 
                     style={{
                         color: '#bfdbfe',
-                        fontSize: scaleFont(SCREEN.isSmall ? 12 : 14),
+                        fontSize: scaleFont(SCREEN.isSmall ? 11 : 13),
                         marginTop: moderateScale(8),
                     }}
                 >
@@ -53,20 +53,20 @@ export default function DashboardCard({ points, onContinue }: DashboardCardProps
                 <Pressable onPress={onContinue}>
                     <View 
                         style={{
-                            marginTop: moderateScale(16),
+                            marginTop: moderateScale(14),
                             backgroundColor: 'white',
-                            paddingHorizontal: moderateScale(16),
-                            paddingVertical: moderateScale(12),
+                            paddingHorizontal: moderateScale(14),
+                            paddingVertical: moderateScale(10),
                             borderRadius: moderateScale(24),
                             alignSelf: 'flex-start',
-                            minWidth: scaleWidth(140),
+                            minWidth: scaleWidth(100),
                             alignItems: 'center',
                         }}
                     >
                         <Text 
                             style={{
                                 color: '#2563eb',
-                                fontSize: scaleFont(SCREEN.isSmall ? 13 : 15),
+                                fontSize: scaleFont(SCREEN.isSmall ? 11 : 13),
                                 fontWeight: '600',
                             }}
                             numberOfLines={1}
