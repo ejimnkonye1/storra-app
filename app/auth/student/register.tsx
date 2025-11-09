@@ -1,4 +1,5 @@
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
+import { BASE_URL } from "../../../backendconfig";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { router } from 'expo-router';
@@ -35,7 +36,7 @@ const StudentAccountScreen = () => {
   }
 
   try {
-    const response = await axios.post('http://192.168.0.187:7001/api/v1/student/registeruser', {
+    const response = await axios.post(`${BASE_URL}/student/registeruser`, {
       fullName: formData.fullName,
       email: formData.email,
       password: formData.password,

@@ -1,54 +1,95 @@
-import { View, ScrollView } from 'react-native'
-import { useRouter } from 'expo-router'
-import { useState, useRef } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useState, useRef, useEffect } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useUserStore } from '../../store/userStore';
+import { getCurrentUser } from '../../services/userService';
 
 // Import components
-import Header from '../components/home/Header'
-import WelcomeBanner from '../components/home/WelcomeBanner'
-import DashboardCard from '../components/home/DashboardCard'
-import ProgressCard from '../components/home/ProgressCard'
-import StatsCards from '../components/home/StatsCards'
-import SectionHeader from '../components/home/SectionHeader'
-import SubjectTabs from '../components/home/SubjectTabs'
-import TopicsGrid from '../components/home/TopicsGrid'
+import Header from '../components/home/Header';
+import WelcomeBanner from '../components/home/WelcomeBanner';
+import DashboardCard from '../components/home/DashboardCard';
+import ProgressCard from '../components/home/ProgressCard';
+import StatsCards from '../components/home/StatsCards';
+import SectionHeader from '../components/home/SectionHeader';
+import SubjectTabs from '../components/home/SubjectTabs';
+import TopicsGrid from '../components/home/TopicsGrid';
 
 // Import data
-import { subjects, subjectCards } from '../../data/subjectData'
+import { subjects, subjectCards } from '../../data/subjectData';
 
 export default function HomeScreen() {
+    const router = useRouter();
+    const [selectedSubject, setSelectedSubject] = useState(0);
+    const [likedTopics, setLikedTopics] = useState<{[key: string]: boolean}>({});
+    const [checkedTopics, setCheckedTopics] = useState<{[key: string]: boolean}>({});
+    const scrollViewRef = useRef<ScrollView>(null);
 
-    const router = useRouter()
-    const [selectedSubject, setSelectedSubject] = useState(0)
-    const [likedTopics, setLikedTopics] = useState<{[key: string]: boolean}>({})
-    const [checkedTopics, setCheckedTopics] = useState<{[key: string]: boolean}>({})
-    const scrollViewRef = useRef<ScrollView>(null)
+    // Get user data from Zustand
+    const { user, token, isLoading, setUser, loadUser } = useUserStore();
+
+    useEffect(() => {
+        // Load user data on mount
+        const fetchUserData = async () => {
+            await loadUser();
+
+            // If we have a token but no user data, fetch it
+            if (token && !user) {
+                try {
+                    const userResponse = await getCurrentUser(token);
+                    const userData = userResponse.data || userResponse;
+                    setUser(userData);
+                } catch (error) {
+                    console.error('Failed to fetch user data:', error);
+                    // If token is invalid, redirect to login
+                    router.replace('/auth/student/login');
+                }
+            }
+
+            // If no token, redirect to login
+            if (!isLoading && !token) {
+                router.replace('/auth/student/login');
+            }
+        };
+
+        fetchUserData();
+    }, [token, user, isLoading]);
 
     const handleSubjectSelect = (index: number) => {
-        setSelectedSubject(index)
-        const ITEM_WIDTH = 100
+        setSelectedSubject(index);
+        const ITEM_WIDTH = 100;
         scrollViewRef.current?.scrollTo({ 
             x: Math.max(0, ITEM_WIDTH * index - 1),
             animated: true
-        })
-    }
+        });
+    };
 
     const handleLike = (topicId: number) => {
-        const key = `${selectedSubject}-${topicId}`
-        setLikedTopics(prev => ({...prev, [key]: !prev[key]}))
-    }
+        const key = `${selectedSubject}-${topicId}`;
+        setLikedTopics(prev => ({...prev, [key]: !prev[key]}));
+    };
 
     const handleCheck = (topicId: number) => {
-        const key = `${selectedSubject}-${topicId}`
-        setCheckedTopics(prev => ({...prev, [key]: !prev[key]}))
-    }
+        const key = `${selectedSubject}-${topicId}`;
+        setCheckedTopics(prev => ({...prev, [key]: !prev[key]}));
+    };
 
     const getLikedState = (topicId: number) => {
-        return likedTopics[`${selectedSubject}-${topicId}`] || false
-    }
+        return likedTopics[`${selectedSubject}-${topicId}`] || false;
+    };
 
     const getCheckedState = (topicId: number) => {
-        return checkedTopics[`${selectedSubject}-${topicId}`] || false
+        return checkedTopics[`${selectedSubject}-${topicId}`] || false;
+    };
+
+    // Show loading state while fetching user data
+    if (isLoading || !user) {
+        return (
+            <SafeAreaView className="flex-1 bg-white justify-center items-center">
+                <ActivityIndicator size="large" color="#3b82f6" />
+                <Text className="mt-4 text-gray-600">Loading...</Text>
+            </SafeAreaView>
+        );
     }
 
     return (
@@ -57,9 +98,9 @@ export default function HomeScreen() {
                 <Header />
                 
                 <WelcomeBanner 
-                    name="Jem"
+                    fullname={user.fullname}
                     grade="Pri 1"
-                    profileImage={require('@/assets/images/Jem.png')}
+                    profileImage={user.profileImage}
                 />
                 
                 <DashboardCard 
@@ -104,27 +145,27 @@ export default function HomeScreen() {
                     topics={subjectCards[selectedSubject].topics}
                     likedTopics={Object.fromEntries(
                         subjectCards[selectedSubject].topics.map(topic =>
-                        [topic.id, getLikedState(topic.id)]
+                            [topic.id, getLikedState(topic.id)]
                         )
                     )}
                     checkedTopics={Object.fromEntries(
                         subjectCards[selectedSubject].topics.map(topic =>
-                        [topic.id, getCheckedState(topic.id)]
+                            [topic.id, getCheckedState(topic.id)]
                         )
                     )}
                     onLike={handleLike}
                     onCheck={handleCheck}
                     onLearnMore={(topicId) => {
-                        const topic = subjectCards[selectedSubject].topics.find(t => t.id === topicId)
+                        const topic = subjectCards[selectedSubject].topics.find(t => t.id === topicId);
                         if (topic) {
                             router.push({
                                 pathname: '/screens/topicDetailScreen',
                                 params: { topic: JSON.stringify(topic) }
-                            })
+                            });
                         }
                     }}
                 />
             </ScrollView>
         </SafeAreaView>
-    )
+    );
 }

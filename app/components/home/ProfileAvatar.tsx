@@ -1,0 +1,49 @@
+import { View, Text, Image } from 'react-native';
+import { getInitials } from '@/utils/userUtils';
+
+interface ProfileAvatarProps {
+  fullname: string;
+  profileImage?: string | null;
+  size?: number;
+}
+
+export default function ProfileAvatar({ 
+  fullname, 
+  profileImage, 
+  size = 48 
+}: ProfileAvatarProps) {
+  const initials = getInitials(fullname);
+
+  if (profileImage) {
+    return (
+      <Image
+        source={{ uri: profileImage }}
+        style={{ width: size, height: size, borderRadius: size / 2 }}
+        resizeMode="cover"
+      />
+    );
+  }
+
+  return (
+    <View 
+      style={{ 
+        width: size, 
+        height: size, 
+        borderRadius: size / 2,
+        backgroundColor: '#3b82f6',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <Text 
+        style={{ 
+          color: 'white', 
+          fontSize: size * 0.4,
+          fontWeight: '600'
+        }}
+      >
+        {initials}
+      </Text>
+    </View>
+  );
+}
