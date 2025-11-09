@@ -1,4 +1,5 @@
 import { View, Text, Image, Pressable } from 'react-native'
+import { scaleWidth, scaleFont, moderateScale, SCREEN } from '../../../utils/responsive'
 
 interface ProgressCardProps {
     title: string
@@ -9,29 +10,123 @@ interface ProgressCardProps {
 
 export default function ProgressCard({ title, subtitle, progress, onResume }: ProgressCardProps) {
     return (
-        <View className="px-6 mx-6 border border-solid rounded-xl border-gray-300 p-4">
-            <View className="p-2 bg-blue-100 rounded-full w-12 h-12 items-center">
-                <Image source={require('@/assets/images/uim_analytics.png')} />
+        <View 
+            style={{
+                marginHorizontal: moderateScale(24),
+                borderWidth: 1,
+                borderColor: '#d1d5db',
+                borderRadius: moderateScale(16),
+                padding: moderateScale(16),
+                marginBottom: moderateScale(24),
+            }}
+        >
+            {/* Icon Container */}
+            <View 
+                style={{
+                    padding: moderateScale(8),
+                    backgroundColor: '#dbeafe',
+                    borderRadius: moderateScale(24),
+                    width: scaleWidth(48),
+                    height: scaleWidth(48),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <Image 
+                    source={require('@/assets/images/uim_analytics.png')}
+                    style={{
+                        width: scaleWidth(28),
+                        height: scaleWidth(28),
+                    }}
+                    resizeMode="contain"
+                />
             </View>
-            <View className="flex-row mt-4 items-center">
-                <View className="flex justify-between mb-2">
-                    <Text className="text-gray-800 text-xl font-semibold">{title}</Text>
-                    <Text className="text-gray-500 text-sm">{subtitle}</Text>
+
+            {/* Title and Button Row */}
+            <View 
+                style={{
+                    flexDirection: SCREEN.isSmall ? 'column' : 'row',
+                    marginTop: moderateScale(16),
+                    alignItems: SCREEN.isSmall ? 'flex-start' : 'center',
+                }}
+            >
+                <View style={{ flex: 1, marginBottom: SCREEN.isSmall ? moderateScale(12) : 0 }}>
+                    <Text 
+                        style={{
+                            color: '#1f2937',
+                            fontSize: scaleFont(SCREEN.isSmall ? 16 : 18),
+                            fontWeight: '600',
+                            marginBottom: moderateScale(4),
+                        }}
+                        numberOfLines={1}
+                    >
+                        {title}
+                    </Text>
+                    <Text 
+                        style={{
+                            color: '#6b7280',
+                            fontSize: scaleFont(SCREEN.isSmall ? 12 : 14),
+                        }}
+                        numberOfLines={2}
+                    >
+                        {subtitle}
+                    </Text>
                 </View>
+                
                 <Pressable 
-                    className="ml-auto mt-2 bg-blue-200 hover:bg-blue-800 px-4 py-2 rounded-full"
+                    style={({ pressed }) => ({
+                        backgroundColor: pressed ? '#1e40af' : '#dbeafe',
+                        paddingHorizontal: moderateScale(SCREEN.isSmall ? 12 : 16),
+                        paddingVertical: moderateScale(SCREEN.isSmall ? 8 : 10),
+                        borderRadius: moderateScale(24),
+                        marginLeft: SCREEN.isSmall ? 0 : moderateScale(12),
+                        alignSelf: SCREEN.isSmall ? 'flex-start' : 'center',
+                    })}
                     onPress={onResume}
                 >
-                    <Text className="text-blue-600 text-lg font-semibold">Resume Lesson</Text>
+                    <Text 
+                        style={{
+                            color: '#2563eb',
+                            fontSize: scaleFont(SCREEN.isSmall ? 13 : 15),
+                            fontWeight: '600',
+                        }}
+                        numberOfLines={1}
+                    >
+                        Resume Lesson
+                    </Text>
                 </Pressable>
             </View>
-            <Text className="text-gray-500 text-sm mt-4 text-right">
+
+            {/* Progress Text */}
+            <Text 
+                style={{
+                    color: '#6b7280',
+                    fontSize: scaleFont(12),
+                    marginTop: moderateScale(16),
+                    textAlign: 'right',
+                }}
+            >
                 {progress}% completed
             </Text>
-            <View className="w-full h-2 bg-gray-200 rounded-full mt-4">
+
+            {/* Progress Bar */}
+            <View 
+                style={{
+                    width: '100%',
+                    height: moderateScale(8),
+                    backgroundColor: '#e5e7eb',
+                    borderRadius: moderateScale(4),
+                    marginTop: moderateScale(8),
+                    overflow: 'hidden',
+                }}
+            >
                 <View 
-                    className="h-2 bg-blue-600 rounded-full" 
-                    style={{ width: `${progress}%` }} 
+                    style={{
+                        height: '100%',
+                        backgroundColor: '#2563eb',
+                        borderRadius: moderateScale(4),
+                        width: `${progress}%`,
+                    }} 
                 />
             </View>
         </View>

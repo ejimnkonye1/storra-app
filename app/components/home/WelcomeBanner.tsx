@@ -1,39 +1,82 @@
-import { View, Text, Image } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import ProfileAvatar from './ProfileAvatar';
+import { scaleWidth, scaleFont, moderateScale, SCREEN } from '../../../utils/responsive';
 
 interface WelcomeBannerProps {
-    name: string
-    grade: string
-    profileImage: any
+  fullname: string;
+  grade: string;
+  profileImage?: string | null;
 }
 
-export default function WelcomeBanner({ name, grade, profileImage }: WelcomeBannerProps) {
-    return (
-        <View className="flex-row text-center items-start gap-8 px-6 mt-4 mb-6">
-            <Image
-                source={profileImage}    
-                className="w-12 h-12 rounded-full"
-                resizeMode="contain"
-            />
-            <View className='flex-row'>
-                <View>
-                    <Text className="mt-2 text-2xl font-semibold text-gray-800">
-                        Welcome back, {name}!
-                    </Text>
-                    <Text className="text-gray-500 text-lg">
-                        Here&apos;s your learning Journey today
-                    </Text>
-                </View>
-                <View className='flex-row pl-8 mt-6'>
-                    <Text className="text-blue-600 font-semibold mt-2">{grade} </Text>
-                    <Ionicons 
-                        name="chevron-down" 
-                        size={15} 
-                        color="blue" 
-                        style={{ marginTop: 6 }}
-                    />
-                </View>
-            </View>
+export default function WelcomeBanner({ fullname, grade, profileImage }: WelcomeBannerProps) {
+  const firstName = fullname.trim().split(' ')[0];
+
+  return (
+    <View 
+      style={{
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingHorizontal: moderateScale(24),
+        marginTop: moderateScale(16),
+        marginBottom: moderateScale(24),
+        gap: moderateScale(12),
+      }}
+    >
+      <ProfileAvatar 
+        fullname={fullname}
+        profileImage={profileImage}
+        size={scaleWidth(48)}
+      />
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ flex: 1 }}>
+          <Text 
+            style={{
+              marginTop: moderateScale(8),
+              fontSize: scaleFont(SCREEN.isSmall ? 18 : 22),
+              fontWeight: '600',
+              color: '#1f2937',
+            }}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            Welcome back, {firstName}!
+          </Text>
+          <Text 
+            style={{
+              fontSize: scaleFont(SCREEN.isSmall ? 14 : 16),
+              color: '#6b7280',
+              marginTop: moderateScale(4),
+            }}
+            numberOfLines={2}
+          >
+            Here&apos;s your learning Journey today
+          </Text>
         </View>
-    )
+        <View 
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: moderateScale(24),
+            marginLeft: moderateScale(8),
+          }}
+        >
+          <Text 
+            style={{
+              color: '#2563eb',
+              fontWeight: '600',
+              fontSize: scaleFont(14),
+            }}
+          >
+            {grade}{' '}
+          </Text>
+          <Ionicons 
+            name="chevron-down" 
+            size={scaleWidth(15)} 
+            color="#2563eb"
+          />
+        </View>
+      </View>
+    </View>
+  );
 }
