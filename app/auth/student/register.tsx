@@ -47,7 +47,7 @@ const StudentAccountScreen = () => {
 
     console.log('Registration successful:', response.data);
     Alert.alert('Success', 'Account created successfully!');
-    router.push('/auth/student/login'); // navigate to login
+    router.push('/auth/others/personification'); // navigate to login
 
   } catch (error) {
     console.error('Registration failed:', error.response?.data || error.message);
@@ -55,7 +55,7 @@ const StudentAccountScreen = () => {
   }
 };
   const handleNext = () => {
-    router.push('/auth/student/login');
+    router.push('/auth/others/personification');
   }
 
   const updateFormData = (field, value) => {
