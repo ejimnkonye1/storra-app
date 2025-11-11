@@ -1,12 +1,12 @@
-import { BASE_URL } from "../../../backendconfig";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useUserStore } from '../../../store/userStore';
+import { BASE_URL } from "../../../backendconfig";
 import { getCurrentUser } from '../../../services/userService';
+import { useUserStore } from '../../../store/userStore';
 
 export default function StudentLogin() {
     const [showPassword, setShowPassword] = useState(false);
@@ -70,6 +70,7 @@ export default function StudentLogin() {
             // Step 5: Navigate to home
             router.push('/(tabs)/home');
         } catch (error: any) {
+                        console.log('Login Error:', error.response?.data || error.message);
             console.error('Login Error:', error.response?.data || error.message);
             Alert.alert(
                 'Login Failed', 
