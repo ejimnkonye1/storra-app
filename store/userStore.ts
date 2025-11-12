@@ -2,14 +2,6 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface Subject {
-  id: string;
-  name: string;
-  code: string;
-  image?: string;
-  topics: Topic[];
-}
-
 interface Topic {
   id: string;
   title: string;
@@ -21,9 +13,17 @@ interface Topic {
     video?: string;
     audio?: string;
   };
-  isLiked?: boolean;      // Added
-  isChecked?: boolean;    // Added
-  progress?: number;      // Added for tracking completion
+  isLiked?: boolean;
+  isChecked?: boolean;
+  progress?: number;
+}
+
+interface Subject {
+  id: string;
+  name: string;
+  code: string;
+  image?: string;
+  topics: Topic[];
 }
 
 interface User {
@@ -45,27 +45,23 @@ interface UserStore {
   isLoading: boolean;
   subjects: Subject[];
   selectedSubject: number;
-  
-  // User actions
+
   setUser: (user: User) => void;
   setToken: (token: string) => Promise<void>;
   clearUser: () => void;
   loadUser: () => Promise<void>;
   logout: () => Promise<void>;
-  
-  // Subject actions
+
   setSubjects: (subjects: Subject[]) => void;
   setSelectedSubject: (index: number) => void;
   clearSubjects: () => void;
   getSelectedSubjectData: () => Subject | null;
   getTopicById: (topicId: string) => Topic | null;
-  
-  // Topic interaction actions
+
   toggleTopicLike: (topicId: string) => void;
   toggleTopicCheck: (topicId: string) => void;
   updateTopicProgress: (topicId: string, progress: number) => void;
-  
-  // Utility getters
+
   getLikedTopics: () => Topic[];
   getCheckedTopics: () => Topic[];
   getCompletedTopics: () => Topic[];
@@ -80,8 +76,8 @@ export const useUserStore = create<UserStore>()(
       subjects: [],
       selectedSubject: 0,
 
-      // ============ User Management ============
-      setUser: (user) => set({ user }),
+      // 🔹 Fix: Ensure loading stops when user is set
+      setUser: (user) => set({ user, isLoading: false }),
 
       setToken: async (token) => {
         try {
@@ -92,21 +88,19 @@ export const useUserStore = create<UserStore>()(
         }
       },
 
-      clearUser: () => set({ 
-        user: null, 
-        token: null, 
-        subjects: [], 
-        selectedSubject: 0 
-      }),
+      clearUser: () =>
+        set({
+          user: null,
+          token: null,
+          subjects: [],
+          selectedSubject: 0,
+          isLoading: false,
+        }),
 
       loadUser: async () => {
         try {
           const token = await AsyncStorage.getItem('access_token');
-          if (token) {
-            set({ token, isLoading: false });
-          } else {
-            set({ isLoading: false });
-          }
+          set({ token: token || null, isLoading: false });
         } catch (error) {
           console.error('Error loading user:', error);
           set({ isLoading: false });
@@ -116,18 +110,18 @@ export const useUserStore = create<UserStore>()(
       logout: async () => {
         try {
           await AsyncStorage.removeItem('access_token');
-          set({ 
-            user: null, 
-            token: null, 
-            subjects: [], 
-            selectedSubject: 0 
+          set({
+            user: null,
+            token: null,
+            subjects: [],
+            selectedSubject: 0,
+            isLoading: false, // ✅ important
           });
         } catch (error) {
           console.error('Error during logout:', error);
         }
       },
 
-      // ============ Subject Management ============
       setSubjects: (subjects) => {
         set({ subjects });
         const currentSelected = get().selectedSubject;
@@ -155,82 +149,76 @@ export const useUserStore = create<UserStore>()(
       getTopicById: (topicId: string) => {
         const { subjects } = get();
         for (const subject of subjects) {
-          const topic = subject.topics.find(t => t.id === topicId);
+          const topic = subject.topics.find((t) => t.id === topicId);
           if (topic) return topic;
         }
         return null;
       },
 
-      // ============ Topic Interactions ============
       toggleTopicLike: (topicId: string) => {
         const { subjects } = get();
-        const updatedSubjects = subjects.map(subject => ({
-          ...subject,
-          topics: subject.topics.map(topic =>
-            topic.id === topicId
-              ? { ...topic, isLiked: !topic.isLiked }
-              : topic
-          ),
-        }));
-        set({ subjects: updatedSubjects });
+        set({
+          subjects: subjects.map((subject) => ({
+            ...subject,
+            topics: subject.topics.map((topic) =>
+              topic.id === topicId ? { ...topic, isLiked: !topic.isLiked } : topic
+            ),
+          })),
+        });
       },
 
       toggleTopicCheck: (topicId: string) => {
         const { subjects } = get();
-        const updatedSubjects = subjects.map(subject => ({
-          ...subject,
-          topics: subject.topics.map(topic =>
-            topic.id === topicId
-              ? { ...topic, isChecked: !topic.isChecked }
-              : topic
-          ),
-        }));
-        set({ subjects: updatedSubjects });
+        set({
+          subjects: subjects.map((subject) => ({
+            ...subject,
+            topics: subject.topics.map((topic) =>
+              topic.id === topicId ? { ...topic, isChecked: !topic.isChecked } : topic
+            ),
+          })),
+        });
       },
 
       updateTopicProgress: (topicId: string, progress: number) => {
         const { subjects } = get();
-        const updatedSubjects = subjects.map(subject => ({
-          ...subject,
-          topics: subject.topics.map(topic =>
-            topic.id === topicId
-              ? { ...topic, progress }
-              : topic
-          ),
-        }));
-        set({ subjects: updatedSubjects });
+        set({
+          subjects: subjects.map((subject) => ({
+            ...subject,
+            topics: subject.topics.map((topic) =>
+              topic.id === topicId ? { ...topic, progress } : topic
+            ),
+          })),
+        });
       },
 
-      // ============ Utility Getters ============
       getLikedTopics: () => {
         const { subjects } = get();
-        return subjects.flatMap(subject =>
-          subject.topics.filter(topic => topic.isLiked)
+        return subjects.flatMap((subject) =>
+          subject.topics.filter((topic) => topic.isLiked)
         );
       },
 
       getCheckedTopics: () => {
         const { subjects } = get();
-        return subjects.flatMap(subject =>
-          subject.topics.filter(topic => topic.isChecked)
+        return subjects.flatMap((subject) =>
+          subject.topics.filter((topic) => topic.isChecked)
         );
       },
 
       getCompletedTopics: () => {
         const { subjects } = get();
-        return subjects.flatMap(subject =>
-          subject.topics.filter(topic => topic.progress === 100)
+        return subjects.flatMap((subject) =>
+          subject.topics.filter((topic) => topic.progress === 100)
         );
       },
     }),
     {
       name: 'user-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      // Persist user, token, and subjects (including interaction states)
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        subjects: state.subjects, // Now persisting subjects with like/check states
+        subjects: state.subjects,
       }),
     }
   )

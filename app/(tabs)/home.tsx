@@ -78,6 +78,11 @@ export default function HomeScreen() {
         toggleTopicCheck(topicId);
     };
 
+    console.log("👤 User:", user);
+console.log("🪙 Token:", token);
+console.log("isLoading (Zustand):", isLoading);
+console.log("loading (local):", loading);
+
     if (isLoading || loading || !user) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
