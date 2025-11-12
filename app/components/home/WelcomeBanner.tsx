@@ -6,14 +6,14 @@ import { scaleWidth, scaleFont, moderateScale, SCREEN } from '../../../utils/res
 interface WelcomeBannerProps {
   fullname: string;
   grade: string;
-  profileImage?: string | null;
+  profileImage: string | null;
 }
 
 export default function WelcomeBanner({ fullname, grade, profileImage }: WelcomeBannerProps) {
-  const firstName = fullname.trim().split(' ')[0];
+  const firstName = fullname?.trim().split(' ')[0] || 'Student';
 
   return (
-    <View 
+    <View
       style={{
         flexDirection: 'row',
         alignItems: 'flex-start',
@@ -23,14 +23,17 @@ export default function WelcomeBanner({ fullname, grade, profileImage }: Welcome
         gap: moderateScale(12),
       }}
     >
-      <ProfileAvatar 
+      {/* Profile Avatar */}
+      <ProfileAvatar
         fullname={fullname}
         profileImage={profileImage}
         size={scaleWidth(48)}
       />
+
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ flex: 1 }}>
-          <Text 
+          {/* Greeting */}
+          <Text
             style={{
               marginTop: moderateScale(8),
               fontSize: scaleFont(SCREEN.isSmall ? 18 : 22),
@@ -42,7 +45,9 @@ export default function WelcomeBanner({ fullname, grade, profileImage }: Welcome
           >
             Welcome back, {firstName}!
           </Text>
-          <Text 
+
+          {/* Subtitle */}
+          <Text
             style={{
               fontSize: scaleFont(SCREEN.isSmall ? 14 : 16),
               color: '#6b7280',
@@ -50,10 +55,12 @@ export default function WelcomeBanner({ fullname, grade, profileImage }: Welcome
             }}
             numberOfLines={2}
           >
-            Here&apos;s your learning Journey today
+            Here&apos;s your learning journey today
           </Text>
         </View>
-        <View 
+
+        {/* Class Display */}
+        <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -61,20 +68,16 @@ export default function WelcomeBanner({ fullname, grade, profileImage }: Welcome
             marginLeft: moderateScale(8),
           }}
         >
-          <Text 
+          <Text
             style={{
               color: '#2563eb',
               fontWeight: '600',
               fontSize: scaleFont(14),
             }}
           >
-            {grade}{' '}
+            {grade}
           </Text>
-          <Ionicons 
-            name="chevron-down" 
-            size={scaleWidth(15)} 
-            color="#2563eb"
-          />
+          <Ionicons name="chevron-down" size={scaleWidth(15)} color="#2563eb" />
         </View>
       </View>
     </View>

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -8,22 +8,18 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import axios from "axios";
+import { BASE_URL } from "../../../backendconfig"; // ✅ make sure this points to your backend base URL
 
 const BasicPersonalizationScreen = () => {
+  const { userId } = useLocalSearchParams(); // ✅ receive from registration screen or previous step
   const [age, setAge] = useState<number | null>(null);
   const [currentClassLevel, setCurrentClassLevel] = useState<string | null>(null);
   const [language, setLanguage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Get userId from route params or AsyncStorage
-  // For now, assuming it's passed from registration
-  const userId = ""; // TODO: Get from route params or storage
-
-  const ages = Array.from({ length: 50 }, (_, i) => i + 1); // 1 to 50
   const classes = [
     { label: "Nursery", value: "nursery" },
     { label: "Primary", value: "primary" },
@@ -31,81 +27,61 @@ const BasicPersonalizationScreen = () => {
     { label: "Tertiary", value: "tertiary" },
     { label: "General Studies", value: "general-studies" },
   ];
+
   const languages = [
     { label: "English", value: "English" },
     { label: "Spanish", value: "Spanish" },
     { label: "French", value: "French" },
-    { label: "German", value: "German" }
+    { label: "German", value: "German" },
   ];
 
   const handleContinue = async () => {
-    // Validation
-    if (!age) {
-      Alert.alert("Required Field", "Please select your age");
-      return;
-    }
-    if (!currentClassLevel) {
-      Alert.alert("Required Field", "Please select your current class level");
-      return;
-    }
-    if (!language) {
-      Alert.alert("Required Field", "Please select your preferred language");
-      return;
-    }
+    if (!age) return Alert.alert("Required Field", "Please select your age");
+    if (!currentClassLevel)
+      return Alert.alert("Required Field", "Please select your current class level");
+    if (!language)
+      return Alert.alert("Required Field", "Please select your preferred language");
 
     setIsLoading(true);
-
     try {
-      // Save personalization data to backend
-      const response = await fetch(
-        `${API_URL}/api/v1/onboarding/personalization/${userId}`,
+      // ✅ Call correct backend endpoint
+      const response = await axios.patch(
+        `${BASE_URL}/onboarding/personalization/${userId}`,
         {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            // Add Authorization header if you have token stored
-            // "Authorization": `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            age,
-            currentClassLevel,
-            preferredLanguage: language,
-          }),
+          age,
+          currentClassLevel,
+          preferredLanguage: language,
         }
       );
 
-      const data = await response.json();
+      console.log("✅ Personalization updated:", response.data);
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to save personalization");
-      }
-
-      console.log("✅ Personalization saved:", data);
-
-      // Navigate to Learning Goals screen
-      router.push("/auth/others/learningoals");
-
+      // ✅ Navigate to the next step (reason screen)
+      router.push({
+        pathname: "/auth/others/learning-goals",
+        params: { userId },
+      });
     } catch (error: any) {
-      console.error("❌ Personalization error:", error);
+      console.error("❌ Personalization error:", error.response?.data || error.message);
       Alert.alert(
         "Error",
-        error.message || "Failed to save your information. Please try again."
+        error.response?.data?.message || "Failed to save your information. Please try again."
       );
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Reusable dropdown-style mock
-  const DropdownField = ({ 
-    label, 
-    value, 
-    options, 
-    onSelect 
-  }: { 
-    label: string; 
-    value?: string | number; 
-    options: Array<{label: string, value: any}>;
+  // Reusable dropdown component
+  const DropdownField = ({
+    label,
+    value,
+    options,
+    onSelect,
+  }: {
+    label: string;
+    value?: string | number;
+    options: Array<{ label: string; value: any }>;
     onSelect: (value: any) => void;
   }) => (
     <View className="mb-5">
@@ -141,10 +117,7 @@ const BasicPersonalizationScreen = () => {
       >
         {/* Header */}
         <View className="flex-row items-center pt-2 pb-6">
-          <TouchableOpacity 
-            onPress={() => router.back()} 
-            className="pr-3"
-          >
+          <TouchableOpacity onPress={() => router.back()} className="pr-3">
             <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
           <Text className="text-xl font-bold">Basic Personalization</Text>
@@ -159,7 +132,7 @@ const BasicPersonalizationScreen = () => {
         <Text className="text-lg font-semibold mb-3">What is your age?</Text>
         <View className="flex-row flex-wrap mb-6">
           {[...Array(10)].map((_, i) => {
-            const ageValue = (i + 1) * 5; // Show: 5, 10, 15, 20, etc.
+            const ageValue = (i + 1) * 5; // 5, 10, 15, ...
             return (
               <TouchableOpacity
                 key={ageValue}
@@ -199,8 +172,8 @@ const BasicPersonalizationScreen = () => {
 
       {/* Footer Buttons */}
       <View className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-100 flex-row justify-between items-center">
-        <TouchableOpacity 
-          onPress={() => router.back()} 
+        <TouchableOpacity
+          onPress={() => router.back()}
           className="py-3 px-6"
           disabled={isLoading}
         >

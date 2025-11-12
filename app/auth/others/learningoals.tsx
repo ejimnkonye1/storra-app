@@ -37,7 +37,7 @@ const SelectClassScreen = () => {
     setIsFetching(true);
     try {
       const response = await fetch(
-        `${API_URL}/api/v1/onboarding/classes/${userId}`,
+        `${API_URL}onboarding/classes/${userId}`,
         {
           headers: {
             // Add Authorization header if you have token stored

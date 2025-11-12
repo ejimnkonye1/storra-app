@@ -1,48 +1,51 @@
-import { View } from 'react-native'
-import TopicCard from './TopicCard'
+import { View, FlatList } from 'react-native';
+import TopicCard from './TopicCard';
 
 interface Topic {
-    id: number
-    title: string
-    paragraph: string
-    progress: number
-    coverImage: any
+  id: string; // Changed from number to string
+  title: string;
+  paragraph: string;
+  coverImage: any;
 }
 
 interface TopicsGridProps {
-    topics: Topic[]
-    likedTopics: {[key: string]: boolean}
-    checkedTopics: {[key: string]: boolean}
-    onLike: (topicId: number) => void
-    onCheck: (topicId: number) => void
-    onLearnMore?: (topicId: number) => void
+  topics: Topic[];
+  likedTopics: { [key: string]: boolean }; // Changed key type
+  checkedTopics: { [key: string]: boolean }; // Changed key type
+  onLike: (topicId: string) => void; // Changed parameter type
+  onCheck: (topicId: string) => void; // Changed parameter type
+  onLearnMore: (topicId: string) => void; // Changed parameter type
 }
 
 export default function TopicsGrid({
-    topics,
-    likedTopics,
-    checkedTopics,
-    onLike,
-    onCheck,
-    onLearnMore
+  topics,
+  likedTopics,
+  checkedTopics,
+  onLike,
+  onCheck,
+  onLearnMore,
 }: TopicsGridProps) {
-    return (
-        <View className="px-4">
-            <View className="flex-row flex-wrap justify-between">
-                {topics.map((topic) => (
-                    <TopicCard
-                        key={topic.id}
-                        title={topic.title}
-                        paragraph={topic.paragraph}
-                        coverImage={topic.coverImage}
-                        isLiked={likedTopics[topic.id] || false}
-                        isChecked={checkedTopics[topic.id] || false}
-                        onLike={() => onLike(topic.id)}
-                        onCheck={() => onCheck(topic.id)}
-                        onLearnMore={() => onLearnMore?.(topic.id)}
-                    />
-                ))}
-            </View>
-        </View>
-    )
+  return (
+    <View className="px-6 mb-6">
+      <FlatList
+        data={topics}
+        renderItem={({ item }) => (
+          <TopicCard
+            title={item.title}
+            paragraph={item.paragraph}
+            coverImage={item.coverImage}
+            isLiked={likedTopics[item.id] || false}
+            isChecked={checkedTopics[item.id] || false}
+            onLike={() => onLike(item.id)}
+            onCheck={() => onCheck(item.id)}
+            onLearnMore={() => onLearnMore(item.id)}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={{ justifyContent: 'space-between' }}
+        scrollEnabled={false}
+      />
+    </View>
+  );
 }
