@@ -1,9 +1,9 @@
 // app/screens/quizzes.tsx
-import { View, Text, ScrollView, Image, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import { useState } from 'react'
-import { useRouter } from 'expo-router'
 import { quizzes } from '@/data/quizData'
+import { Ionicons } from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
+import { useState } from 'react'
+import { Image, Pressable, ScrollView, Text, View } from 'react-native'
 
 export default function Quizzes() {
   const router = useRouter()

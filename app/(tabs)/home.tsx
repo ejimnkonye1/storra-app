@@ -1,55 +1,64 @@
-import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getCourses } from '../../services/courseService';
 import { useUserStore } from '../../store/userStore';
-import { getCurrentUser } from '../../services/userService';
-import { moderateScale } from '../../utils/responsive';
 
 // Import components
-import Header from '../components/home/Header';
-import WelcomeBanner from '../components/home/WelcomeBanner';
 import DashboardCard from '../components/home/DashboardCard';
+import Header from '../components/home/Header';
 import ProgressCard from '../components/home/ProgressCard';
-import StatsCards from '../components/home/StatsCards';
 import SectionHeader from '../components/home/SectionHeader';
+import StatsCards from '../components/home/StatsCards';
 import SubjectTabs from '../components/home/SubjectTabs';
 import TopicsGrid from '../components/home/TopicsGrid';
-
-// Import data
-import { subjects, subjectCards } from '../../data/subjectData';
+import WelcomeBanner from '../components/home/WelcomeBanner';
 
 export default function HomeScreen() {
     const router = useRouter();
-    const [selectedSubject, setSelectedSubject] = useState(0);
-    const [likedTopics, setLikedTopics] = useState<{[key: string]: boolean}>({});
-    const [checkedTopics, setCheckedTopics] = useState<{[key: string]: boolean}>({});
     const scrollViewRef = useRef<ScrollView>(null);
+    const [loading, setLoading] = useState(true);
 
-    const { user, token, isLoading, setUser, loadUser } = useUserStore();
+    // Get data from Zustand
+    const { 
+        user, 
+        token, 
+        isLoading, 
+        subjects, 
+        selectedSubject, 
+        setSubjects, 
+        setSelectedSubject,
+        toggleTopicLike,
+        toggleTopicCheck,
+        getSelectedSubjectData
+    } = useUserStore();
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            await loadUser();
-
-            if (token && !user) {
-                try {
-                    const userResponse = await getCurrentUser(token);
-                    const userData = userResponse.data || userResponse;
-                    setUser(userData);
-                } catch (error) {
-                    console.error('Failed to fetch user data:', error);
-                    router.replace('/auth/student/login');
-                }
+        const fetchCourses = async () => {
+            if (!token) {
+                router.replace('/auth/student/login');
+                return;
             }
 
-            if (!isLoading && !token) {
-                router.replace('/auth/student/login');
+            try {
+                setLoading(true);
+                const response = await getCourses(token);
+                
+                if (response.data?.subjects) {
+                    setSubjects(response.data.subjects);
+                }
+            } catch (error) {
+                console.error('Failed to fetch courses:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchUserData();
-    }, [token, user, isLoading]);
+        if (token) {
+            fetchCourses();
+        }
+    }, [token]);
 
     const handleSubjectSelect = (index: number) => {
         setSelectedSubject(index);
@@ -60,39 +69,52 @@ export default function HomeScreen() {
         });
     };
 
-    const handleLike = (topicId: number) => {
-        const key = `${selectedSubject}-${topicId}`;
-        setLikedTopics(prev => ({...prev, [key]: !prev[key]}));
+    // Updated to use string IDs
+    const handleLike = (topicId: string) => {
+        toggleTopicLike(topicId);
     };
 
-    const handleCheck = (topicId: number) => {
-        const key = `${selectedSubject}-${topicId}`;
-        setCheckedTopics(prev => ({...prev, [key]: !prev[key]}));
+    const handleCheck = (topicId: string) => {
+        toggleTopicCheck(topicId);
     };
 
-    const getLikedState = (topicId: number) => {
-        return likedTopics[`${selectedSubject}-${topicId}`] || false;
-    };
+    console.log("👤 User:", user);
+console.log("🪙 Token:", token);
+console.log("isLoading (Zustand):", isLoading);
+console.log("loading (local):", loading);
+//  console.log("✅ subjectsss:", subjects);
+//  console.log("✅ subjectsss:", subjects);
 
-    const getCheckedState = (topicId: number) => {
-        return checkedTopics[`${selectedSubject}-${topicId}`] || false;
-    };
-
-    if (isLoading || !user) {
+    if (isLoading || loading || !user) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#3b82f6" />
-                <Text style={{ marginTop: moderateScale(16), color: '#6b7280' }}>Loading...</Text>
+                <Text style={{ marginTop: 16, color: '#6b7280' }}>Loading...</Text>
+            </SafeAreaView>
+        );
+    }
+
+    if (subjects.length === 0) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18, color: '#6b7280' }}>No courses available</Text>
+            </SafeAreaView>
+        );
+    }
+
+    const currentSubject = getSelectedSubjectData();
+
+    if (!currentSubject) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18, color: '#6b7280' }}>No subject selected</Text>
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-            <ScrollView 
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: moderateScale(20) }}
-            >
+        <SafeAreaView className="flex-1 bg-white">
+            <ScrollView>
                 <Header />
                 
                 <WelcomeBanner 
@@ -106,7 +128,7 @@ export default function HomeScreen() {
                     onContinue={() => console.log('Continue learning')}
                 />
 
-                <View style={{ paddingHorizontal: moderateScale(24), marginBottom: moderateScale(24) }}>
+                <View className="px-6 mb-1">
                     <SectionHeader title="Your Progress" />
                 </View>
                 
@@ -130,38 +152,39 @@ export default function HomeScreen() {
                     onAction={() => console.log('View all subjects')}
                 />
 
-                <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+                <View className='flex-1 bg-gray-50'>
                     <SubjectTabs 
                         ref={scrollViewRef}
-                        subjects={subjects}
+                        subjects={subjects.map(s => ({ name: s.name, icon: s.image }))}
                         selectedSubject={selectedSubject}
                         onSelectSubject={handleSubjectSelect}
                     />
                 </View>
 
                 <TopicsGrid
-                    topics={subjectCards[selectedSubject].topics}
+                    topics={currentSubject.topics}
                     likedTopics={Object.fromEntries(
-                        subjectCards[selectedSubject].topics.map(topic =>
-                            [topic.id, getLikedState(topic.id)]
-                        )
+                        currentSubject.topics.map(topic => [topic.id, topic.isLiked || false])
                     )}
                     checkedTopics={Object.fromEntries(
-                        subjectCards[selectedSubject].topics.map(topic =>
-                            [topic.id, getCheckedState(topic.id)]
-                        )
+                        currentSubject.topics.map(topic => [topic.id, topic.isChecked || false])
                     )}
                     onLike={handleLike}
                     onCheck={handleCheck}
-                    onLearnMore={(topicId) => {
-                        const topic = subjectCards[selectedSubject].topics.find(t => t.id === topicId);
-                        if (topic) {
-                            router.push({
-                                pathname: '/screens/topicDetailScreen',
-                                params: { topic: JSON.stringify(topic) }
-                            });
-                        }
-                    }}
+                onLearnMore={(topicId) => {
+                       const topicIndex = currentSubject.topics.findIndex(t => t.id === topicId);
+    const topic = currentSubject.topics.find(t => t.id === topicId);
+    if (topic) {
+      router.push({
+        pathname: '/screens/learning',
+        params: { topic: JSON.stringify(topic),
+        topicsList: JSON.stringify(currentSubject.topics),
+          currentIndex: topicIndex.toString()
+         },
+         // Pass topic object as string
+      });
+    }
+  }}
                 />
             </ScrollView>
         </SafeAreaView>

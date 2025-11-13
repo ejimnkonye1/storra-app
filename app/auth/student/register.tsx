@@ -5,6 +5,7 @@ import axios from 'axios';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -19,21 +20,41 @@ import {
 const StudentAccountScreen = () => {
   const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phoneNumber: '',
     password: '',
-    parentContact: '',
+    parentPhoneNumber: '',
+    username: '',
     agreeToTerms: false
   });
 
 
-  const handleRegister = async () => {
+const handleRegister = async () => {
   if (!formData.email || !formData.password) {
     Alert.alert('Error', 'Email and password are required');
     return;
   }
+
+  // Add validation for all required fields
+  if (!formData.fullName) {
+    Alert.alert('Error', 'Full name is required');
+    return;
+  }
+
+  if (!formData.phoneNumber) {
+    Alert.alert('Error', 'Phone number is required');
+    return;
+  }
+
+  if (!formData.agreeToTerms) {
+    Alert.alert('Error', 'You must agree to the terms and conditions');
+    return;
+  }
+
+  setIsLoading(true); // Make sure you have this state
 
   try {
     const response = await axios.post(`${BASE_URL}/student/registeruser`, {
@@ -41,22 +62,41 @@ const StudentAccountScreen = () => {
       email: formData.email,
       password: formData.password,
       phoneNumber: formData.phoneNumber,
-      parentPhoneNumber: formData.phoneNumber,
-      agreeToTerms: formData.agreeToTerms,
+      parentPhoneNumber: formData.parentPhoneNumber, // Fixed: was duplicate phoneNumber
+      username: formData.username, // Add if you have this field
     });
 
     console.log('Registration successful:', response.data);
-    Alert.alert('Success', 'Account created successfully!');
-    router.push('/auth/student/login'); // navigate to login
 
-  } catch (error) {
+    // Extract userId from the response
+    const userId = response.data.data.profile._id || response.data.data.supabaseUser.id;
+
+    // Show success message and navigate to personalization
+    Alert.alert(
+      'Success! 🎉',
+      'Account created successfully! Let\'s personalize your experience.',
+      [
+        {
+          text: 'Continue',
+          onPress: () => {
+            // Navigate to personalization with userId as param
+            router.push({
+              pathname: '/auth/others/personification',
+              params: { userId }
+            });
+          }
+        }
+      ]
+    );
+
+  } catch (error: any) {
     console.error('Registration failed:', error.response?.data || error.message);
-    Alert.alert('Error', error.response?.data?.message || 'Failed to register');
+    Alert.alert('Error', error.response?.data?.message || 'Failed to register. Please try again.');
+  } finally {
+    setIsLoading(false);
   }
 };
-  const handleNext = () => {
-    router.push('/auth/student/login');
-  }
+
 
   const updateFormData = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -111,9 +151,22 @@ const StudentAccountScreen = () => {
             onChangeText={(value) => updateFormData('fullName', value)}
           />
 
+          {/* Username (Optional) */}
+          <Text className="text-base font-medium text-gray-700 mb-2">
+            Username <Text className="text-gray-500">(Optional)</Text>
+          </Text>
+          <TextInput
+            className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4"
+            placeholder="your_username"
+            placeholderTextColor="#999"
+            value={formData.username}
+            onChangeText={(value) => updateFormData('username', value)}
+            autoCapitalize="none"
+          />
+
           {/* Email (Optional) */}
           <Text className="text-base font-medium text-gray-700 mb-2">
-            Email <Text className="text-gray-500">(Optional)</Text>
+            Email 
           </Text>
         <View className="relative w-full">
       <TextInput
@@ -133,9 +186,9 @@ const StudentAccountScreen = () => {
       />
     </View>
 
-          {/* Phone Number (Optional) */}
+          {/* Phone Number */}
           <Text className="text-base font-medium text-gray-700 mb-2">
-            Phone Number <Text className="text-gray-500">(Optional)</Text>
+            Phone Number
           </Text>
           <TextInput
             className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4"
@@ -169,18 +222,17 @@ const StudentAccountScreen = () => {
       </TouchableOpacity>
     </View>
 
-          {/* Parent Contact */}
+          {/* Parent Phone Number */}
           <Text className="text-base font-medium text-gray-700 mb-2">
-            Parent Contact (If under 18)
+            Parent Phone Number <Text className="text-gray-500">(Optional)</Text>
           </Text>
           <TextInput
             className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-6"
-            placeholder="parent@email.com"
+            placeholder="Parent's phone number"
             placeholderTextColor="#999"
-            value={formData.parentContact}
-            onChangeText={(value) => updateFormData('parentContact', value)}
-            keyboardType="email-address"
-            autoCapitalize="none"
+            value={formData.parentPhoneNumber}
+            onChangeText={(value) => updateFormData('parentPhoneNumber', value)}
+            keyboardType="phone-pad"
           />
 
           {/* Terms & Conditions */}
@@ -194,13 +246,17 @@ const StudentAccountScreen = () => {
           {/* Create Account Button */}
           <TouchableOpacity 
             className={`py-4 rounded-full mb-4 ${
-              formData.agreeToTerms ? 'bg-blue-500' : 'bg-gray-300'
-            }`} disabled={!formData.agreeToTerms}
+              formData.agreeToTerms && !isLoading ? 'bg-blue-500' : 'bg-gray-300'
+            }`} disabled={!formData.agreeToTerms || isLoading}
   onPress={handleRegister} 
           >
-            <Text className="text-white font-semibold text-center">
-              Create My Account
-            </Text>
+            {isLoading ? (
+    <ActivityIndicator color="white" />
+  ) : (
+    <Text className="text-white font-semibold text-center">
+      Create My Account
+    </Text>
+  )}
           </TouchableOpacity>
           {/* Divider */}
           <View className="flex-row items-center my-2">
@@ -235,7 +291,7 @@ const StudentAccountScreen = () => {
 <TouchableOpacity
  onPress={() => router.push("/auth/student/login")}
  >
-              <Text className="text-blue-500 font-semibold" onPress={handleNext}>Login</Text>
+              <Text className="text-blue-500 font-semibold">Login</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

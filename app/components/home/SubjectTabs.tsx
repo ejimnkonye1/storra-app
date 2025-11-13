@@ -2,7 +2,7 @@ import { View, Text, ScrollView, Pressable } from 'react-native'
 import { forwardRef } from 'react'
 
 interface SubjectTabsProps {
-    subjects: string[]
+    subjects: { name: string; icon: string }[]
     selectedSubject: number
     onSelectSubject: (index: number) => void
 }
@@ -33,7 +33,7 @@ const SubjectTabs = forwardRef<ScrollView, SubjectTabsProps>(
                                             isActive ? 'text-white' : 'text-gray-800'
                                         }`}
                                     >
-                                        {subject}
+                                        {subject.name}
                                     </Text>
                                 </Pressable>
                             )

@@ -1,56 +1,107 @@
-import { View, Text, ScrollView } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useState } from 'react'
+import { subjects } from '@/data/subjectData'
 import { useRouter } from 'expo-router'
-import Header from '../components/home/Header'
-import CourseTabs from '../components/courses/CourseTabs'
+import { useEffect, useState } from 'react'
+import { ScrollView, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { getCourses } from '../../services/courseService'
+import { useUserStore } from '../../store/userStore'
 import CourseCard from '../components/courses/CourseCard'
-import { subjectCards } from '@/data/subjectData'
+import CourseTabs from '../components/courses/CourseTabs'
+import Header from '../components/home/Header'
+
+const DEFAULT_COVER_IMAGE = 'https://via.placeholder.com/300x150.png?text=No+Image'
 
 export default function CoursesScreen() {
     const [activeTab, setActiveTab] = useState<'ongoing' | 'completed'>('ongoing')
+    const [courses, setCourses] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
     const router = useRouter()
+    const { token } = useUserStore()
 
-    // Transform subject data into course format
-    const allCourses = subjectCards.map(subject => {
-        const randomTopicIndex = Math.floor(Math.random() * subject.topics.length)
-        return {
-            id: subject.id,
-            subject: subject.subject,
-            title: subject.subject,
-            subtitle: `Congratulations! You've completed the lessons for this topic`,
-            coverImage: subject.topics[randomTopicIndex].coverImage, // Random topic image
-            progress: Math.floor(Math.random() * 100), // Random progress for demo
-            isCompleted: Math.random() > 0.5 // Random completion for demo
+    // Fetch courses from API
+    useEffect(() => {
+        const fetchCourses = async () => {
+            if (!token) return
+            try {
+                setLoading(true)
+                const response = await getCourses(token)
+                const subjects = response.data?.subjects || []
+
+              console.log("First subject from API:", response.data?.subjects?.[0])
+      const apiCourses = subjects.map((subject, index) => {
+    const firstTopic = subject.topics?.[0] || {}
+    const totalLessons = subject.totalLessons || (subject.topics?.length || 1)
+
+    // Mark only the first course as completed
+    const completedLessons = index === 0 ? totalLessons : subject.completedLessons ?? 0
+
+    return {
+        id: subject.id || Math.random().toString(), // fallback id
+        title: subject.name || 'Untitled Course',
+        subtitle: `Completed ${completedLessons}/${totalLessons}`,
+        coverImage: firstTopic.coverImage || DEFAULT_COVER_IMAGE,
+        progress: totalLessons ? Math.floor((completedLessons / totalLessons) * 100) : 0,
+        isCompleted: completedLessons === totalLessons,
+        fullDetails: subject
+    }
+})
+                setCourses(apiCourses)
+            } catch (error) {
+                console.error('Failed to fetch courses:', error)
+                setCourses([]) // fallback to empty
+            } finally {
+                setLoading(false)
+            }
         }
-    })
 
-    const ongoingCourses = allCourses.filter(course => !course.isCompleted)
-    const completedCourses = allCourses.filter(course => course.isCompleted)
+        fetchCourses()
+    }, [token])
+console.log("courses",subjects)
+    if (loading) {
+        return (
+            <SafeAreaView className="flex-1 justify-center items-center bg-white">
+                <Text>Loading courses...</Text>
+            </SafeAreaView>
+        )
+    }
 
+    const ongoingCourses = courses.filter(course => !course.isCompleted)
+    const completedCourses = courses.filter(course => course.isCompleted)
     const displayedCourses = activeTab === 'ongoing' ? ongoingCourses : completedCourses
 
-    const handleStartQuiz = (courseId: number) => {
-        console.log('Start quiz for course:', courseId)
-        // router.push(`/quiz/${courseId}`)
-    }
+   const handleStartQuiz = async (course: any) => {
+        // If quiz is already included in course data
+        if (course.fullDetails.quiz) {
+            router.push({
+                pathname: '/screens/quiz',
+                params: { quiz: JSON.stringify(course.fullDetails.quiz) }
+            });
+            return;
+        }
 
-    const handleContinue = (courseId: number) => {
-        console.log('Continue course:', courseId)
-        // router.push(`/course/${courseId}`)
-    }
+        // fallback: fetch topics/quiz from API
+        try {
+            const response = await getCourses(token)
+      
+            const quizData = response?.data?.quiz ?? [];
+
+            router.push({
+                pathname: '/screens/quiz',
+                params: { quiz: JSON.stringify(quizData) }
+            });
+        } catch (error) {
+            console.error('Failed to fetch quiz:', error);
+            alert('Unable to fetch quiz for this course.');
+        }
+    };
+
 
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
             <Header />
-            
             <ScrollView className="flex-1 px-6 pt-6">
-                {/* Page Title */}
-                <Text className="text-gray-900 text-3xl font-bold mb-6">
-                    Courses
-                </Text>
+                <Text className="text-gray-900 text-3xl font-bold mb-6">Courses</Text>
 
-                {/* Course Tabs */}
                 <CourseTabs 
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
@@ -58,9 +109,8 @@ export default function CoursesScreen() {
                     completedCount={completedCourses.length}
                 />
 
-                {/* Course List */}
                 {displayedCourses.length > 0 ? (
-                    displayedCourses.map((course) => (
+                    displayedCourses.map(course => (
                         <CourseCard
                             key={course.id}
                             title={course.title}
@@ -68,14 +118,15 @@ export default function CoursesScreen() {
                             coverImage={course.coverImage}
                             progress={course.progress}
                             isCompleted={course.isCompleted}
-                            onStartQuiz={() => handleStartQuiz(course.id)}
-                            onContinue={() => handleContinue(course.id)}
+                            topicData={course.fullDetails}
+                            onStartQuiz={() => handleStartQuiz(course)}
+                           
                         />
                     ))
                 ) : (
                     <View className="items-center justify-center py-16">
                         <Text className="text-gray-500 text-lg">
-                            No {activeTab} courses yet
+                            No {activeTab} courses available
                         </Text>
                     </View>
                 )}
