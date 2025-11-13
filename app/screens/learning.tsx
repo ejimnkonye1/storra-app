@@ -1,85 +1,94 @@
-import { View, Text, ScrollView, Image, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import { useState } from 'react'
-import { useRouter } from 'expo-router'
-import { dummyLesson } from '../../data/subjectLessons'
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 export default function Learning() {
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState(0)
-  const mediaTabs = ['Text', 'Audio', 'Video']
+  const router = useRouter();
+  const { topic, topicsList, currentIndex } = useLocalSearchParams();
+  const [activeTab, setActiveTab] = useState(0);
+  const mediaTabs = ['Text', 'Audio', 'Video'];
 
-  const lessonSections = [
-    { key: 'introduction', data: dummyLesson.content.introduction },
-    { key: 'properties', data: dummyLesson.content.properties },
-    { key: 'types', data: dummyLesson.content.types },
-    { key: 'howToIdentify', data: dummyLesson.content.howToIdentify },
-    { key: 'howToDraw', data: dummyLesson.content.howToDraw },
-  ]
+  // Parse topic and topicsList safely
+  const parsedTopic = topic ? JSON.parse(topic as string) : null;
+  const parsedTopicsList = topicsList ? JSON.parse(topicsList as string) : [];
+  const topicIndex = currentIndex ? parseInt(currentIndex as string, 10) : 0;
+
+  if (!parsedTopic) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <Text className="text-gray-600 text-lg">Lesson data not found</Text>
+      </View>
+    );
+  }
+
+  // Content fallback
+  const audioSource = parsedTopic.content?.audio || '';
+  const videoSource = parsedTopic.content?.video || '';
+  const coverImage = parsedTopic.coverImage || 'https://via.placeholder.com/300x150.png?text=No+Image';
 
   const renderTextContent = () => (
     <View className="px-4 pb-8">
-      {lessonSections.map((section, index) => (
-        <View key={index} className="mb-6">
-          <Text className="text-lg font-bold text-blue-700 mb-3">
-            {section.data.title}
-          </Text>
-          {section.data.points.map((point, pointIndex) => (
-            <View key={pointIndex} className="flex-row mb-2">
-              <Text className="text-blue-600 mr-2">•</Text>
-              <Text className="text-gray-700 flex-1">{point}</Text>
-            </View>
-          ))}
-        </View>
-      ))}
+      {parsedTopic.content?.text ? (
+        <Text className="text-gray-700">{parsedTopic.content.text}</Text>
+      ) : (
+        <Text className="text-gray-500">No text content available for this lesson.</Text>
+      )}
     </View>
-  )
+  );
 
   const renderAudioContent = () => (
     <View className="px-4 pb-8">
-      {lessonSections.map((section, index) => (
-        <Pressable
-          key={index}
-          className="bg-white border border-gray-200 rounded-lg p-4 mb-3 flex-row items-center"
-        >
+      {audioSource ? (
+        <Pressable className="bg-white border border-gray-200 rounded-lg p-4 flex-row items-center mb-3">
           <View className="bg-blue-600 w-12 h-12 rounded-full items-center justify-center mr-4">
             <Ionicons name="play" size={24} color="white" />
           </View>
           <View className="flex-1">
-            <Text className="text-gray-900 font-semibold mb-1">
-              {section.data.title}
-            </Text>
-            <Text className="text-gray-500 text-sm">
-              {section.data.duration}
-            </Text>
+            <Text className="text-gray-900 font-semibold mb-1">Audio Lesson</Text>
+            <Text className="text-gray-500 text-sm">{audioSource}</Text>
           </View>
         </Pressable>
-      ))}
+      ) : (
+        <Text className="text-gray-500">No audio content available for this lesson.</Text>
+      )}
     </View>
-  )
+  );
 
   const renderVideoContent = () => (
     <View className="px-4 pb-8">
-      {lessonSections.map((section, index) => (
-        <Pressable
-          key={index}
-          className="bg-white border border-gray-200 rounded-lg p-4 mb-3 flex-row items-center"
-        >
+      {videoSource ? (
+        <Pressable className="bg-white border border-gray-200 rounded-lg p-4 flex-row items-center mb-3">
           <View className="bg-blue-600 w-12 h-12 rounded-full items-center justify-center mr-4">
             <Ionicons name="play" size={24} color="white" />
           </View>
           <View className="flex-1">
-            <Text className="text-gray-900 font-semibold mb-1">
-              {section.data.title}
-            </Text>
-            <Text className="text-gray-500 text-sm">
-              {section.data.duration}
-            </Text>
+            <Text className="text-gray-900 font-semibold mb-1">Video Lesson</Text>
+            <Text className="text-gray-500 text-sm">{videoSource}</Text>
           </View>
         </Pressable>
-      ))}
+      ) : (
+        <Text className="text-gray-500">No video content available for this lesson.</Text>
+      )}
     </View>
-  )
+  );
+
+  // Navigate to next lesson
+  const handleNextLesson = () => {
+    const nextIndex = topicIndex + 1;
+    if (nextIndex < parsedTopicsList.length) {
+      router.replace({
+        pathname: '/screens/learning',
+        params: {
+          topic: JSON.stringify(parsedTopicsList[nextIndex]),
+          topicsList: JSON.stringify(parsedTopicsList),
+          currentIndex: nextIndex.toString()
+        }
+      });
+    } else {
+      alert('You have completed all lessons in this course!');
+    }
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -91,7 +100,7 @@ export default function Learning() {
               <Ionicons name="arrow-back" size={24} color="#000" />
             </Pressable>
             <Text className="text-lg font-semibold flex-1">
-              Shapes and Spatial Understanding
+              {parsedTopic.title || 'Lesson'}
             </Text>
           </View>
           <Pressable>
@@ -99,12 +108,12 @@ export default function Learning() {
           </Pressable>
         </View>
 
-        {/* Media Type Tabs */}
+        {/* Media Tabs */}
         <View className="px-4 py-4">
           <View className="bg-gray-100 p-2 rounded-lg flex-row">
             {mediaTabs.map((tab, index) => {
-              const isActive = activeTab === index
-              const icons = ['document-text', 'mic', 'play']
+              const isActive = activeTab === index;
+              const icons = ['document-text', 'mic', 'play'];
               return (
                 <Pressable
                   key={index}
@@ -118,67 +127,25 @@ export default function Learning() {
                     size={18}
                     color={isActive ? '#2563EB' : '#6B7280'}
                   />
-                  <Text
-                    className={`ml-2 font-medium ${
-                      isActive ? 'text-blue-600' : 'text-gray-700'
-                    }`}
-                  >
+                  <Text className={`ml-2 font-medium ${isActive ? 'text-blue-600' : 'text-gray-700'}`}>
                     {tab}
                   </Text>
                 </Pressable>
-              )
+              );
             })}
           </View>
         </View>
 
-        {/* Lesson Cover Image - Different for Video */}
+        {/* Cover Image */}
         <View className="px-4 mb-4">
-          <View className="rounded-lg overflow-hidden bg-purple-100 relative">
-            <Image
-              source={activeTab === 2 ? dummyLesson.videoCoverImage : dummyLesson.coverImage}
-              className={`w-full ${activeTab === 2 ? 'h-50' : 'h-48'}`}
-              resizeMode="cover"
-            />
-            
-          </View>
+          <Image
+            source={{ uri: activeTab === 2 && videoSource ? videoSource : coverImage }}
+            className={`w-full ${activeTab === 2 ? 'h-50' : 'h-48'}`}
+            resizeMode="cover"
+          />
         </View>
 
-        {/* Lesson Title and Stats */}
-        <View className="px-4 mb-4">
-          <View className="flex-row justify-between items-start mb-3">
-            <View className="flex-1 mr-4">
-              <Text className="text-xl font-bold text-gray-900 mb-2">
-                {dummyLesson.title}
-              </Text>
-            </View>
-            <Pressable className="bg-blue-50 p-3 rounded-lg">
-              <Ionicons name="download-outline" size={24} color="#3B82F6" />
-            </Pressable>
-          </View>
-
-          <View className="flex-row items-center flex-wrap">
-            <View className="flex-row items-center mr-4 mb-2">
-              <Ionicons name="eye-outline" size={16} color="#F59E0B" />
-              <Text className="text-gray-600 text-sm ml-1">
-                {dummyLesson.views}
-              </Text>
-            </View>
-            <View className="flex-row items-center mr-4 mb-2">
-              <Ionicons name="download-outline" size={16} color="#3B82F6" />
-              <Text className="text-gray-600 text-sm ml-1">
-                {dummyLesson.downloads}
-              </Text>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <Ionicons name="calendar-outline" size={16} color="#6B7280" />
-              <Text className="text-gray-600 text-sm ml-1">
-                Last updated {dummyLesson.lastUpdated}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Dynamic Content Based on Active Tab */}
+        {/* Content */}
         {activeTab === 0 && renderTextContent()}
         {activeTab === 1 && renderAudioContent()}
         {activeTab === 2 && renderVideoContent()}
@@ -195,12 +162,12 @@ export default function Learning() {
 
         <Pressable
           className="px-6 py-3 rounded-lg bg-blue-600 flex-row items-center"
-          onPress={() => console.log('Next lesson')}
+          onPress={handleNextLesson}
         >
           <Text className="text-white font-semibold mr-2">Next Lesson</Text>
           <Ionicons name="arrow-forward" size={20} color="white" />
         </Pressable>
       </View>
     </View>
-  )
+  );
 }
