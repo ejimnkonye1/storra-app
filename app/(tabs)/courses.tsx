@@ -73,7 +73,7 @@ console.log("courses",subjects)
         // If quiz is already included in course data
         if (course.fullDetails.quiz) {
             router.push({
-                pathname: '/screens/quiz',
+                pathname: '/screens/QuizScreen',
                 params: { quiz: JSON.stringify(course.fullDetails.quiz) }
             });
             return;

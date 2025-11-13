@@ -1,3 +1,4 @@
+import Loader from "@/app/components/loader";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useRouter } from "expo-router";
@@ -112,7 +113,9 @@ setUser(formattedUser);
       setLoading(false);
     }
   };
-
+  if (loading) {
+    return <Loader message="Logging you in..." />;
+  }
   return (
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
