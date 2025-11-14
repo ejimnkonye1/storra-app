@@ -37,6 +37,7 @@ export default function QuizTaking() {
         setQuizData(fullQuiz);
       } catch (err) {
         console.error("Error fetching quiz:", err);
+             console.log("Error fetching quiz:", err);
         setQuizData(null);
       } finally {
         setLoading(false);

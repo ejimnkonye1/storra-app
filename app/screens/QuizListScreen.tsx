@@ -76,8 +76,8 @@ export default function Quizzes() {
 
           return progress.map((q: QuizProgress) => ({
             id: q.quizId,
-            title: q.quizTitle ?? q.quizId || "os",
-            subtitle: subject.name ?? 'i',
+            title: q.quizTitle ?? q.quizId  ?? 'o',
+            subtitle: subject.name ?? '',
             estimatedTime: q.timeLimit ?? '—',
             totalQuestions: q.totalQuestions ?? 0,
             totalPoints: (q.totalQuestions ?? 0) * 10,
