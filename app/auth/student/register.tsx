@@ -27,7 +27,6 @@ const StudentAccountScreen = () => {
     phoneNumber: '',
     password: '',
     parentPhoneNumber: '',
-    username: '',
     agreeToTerms: false
   });
 
@@ -63,7 +62,6 @@ const handleRegister = async () => {
       password: formData.password,
       phoneNumber: formData.phoneNumber,
       parentPhoneNumber: formData.parentPhoneNumber, // Fixed: was duplicate phoneNumber
-      username: formData.username, // Add if you have this field
     });
 
     console.log('Registration successful:', response.data);
@@ -149,19 +147,6 @@ const handleRegister = async () => {
             placeholderTextColor="#999"
             value={formData.fullName}
             onChangeText={(value) => updateFormData('fullName', value)}
-          />
-
-          {/* Username (Optional) */}
-          <Text className="text-base font-medium text-gray-700 mb-2">
-            Username <Text className="text-gray-500">(Optional)</Text>
-          </Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4"
-            placeholder="your_username"
-            placeholderTextColor="#999"
-            value={formData.username}
-            onChangeText={(value) => updateFormData('username', value)}
-            autoCapitalize="none"
           />
 
           {/* Email (Optional) */}
