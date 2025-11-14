@@ -1,6 +1,6 @@
-import { View, Text, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
+import { Image, Pressable, Text, View } from 'react-native';
 
 interface TopicCardProps {
   title: string;
@@ -32,7 +32,7 @@ export default function TopicCard({
     coverImage && coverImage.startsWith('http')
       ? { uri: coverImage }
       : { uri: fallbackImage };
-
+//  console.log("✅ cover:", coverImage);
   return (
     <View
       className="bg-white w-[48%] mb-5 p-3 rounded-2xl shadow-sm border border-gray-100"

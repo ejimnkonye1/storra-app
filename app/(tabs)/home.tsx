@@ -1,19 +1,19 @@
-import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useUserStore } from '../../store/userStore';
 import { getCourses } from '../../services/courseService';
+import { useUserStore } from '../../store/userStore';
 
 // Import components
-import Header from '../components/home/Header';
-import WelcomeBanner from '../components/home/WelcomeBanner';
 import DashboardCard from '../components/home/DashboardCard';
+import Header from '../components/home/Header';
 import ProgressCard from '../components/home/ProgressCard';
-import StatsCards from '../components/home/StatsCards';
 import SectionHeader from '../components/home/SectionHeader';
+import StatsCards from '../components/home/StatsCards';
 import SubjectTabs from '../components/home/SubjectTabs';
 import TopicsGrid from '../components/home/TopicsGrid';
+import WelcomeBanner from '../components/home/WelcomeBanner';
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -82,6 +82,8 @@ export default function HomeScreen() {
 console.log("🪙 Token:", token);
 console.log("isLoading (Zustand):", isLoading);
 console.log("loading (local):", loading);
+//  console.log("✅ subjectsss:", subjects);
+//  console.log("✅ subjectsss:", subjects);
 
     if (isLoading || loading || !user) {
         return (
@@ -126,7 +128,7 @@ console.log("loading (local):", loading);
                     onContinue={() => console.log('Continue learning')}
                 />
 
-                <View className="px-6 mb-6">
+                <View className="px-6 mb-1">
                     <SectionHeader title="Your Progress" />
                 </View>
                 
@@ -169,15 +171,20 @@ console.log("loading (local):", loading);
                     )}
                     onLike={handleLike}
                     onCheck={handleCheck}
-                    onLearnMore={(topicId) => {
-                        const topic = currentSubject.topics.find(t => t.id === topicId);
-                        if (topic) {
-                            router.push({
-                                pathname: '/screens/topicDetailScreen',
-                                params: { topic: JSON.stringify(topic) }
-                            });
-                        }
-                    }}
+                onLearnMore={(topicId) => {
+                       const topicIndex = currentSubject.topics.findIndex(t => t.id === topicId);
+    const topic = currentSubject.topics.find(t => t.id === topicId);
+    if (topic) {
+      router.push({
+        pathname: '/screens/learning',
+        params: { topic: JSON.stringify(topic),
+        topicsList: JSON.stringify(currentSubject.topics),
+          currentIndex: topicIndex.toString()
+         },
+         // Pass topic object as string
+      });
+    }
+  }}
                 />
             </ScrollView>
         </SafeAreaView>

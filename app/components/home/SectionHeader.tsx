@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { Text, View } from 'react-native'
 
 interface SectionHeaderProps {
     title: string
@@ -8,10 +8,10 @@ interface SectionHeaderProps {
 
 export default function SectionHeader({ title, actionText, onAction }: SectionHeaderProps) {
     return (
-        <View className="flex-row justify-between mx-6 mt-2">
-            <Text className="text-gray-800 text-2xl font-semibold mb-4">
+        <View className="flex-row justify-between mx-6 ">
+            {/* <Text className="text-gray-800 text-2xl font-semibold mb-4">
                 {title}
-            </Text>
+            </Text> */}
             {actionText && (
                 <Text 
                     className="text-blue-500 text-lg font-bold mb-6"

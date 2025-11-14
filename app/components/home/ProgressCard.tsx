@@ -1,5 +1,5 @@
-import { View, Text, Image, Pressable } from 'react-native'
-import { scaleWidth, scaleFont, moderateScale, SCREEN } from '../../../utils/responsive'
+import { Image, Pressable, Text, View } from 'react-native'
+import { moderateScale, scaleFont, scaleWidth, SCREEN } from '../../../utils/responsive'
 
 interface ProgressCardProps {
     title: string
@@ -17,7 +17,7 @@ export default function ProgressCard({ title, subtitle, progress, onResume }: Pr
                 borderColor: '#d1d5db',
                 borderRadius: moderateScale(16),
                 padding: moderateScale(16),
-                marginBottom: moderateScale(24),
+                marginBottom: moderateScale(1),
             }}
         >
             {/* Icon Container */}

@@ -1,4 +1,4 @@
-import { View, FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import TopicCard from './TopicCard';
 
 interface Topic {
@@ -25,6 +25,7 @@ export default function TopicsGrid({
   onCheck,
   onLearnMore,
 }: TopicsGridProps) {
+    // console.log("✅ TopicsGrid received topics:", topics);
   return (
     <View className="px-6 mb-6">
       <FlatList

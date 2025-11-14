@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Text, View } from 'react-native';
+import { moderateScale, scaleFont, scaleWidth, SCREEN } from '../../../utils/responsive';
 import ProfileAvatar from './ProfileAvatar';
-import { scaleWidth, scaleFont, moderateScale, SCREEN } from '../../../utils/responsive';
 
 interface WelcomeBannerProps {
   fullname: string;
@@ -18,8 +18,8 @@ export default function WelcomeBanner({ fullname, grade, profileImage }: Welcome
         flexDirection: 'row',
         alignItems: 'flex-start',
         paddingHorizontal: moderateScale(24),
-        marginTop: moderateScale(16),
-        marginBottom: moderateScale(24),
+        marginTop: moderateScale(3),
+        marginBottom: moderateScale(10),
         gap: moderateScale(12),
       }}
     >
