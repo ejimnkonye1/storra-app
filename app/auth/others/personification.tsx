@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   SafeAreaView,
   ScrollView,
   Text,
@@ -12,16 +13,31 @@ import {
 } from "react-native";
 import axios from "axios";
 import { BASE_URL } from "../../../backendconfig"; // ✅ make sure this points to your backend base URL
+import * as ImagePicker from "expo-image-picker";
 
 const BasicPersonalizationScreen = () => {
   const { userId } = useLocalSearchParams(); // ✅ receive from registration screen or previous step
   const [age, setAge] = useState<number | null>(null);
   const [currentClassLevel, setCurrentClassLevel] = useState<string | null>(null);
   const [language, setLanguage] = useState<string | null>(null);
+  const [profilePictureUri, setProfilePictureUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfilePictureUri(result.assets[0].uri);
+    }
+  };
+
+
   const classes = [
-    { label: "Nursery", value: "nursery" },
     { label: "Primary", value: "primary" },
     { label: "Secondary", value: "secondary" },
     { label: "Tertiary", value: "tertiary" },
@@ -44,6 +60,13 @@ const BasicPersonalizationScreen = () => {
 
     setIsLoading(true);
     try {
+      // For now, we'll use a placeholder URL.
+      // In a real app, you would upload the image to a service like S3 or Firebase Storage
+      // and get the URL from there.
+      const profilePictureUrl = profilePictureUri
+        ? "https://placekitten.com/200/200" // Mock URL
+        : null;
+
       // ✅ Call correct backend endpoint
       const response = await axios.patch(
         `${BASE_URL}/onboarding/personalization/${userId}`,
@@ -51,6 +74,7 @@ const BasicPersonalizationScreen = () => {
           age,
           currentClassLevel,
           preferredLanguage: language,
+          profilePictureUrl,
         }
       );
 
@@ -59,7 +83,7 @@ const BasicPersonalizationScreen = () => {
       // ✅ Navigate to the next step (reason screen)
       router.push({
         pathname: "/auth/others/learning-goals",
-        params: { userId },
+        params: { userId, profilePictureUrl },
       });
     } catch (error: any) {
       console.error("❌ Personalization error:", error.response?.data || error.message);
@@ -126,6 +150,24 @@ const BasicPersonalizationScreen = () => {
         {/* Progress Bar */}
         <View className="h-1.5 bg-gray-200 rounded-full w-full mb-8">
           <View className="bg-indigo-600 rounded-full h-full w-[33%]" />
+        </View>
+
+        {/* Profile Picture */}
+        <View className="items-center mb-6">
+          <TouchableOpacity
+            onPress={pickImage}
+            className="w-32 h-32 bg-gray-200 rounded-full items-center justify-center mb-2"
+          >
+            {profilePictureUri ? (
+              <Image
+                source={{ uri: profilePictureUri }}
+                className="w-32 h-32 rounded-full"
+              />
+            ) : (
+              <Ionicons name="camera" size={48} color="gray" />
+            )}
+          </TouchableOpacity>
+          <Text className="text-gray-600">Upload Profile Picture</Text>
         </View>
 
         {/* Age */}

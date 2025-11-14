@@ -42,7 +42,7 @@ export default function TopicCard({
       <Image
         source={imageSource}
         className="w-full h-24 rounded-lg mb-3"
-        resizeMode="cover"
+        resizeMode="contain"
       />
 
       {/* Title */}
