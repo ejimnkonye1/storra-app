@@ -1,35 +1,60 @@
+// app/screens/QuizTaking.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Quiz, QuizAnswer, quizService } from "../../services/quizService";
+import { useUserStore } from "../../store/userStore";
 
 export default function QuizTaking() {
   const router = useRouter();
   const { quiz } = useLocalSearchParams();
+  const { token } = useUserStore();
 
-  // ✅ Parse & normalize quiz structure
-  let parsedQuiz = null;
-  try {
-    parsedQuiz = quiz ? JSON.parse(quiz as string) : null;
-    if (parsedQuiz) {
-      parsedQuiz = {
-        title: parsedQuiz.quizTitle || "Quiz",
-        subtitle: parsedQuiz.timeLimit || "",
-        estimatedTime: parsedQuiz.timeLimit || "",
-        questions: parsedQuiz.questions.map((q: any) => ({
-          id: q.questionId,
-          question: q.questionText,
-          options: q.options,
-          answer: q.correctAnswer,
-          type: q.options?.length ? "multiple_choice" : "short_answer",
-        })),
-      };
-    }
-  } catch (err) {
-    console.error("Error parsing quiz:", err);
+  const [quizData, setQuizData] = useState<Quiz | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  // ----------------------------
+  // Fetch quiz from backend
+  // ----------------------------
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      if (!token) return;
+
+      try {
+        const parsed = quiz ? JSON.parse(quiz as string) : null;
+        if (!parsed) throw new Error("Quiz data not found");
+
+        const courseId = parsed.courseId ?? parsed.id ?? parsed.quizId;
+        const quizId = parsed.quizId ?? parsed.id;
+
+        if (!courseId || !quizId) throw new Error("Missing courseId or quizId");
+
+        const fullQuiz = await quizService.getQuiz(token, courseId, quizId);
+        setQuizData(fullQuiz);
+      } catch (err) {
+        console.error("Error fetching quiz:", err);
+        setQuizData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuiz();
+  }, [quiz, token]);
+
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-gray-600 text-lg">Loading quiz...</Text>
+      </View>
+    );
   }
 
-  if (!parsedQuiz) {
+  if (!quizData) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <Text className="text-gray-600 text-lg">Quiz data not available.</Text>
@@ -37,32 +62,18 @@ export default function QuizTaking() {
     );
   }
 
-  // ✅ Destructure quiz data
-  const { title, subtitle, questions, estimatedTime } = parsedQuiz;
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
-  const [score, setScore] = useState(0);
-
+  const { quizTitle: title, timeLimit: subtitle, questions } = quizData;
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
+  // ----------------------------
+  // Navigation
+  // ----------------------------
   const handleNext = () => {
-    const selected = selectedAnswers[currentQuestion.id];
-    if (selected && currentQuestion.answer) {
-      if (selected === currentQuestion.answer) {
-        setScore((prev) => prev + 1);
-      }
-    }
-
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      alert(
-        `🎉 Quiz completed!\nYour score: ${
-          score + (selected === currentQuestion.answer ? 1 : 0)
-        } / ${questions.length}`
-      );
-      router.back();
+      handleSubmit();
     }
   };
 
@@ -70,14 +81,44 @@ export default function QuizTaking() {
     if (currentIndex > 0) setCurrentIndex((prev) => prev - 1);
   };
 
+  // ----------------------------
+  // Submit quiz
+  // ----------------------------
+  const handleSubmit = async () => {
+    if (!token) return;
+    if (!quizData) return;
+
+    const answers: QuizAnswer[] = questions.map((q) => ({
+      questionId: q.questionId,
+      selectedAnswer: selectedAnswers[q.questionId] ?? "",
+    }));
+
+    setSubmitting(true);
+    try {
+      const courseId = quizData.quizId; // assuming courseId = quizId for route
+      const quizId = quizData.quizId;
+
+      const result = await quizService.submitQuizAttempt(token, courseId, quizId, answers);
+      alert(
+        `🎉 Quiz completed!\nScore: ${result.score} / ${result.totalQuestions}\nStatus: ${result.status}`
+      );
+      router.back();
+    } catch (err) {
+      console.error("Error submitting quiz:", err);
+      alert("Failed to submit quiz. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ----------------------------
+  // Render functions
+  // ----------------------------
   const renderMultipleChoice = (question: any) => {
-    const selectedOption = selectedAnswers[question.id];
+    const selectedOption = selectedAnswers[question.questionId];
     return (
       <View className="px-4">
-        <Text className="text-gray-900 text-base mb-6 leading-6">
-          {question.question}
-        </Text>
-
+        <Text className="text-gray-900 text-base mb-6 leading-6">{question.questionText}</Text>
         <View className="space-y-3">
           {question.options?.map((option: string, index: number) => {
             const isSelected = selectedOption === option;
@@ -85,12 +126,10 @@ export default function QuizTaking() {
               <Pressable
                 key={index}
                 onPress={() =>
-                  setSelectedAnswers({ ...selectedAnswers, [question.id]: option })
+                  setSelectedAnswers({ ...selectedAnswers, [question.questionId]: option })
                 }
                 className={`flex-row items-center p-4 rounded-lg border-2 ${
-                  isSelected
-                    ? "bg-blue-600 border-blue-600"
-                    : "bg-white border-gray-200"
+                  isSelected ? "bg-blue-600 border-blue-600" : "bg-white border-gray-200"
                 }`}
               >
                 <View
@@ -98,19 +137,11 @@ export default function QuizTaking() {
                     isSelected ? "bg-white" : "bg-gray-100"
                   }`}
                 >
-                  <Text
-                    className={`font-bold ${
-                      isSelected ? "text-blue-600" : "text-gray-700"
-                    }`}
-                  >
+                  <Text className={`font-bold ${isSelected ? "text-blue-600" : "text-gray-700"}`}>
                     {String.fromCharCode(65 + index)}
                   </Text>
                 </View>
-                <Text
-                  className={`flex-1 ${
-                    isSelected ? "text-white font-semibold" : "text-gray-900"
-                  }`}
-                >
+                <Text className={`flex-1 ${isSelected ? "text-white font-semibold" : "text-gray-900"}`}>
                   {option}
                 </Text>
               </Pressable>
@@ -122,19 +153,17 @@ export default function QuizTaking() {
   };
 
   const renderShortAnswer = (question: any) => {
-    const answer = selectedAnswers[question.id] || "";
+    const answer = selectedAnswers[question.questionId] || "";
     return (
       <View className="px-4">
-        <Text className="text-gray-900 text-base mb-6 leading-6">
-          {question.question}
-        </Text>
+        <Text className="text-gray-900 text-base mb-6 leading-6">{question.questionText}</Text>
         <TextInput
           className="bg-white border-2 border-gray-200 rounded-lg p-4 text-gray-900"
           placeholder="Type your answer..."
           placeholderTextColor="#9CA3AF"
           value={answer}
           onChangeText={(text) =>
-            setSelectedAnswers({ ...selectedAnswers, [question.id]: text })
+            setSelectedAnswers({ ...selectedAnswers, [question.questionId]: text })
           }
           multiline
           numberOfLines={4}
@@ -145,15 +174,12 @@ export default function QuizTaking() {
   };
 
   const renderQuestion = () => {
-    switch (currentQuestion.type) {
-      case "short_answer":
-        return renderShortAnswer(currentQuestion);
-      case "multiple_choice":
-      default:
-        return renderMultipleChoice(currentQuestion);
-    }
+    return currentQuestion.options?.length ? renderMultipleChoice(currentQuestion) : renderShortAnswer(currentQuestion);
   };
 
+  // ----------------------------
+  // UI
+  // ----------------------------
   return (
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1">
@@ -163,9 +189,7 @@ export default function QuizTaking() {
             <Ionicons name="arrow-back" size={24} color="black" />
           </Pressable>
 
-          {subtitle && (
-            <Text className="text-sm text-gray-600 mb-1">{subtitle}</Text>
-          )}
+          {subtitle && <Text className="text-sm text-gray-600 mb-1">{subtitle}</Text>}
           <Text className="text-xl font-bold text-gray-900 mb-4">{title}</Text>
 
           {/* Progress Bar */}
@@ -174,15 +198,10 @@ export default function QuizTaking() {
               <Text className="text-sm text-gray-600">
                 Question {currentIndex + 1} of {questions.length}
               </Text>
-              {estimatedTime && (
-                <Text className="text-sm text-gray-600">⏱ {estimatedTime}</Text>
-              )}
+              {subtitle && <Text className="text-sm text-gray-600">⏱ {subtitle}</Text>}
             </View>
             <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
-              <View
-                className="h-full bg-blue-600 rounded-full"
-                style={{ width: `${progress}%` }}
-              />
+              <View className="h-full bg-blue-600 rounded-full" style={{ width: `${progress}%` }} />
             </View>
           </View>
         </View>
@@ -196,25 +215,18 @@ export default function QuizTaking() {
         <Pressable
           onPress={handlePrevious}
           disabled={currentIndex === 0}
-          className={`px-6 py-3 rounded-lg ${
-            currentIndex === 0 ? "bg-gray-100" : "bg-gray-200"
-          }`}
+          className={`px-6 py-3 rounded-lg ${currentIndex === 0 ? "bg-gray-100" : "bg-gray-200"}`}
         >
-          <Text
-            className={`font-semibold ${
-              currentIndex === 0 ? "text-gray-400" : "text-gray-700"
-            }`}
-          >
-            Previous
-          </Text>
+          <Text className={`font-semibold ${currentIndex === 0 ? "text-gray-400" : "text-gray-700"}`}>Previous</Text>
         </Pressable>
 
         <Pressable
           onPress={handleNext}
-          className="px-6 py-3 rounded-lg bg-blue-600 flex-row items-center"
+          disabled={submitting}
+          className={`px-6 py-3 rounded-lg flex-row items-center ${submitting ? "bg-gray-400" : "bg-blue-600"}`}
         >
           <Text className="text-white font-semibold mr-2">
-            {currentIndex === questions.length - 1 ? "Submit" : "Next"}
+            {currentIndex === questions.length - 1 ? (submitting ? "Submitting..." : "Submit") : "Next"}
           </Text>
           <Ionicons name="arrow-forward" size={20} color="white" />
         </Pressable>
