@@ -15,6 +15,7 @@ export default function RootLayout() {
         <Stack.Screen name="index"/>
         <Stack.Screen name="login"/>
         <Stack.Screen name="onboarding"/>
+          <Stack.Screen name="screens"/>
 
         {/* Main app routes with bottom tabs */}
         <Stack.Screen name="(tabs)"/>
