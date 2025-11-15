@@ -25,29 +25,30 @@ export default function Quizzes() {
         const subjects = response?.data?.subjects || [];
 
         // Flatten and extract quiz data from subjects
-        const apiQuizzes = subjects
-          .map((subject: any, index: number) => {
-            if (!subject.quiz) return null;
+      const apiQuizzes = subjects
+        .map((subject: any, index: number) => {
+          if (!subject.quiz) return null;
 
-            return {
-              id: subject.id || Math.random().toString(),
-              title: subject.quiz.quizTitle || subject.name || 'Untitled Quiz',
-              subtitle: subject.name || 'General Subject',
-              estimatedTime: subject.quiz.timeLimit || '10 mins',
-              totalQuestions: subject.quiz.questions?.length || 0,
-              totalPoints: (subject.quiz.questions?.length || 0) * 10,
-              coverImage:
-                subject.topics?.[0]?.coverImage || DEFAULT_COVER_IMAGE,
-              status:
-                index === 0
-                  ? 'new'
-                  : index % 2 === 0
-                  ? 'completed'
-                  : 'incomplete',
-              fullQuiz: subject.quiz,
-            };
-          })
-          .filter(Boolean);
+          return {
+            id: subject.id || Math.random().toString(),
+            courseId: subject.id,   // ← REQUIRED FOR DYNAMIC ROUTING
+            title: subject.quiz.quizTitle || subject.name || 'Untitled Quiz',
+            subtitle: subject.name || 'General Subject',
+            estimatedTime: subject.quiz.timeLimit || '10 mins',
+            totalQuestions: subject.quiz.questions?.length || 0,
+            totalPoints: (subject.quiz.questions?.length || 0) * 10,
+            coverImage: subject.topics?.[0]?.coverImage || DEFAULT_COVER_IMAGE,
+            status:
+              index === 0
+                ? 'new'
+                : index % 2 === 0
+                ? 'completed'
+                : 'incomplete',
+            fullQuiz: subject.quiz, // quizId lives inside here
+          };
+        })
+        .filter(Boolean);
+
 
         setQuizzes(apiQuizzes);
       } catch (error) {
@@ -181,10 +182,8 @@ export default function Quizzes() {
               <Pressable
                 key={quiz.id}
                 onPress={() =>
-                  router.push({
-                    pathname: '/screens/QuizScreen',
-                    params: { quiz: JSON.stringify(quiz.fullQuiz) },
-                  })
+                  router.push(`/screens/quiz/${quiz.courseId}/${quiz.fullQuiz.quizId}`)
+
                 }
                 className="w-[48%] mb-4"
               >
