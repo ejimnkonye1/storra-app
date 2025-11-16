@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { BASE_URL } from "@/backendconfig";
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -135,7 +136,6 @@ interface UserStore {
 }
 
 // ============= API BASE URL =============
-const API_BASE_URL = 'http://your-api-url.com/api/v1'; // Update this!
 
 // ============= STORE =============
 export const useUserStore = create<UserStore>()(
@@ -303,7 +303,7 @@ export const useUserStore = create<UserStore>()(
         try {
           set({ rewardsLoading: true, rewardsError: null });
 
-          const response = await fetch(`${API_BASE_URL}/rewards`, {
+          const response = await fetch(`${BASE_URL}/rewards`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -322,7 +322,7 @@ export const useUserStore = create<UserStore>()(
               rewardsError: null,
             });
           } else {
-            throw new Error(data.message || 'Failed to fetch rewards');
+            throw new Error('Failed to fetch rewards');
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'An error occurred';
@@ -350,7 +350,7 @@ export const useUserStore = create<UserStore>()(
         }
 
         try {
-          const response = await fetch(`${API_BASE_URL}/rewards/daily-claim`, {
+          const response = await fetch(`${BASE_URL}/rewards/daily-claim`, {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${token}`,
@@ -389,7 +389,7 @@ export const useUserStore = create<UserStore>()(
 
         try {
           const response = await fetch(
-            `${API_BASE_URL}/rewards/achievement/${achievementId}/claim`,
+            `${BASE_URL}/rewards/achievement/${achievementId}/claim`,
             {
               method: 'POST',
               headers: {
