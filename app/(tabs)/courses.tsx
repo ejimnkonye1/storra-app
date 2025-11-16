@@ -86,7 +86,7 @@ console.log("courses",subjects)
             const quizData = response?.data?.quiz ?? [];
 
             router.push({
-                pathname: '/screens/quiz',
+                pathname: '/screens/quiz/[courseId]/[quizId]',
                 params: { quiz: JSON.stringify(quizData) }
             });
         } catch (error) {
