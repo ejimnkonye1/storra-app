@@ -69,31 +69,20 @@ console.log("courses",subjects)
     const completedCourses = courses.filter(course => course.isCompleted)
     const displayedCourses = activeTab === 'ongoing' ? ongoingCourses : completedCourses
 
-   const handleStartQuiz = async (course: any) => {
-        // If quiz is already included in course data
-        if (course.fullDetails.quiz) {
-            router.push({
-                pathname: '/screens/QuizScreen',
-                params: { quiz: JSON.stringify(course.fullDetails.quiz) }
-            });
-            return;
-        }
+const handleStartQuiz = (course: any) => {
+    const quiz = course.fullDetails?.quiz;
 
-        // fallback: fetch topics/quiz from API
-        try {
-            const response = await getCourses(token)
-      
-            const quizData = response?.data?.quiz ?? [];
+    if (!quiz) {
+        console.warn("No quiz found for this course");
+        return;
+    }
 
-            router.push({
-                pathname: '/screens/quiz',
-                params: { quiz: JSON.stringify(quizData) }
-            });
-        } catch (error) {
-            console.error('Failed to fetch quiz:', error);
-            alert('Unable to fetch quiz for this course.');
-        }
-    };
+    const courseId = course.fullDetails.id;
+    const quizId = quiz.quizId;
+
+    router.push(`/screens/quiz/${courseId}/${quizId}`);
+};
+
 
 
     return (
