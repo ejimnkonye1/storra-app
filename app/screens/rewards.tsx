@@ -1,31 +1,31 @@
+import { useUserStore } from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import Animated, {
-  FadeInDown,
-  FadeInUp,
-  FadeInRight,
   BounceIn,
+  Easing,
+  FadeInDown,
+  FadeInRight,
+  FadeInUp,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withRepeat,
   withSequence,
+  withSpring,
   withTiming,
-  Easing,
   ZoomIn,
 } from "react-native-reanimated";
-import * as Animatable from "react-native-animatable";
-import { useUserStore } from "@/store/userStore";
 
 export default function RewardScreen() {
   const router = useRouter();
