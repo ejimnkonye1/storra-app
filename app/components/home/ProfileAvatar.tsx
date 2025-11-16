@@ -1,11 +1,12 @@
-import { View, Text, Image } from 'react-native';
-import { getInitials } from '../../../utils/userUtils';
+import { Image, Text, View } from 'react-native';
 import { scaleFont } from '../../../utils/responsive';
+import { getInitials } from '../../../utils/userUtils';
 
 interface ProfileAvatarProps {
   fullname: string;
   profileImage?: string | null;
   size?: number;
+  profilePictureUrl?: string | null;
 }
 
 export default function ProfileAvatar({ 
