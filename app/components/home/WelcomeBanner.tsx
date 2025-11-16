@@ -7,6 +7,7 @@ interface WelcomeBannerProps {
   fullname: string;
   grade: string;
   profileImage: string | null;
+  profilePictureUrl?: string | null;
 }
 
 export default function WelcomeBanner({ fullname, grade, profileImage }: WelcomeBannerProps) {

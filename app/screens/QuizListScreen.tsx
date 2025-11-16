@@ -26,8 +26,21 @@ export default function Quizzes() {
 
         // Flatten and extract quiz data from subjects
       const apiQuizzes = subjects
-        .map((subject: any, index: number) => {
-          if (!subject.quiz) return null;
+      .map((subject: any, index: number) => {
+  if (!subject.quiz) return null;
+
+  const pct = subject.quiz.bestPercentage ?? 0;
+  let status = "new";
+
+  if (pct === 100) {
+    status = "completed";
+  } else if (pct >= 50) {
+    status = "retake";
+  } else if (pct > 0) {
+    status = "incomplete";
+  }
+
+  console.log("Quiz Status:", subject.name, pct, status)
 
           return {
             id: subject.id || Math.random().toString(),
@@ -38,12 +51,7 @@ export default function Quizzes() {
             totalQuestions: subject.quiz.questions?.length || 0,
             totalPoints: (subject.quiz.questions?.length || 0) * 10,
             coverImage: subject.topics?.[0]?.coverImage || DEFAULT_COVER_IMAGE,
-            status:
-              index === 0
-                ? 'new'
-                : index % 2 === 0
-                ? 'completed'
-                : 'incomplete',
+            status,
             fullQuiz: subject.quiz, // quizId lives inside here
           };
         })
