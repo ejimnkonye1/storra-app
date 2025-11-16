@@ -1,10 +1,10 @@
+import { getCurrentUser } from '@/services/userService';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getCourses } from '../../services/courseService';
 import { useUserStore } from '../../store/userStore';
-
 // Import components
 import DashboardCard from '../components/home/DashboardCard';
 import Header from '../components/home/Header';
@@ -34,31 +34,39 @@ export default function HomeScreen() {
         getSelectedSubjectData
     } = useUserStore();
 
-    useEffect(() => {
-        const fetchCourses = async () => {
-            if (!token) {
-                router.replace('/auth/student/login');
-                return;
-            }
-
-            try {
-                setLoading(true);
-                const response = await getCourses(token);
-                
-                if (response.data?.subjects) {
-                    setSubjects(response.data.subjects);
-                }
-            } catch (error) {
-                console.error('Failed to fetch courses:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (token) {
-            fetchCourses();
+   useEffect(() => {
+    const fetchData = async () => {
+        if (!token) {
+            router.replace('/auth/student/login');
+            return;
         }
-    }, [token]);
+
+        try {
+            setLoading(true);
+
+            // Fetch current user profile
+            const userRes = await getCurrentUser(token);
+                            console.log('✅ Fetched User:', userRes); 
+            if (userRes?.data?.user) {
+                useUserStore.getState().setUser(userRes.data.user);
+                console.log('✅ Fetched User:', userRes.data.user); 
+            }
+
+            // Fetch courses
+            const coursesRes = await getCourses(token);
+            if (coursesRes.data?.subjects) {
+                setSubjects(coursesRes.data.subjects);
+            }
+
+        } catch (error) {
+            console.error('❌ Fetch failed:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (token) fetchData();
+}, [token]);
 
     const handleSubjectSelect = (index: number) => {
         setSelectedSubject(index);
@@ -78,10 +86,10 @@ export default function HomeScreen() {
         toggleTopicCheck(topicId);
     };
 
-    console.log("👤 User:", user);
-console.log("🪙 Token:", token);
-console.log("isLoading (Zustand):", isLoading);
-console.log("loading (local):", loading);
+//     console.log("👤 User:", user);
+// console.log("🪙 Token:", token);
+// console.log("isLoading (Zustand):", isLoading);
+// console.log("loading (local):", loading);
 //  console.log("✅ subjectsss:", subjects);
 //  console.log("✅ subjectsss:", subjects);
 
@@ -120,7 +128,7 @@ console.log("loading (local):", loading);
                 <WelcomeBanner 
                     fullname={user.fullname}
                     grade="Pri 1"
-                    profileImage={user.profileImage}
+                    profileImage={user.profilePictureUrl}
                 />
                 
                 <DashboardCard 

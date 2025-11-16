@@ -1,5 +1,4 @@
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
-import { BASE_URL } from "../../../backendconfig";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { router } from 'expo-router';
@@ -16,6 +15,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { BASE_URL } from "../../../backendconfig";
 
 const StudentAccountScreen = () => {
   const navigation = useNavigation();
