@@ -10,7 +10,7 @@ export default function QuizTaking() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { token } = useUserStore();
-  
+  // Fucking boy 
   // ✅ Extract params properly
   const courseId = params.courseId as string;
   const quizId = params.quizId as string;
