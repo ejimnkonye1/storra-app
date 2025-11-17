@@ -1,13 +1,23 @@
+import { markLessonCompleted, updateLessonProgress } from '@/services/lesson';
+import { useUserStore } from '@/store/userStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 export default function Learning() {
   const router = useRouter();
-  const { topic, topicsList, currentIndex } = useLocalSearchParams();
+  const { topic, topicsList, currentIndex, courseId } = useLocalSearchParams();
+  const { token } = useUserStore();
   const [activeTab, setActiveTab] = useState(0);
   const mediaTabs = ['Text', 'Audio', 'Video'];
+  const [timeSpent, setTimeSpent] = useState(0);
+
+  // Increment time every second
+  useEffect(() => {
+    const timer = setInterval(() => setTimeSpent(prev => prev + 1), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Parse topic and topicsList safely
   const parsedTopic = topic ? JSON.parse(topic as string) : null;
@@ -22,7 +32,6 @@ export default function Learning() {
     );
   }
 
-  // Content fallback
   const audioSource = parsedTopic.content?.audio || '';
   const videoSource = parsedTopic.content?.video || '';
   const coverImage = parsedTopic.coverImage || 'https://via.placeholder.com/300x150.png?text=No+Image';
@@ -74,7 +83,18 @@ export default function Learning() {
   );
 
   // Navigate to next lesson
-  const handleNextLesson = () => {
+  const handleNextLesson = async () => {
+    if (!parsedTopic || !courseId) return;
+
+    try {
+      // Update lesson progress
+      await updateLessonProgress(token, courseId as string, parsedTopic.id, {
+        progress: 100
+      });
+    } catch (err) {
+      console.warn('Failed to update lesson progress', err);
+    }
+
     const nextIndex = topicIndex + 1;
     if (nextIndex < parsedTopicsList.length) {
       router.replace({
@@ -82,11 +102,17 @@ export default function Learning() {
         params: {
           topic: JSON.stringify(parsedTopicsList[nextIndex]),
           topicsList: JSON.stringify(parsedTopicsList),
-          currentIndex: nextIndex.toString()
+          currentIndex: nextIndex.toString(),
+          courseId: courseId as string
         }
       });
     } else {
       alert('You have completed all lessons in this course!');
+      try {
+        await markLessonCompleted(token, courseId as string, parsedTopic.id);
+      } catch (err) {
+        console.warn('Failed to mark lesson completed', err);
+      }
     }
   };
 

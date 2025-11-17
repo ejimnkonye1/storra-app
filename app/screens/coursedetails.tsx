@@ -112,8 +112,11 @@ console.log("ttt",parsedTopic)
         router.push({
           pathname: '/screens/learning',
           params: {
-            topic: JSON.stringify(lesson), // current lesson
- 
+            topic: JSON.stringify(lesson),          // current lesson
+    courseId: parsedTopic.id,               // course ID
+    topicsList: JSON.stringify(parsedTopic.topics),
+    currentIndex: parsedTopic.topics.findIndex(t => t.id === lesson.id).toString(),
+
           },
         })
       }
