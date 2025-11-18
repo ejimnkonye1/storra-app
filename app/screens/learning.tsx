@@ -25,61 +25,6 @@ export default function Learning() {
   const parsedTopicsList = topicsList ? JSON.parse(topicsList as string) : [];
   const topicIndex = currentIndex ? parseInt(currentIndex as string, 10) : 0;
 
-  // Progress tracking state
-  const [progress, setProgress] = useState(0);
-  const [timeSpent, setTimeSpent] = useState(0);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [showNotes, setShowNotes] = useState(false);
-
-  // Refs for trackers
-  const timeTracker = useRef<LessonTimeTracker | null>(null);
-  const videoTracker = useRef<VideoProgressTracker | null>(null);
-  const scrollTracker = useRef<ScrollProgressTracker | null>(null);
-  const videoRef = useRef<Video>(null);
-
-  // Scroll tracking
-  const scrollViewRef = useRef<ScrollView>(null);
-  const [contentHeight, setContentHeight] = useState(0);
-  const [containerHeight, setContainerHeight] = useState(0);
-
-  useEffect(() => {
-    if (parsedTopic && courseId) {
-      initializeTrackers();
-    }
-
-    return () => {
-      // Cleanup: Stop time tracking
-      if (timeTracker.current) {
-        timeTracker.current.stop();
-      }
-    };
-  }, [parsedTopic, courseId]);
-
-  const initializeTrackers = () => {
-    // Initialize time tracker
-    timeTracker.current = new LessonTimeTracker(
-      parsedTopic.id,
-      courseId as string
-    );
-    timeTracker.current.start();
-
-    // Initialize appropriate tracker based on lesson type
-    if (activeTab === 2) {
-      // Video
-      videoTracker.current = new VideoProgressTracker(
-        parsedTopic.id,
-        courseId as string
-      );
-    } else if (activeTab === 0) {
-      // Text
-      scrollTracker.current = new ScrollProgressTracker(
-        parsedTopic.id,
-        courseId as string
-      );
-    }
-  };
-
   if (!parsedTopic) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
@@ -90,99 +35,14 @@ export default function Learning() {
 
   const audioSource = parsedTopic.content?.audio || '';
   const videoSource = parsedTopic.content?.video || '';
-  const coverImage =
-    parsedTopic.coverImage ||
-    'https://via.placeholder.com/300x150.png?text=No+Image';
-
-  // Handle lesson completion
-  const handleComplete = async () => {
-    Alert.alert(
-      'Complete Lesson',
-      'Mark this lesson as completed?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Complete',
-          onPress: async () => {
-            const result = await markLessonCompleted(
-              parsedTopic.id,
-              courseId as string
-            );
-
-            if (result.success) {
-              Alert.alert('🎉 Lesson Completed!', 'Great job!', [
-                {
-                  text: 'Next Lesson',
-                  onPress: handleNextLesson,
-                },
-              ]);
-            }
-          },
-        },
-      ]
-    );
-  };
-
-  // Toggle bookmark
-  const handleBookmark = async () => {
-    const result = await toggleLessonBookmark(
-      parsedTopic.id,
-      courseId as string
-    );
-
-    if (result.success) {
-      setIsBookmarked(result.isBookmarked!);
-    }
-  };
-
-  // Save notes
-  const handleSaveNotes = async () => {
-    const result = await updateLessonNotes(
-      parsedTopic.id,
-      courseId as string,
-      notes
-    );
-
-    if (result.success) {
-      Alert.alert('Success', 'Notes saved!');
-      setShowNotes(false);
-    }
-  };
-
-  // Video progress tracking
-  const handleVideoProgress = async (status: any) => {
-    if (status.isLoaded && videoTracker.current) {
-      await videoTracker.current.handleProgress(
-        status.positionMillis / 1000,
-        status.durationMillis / 1000
-      );
-    }
-  };
-
-  // Scroll progress tracking
-  const handleScroll = async (event: any) => {
-    if (scrollTracker.current && activeTab === 0) {
-      const { y } = event.nativeEvent.contentOffset;
-      const percentage = scrollTracker.current.calculateScrollPercentage(
-        y,
-        contentHeight,
-        containerHeight
-      );
-      await scrollTracker.current.handleScroll(percentage);
-      setProgress(Math.round(percentage));
-    }
-  };
+  const coverImage = parsedTopic.coverImage || 'https://via.placeholder.com/300x150.png?text=No+Image';
 
   const renderTextContent = () => (
     <View className="px-4 pb-8">
       {parsedTopic.content?.text ? (
-        <Text className="text-gray-700 leading-6">
-          {parsedTopic.content.text}
-        </Text>
+        <Text className="text-gray-700">{parsedTopic.content.text}</Text>
       ) : (
-        <Text className="text-gray-500">
-          No text content available for this lesson.
-        </Text>
+        <Text className="text-gray-500">No text content available for this lesson.</Text>
       )}
     </View>
   );
@@ -203,9 +63,7 @@ const renderAudioContent = () => {
           </Text>
         </Pressable>
       ) : (
-        <Text className="text-gray-500">
-          No audio content available for this lesson.
-        </Text>
+        <Text className="text-gray-500">No audio content available for this lesson.</Text>
       )}
 
       {/* Hidden YoutubePlayer for audio */}
@@ -315,41 +173,20 @@ const renderVideoContent = () => (
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView
-        ref={scrollViewRef}
-        className="flex-1"
-        onScroll={handleScroll}
-        scrollEventThrottle={400}
-        onContentSizeChange={(w, h) => setContentHeight(h)}
-        onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}
-      >
+      <ScrollView className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 pt-12 pb-4 mt-8 border-b border-gray-200">
           <View className="flex-row items-center flex-1">
             <Pressable onPress={() => router.back()} className="mr-4">
               <Ionicons name="arrow-back" size={24} color="#000" />
             </Pressable>
-            <View className="flex-1">
-              <Text className="text-lg font-semibold">
-                {parsedTopic.title || 'Lesson'}
-              </Text>
-              <Text className="text-xs text-gray-500">
-                {progress}% • {formatTimeSpent(timeSpent)}
-              </Text>
-            </View>
+            <Text className="text-lg font-semibold flex-1">
+              {parsedTopic.title || 'Lesson'}
+            </Text>
           </View>
-          <Pressable onPress={handleBookmark}>
-            <Ionicons
-              name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-              size={24}
-              color={isBookmarked ? '#2563EB' : '#9CA3AF'}
-            />
+          <Pressable>
+            <Ionicons name="ellipsis-vertical" size={24} color="#000" />
           </Pressable>
-        </View>
-
-        {/* Progress Bar */}
-        <View className="h-1 bg-gray-200">
-          <View className="h-1 bg-blue-600" style={{ width: `${progress}%` }} />
         </View>
 
         {/* Media Tabs */}
@@ -361,21 +198,7 @@ const renderVideoContent = () => (
               return (
                 <Pressable
                   key={index}
-                  onPress={() => {
-                    setActiveTab(index);
-                    // Reinitialize tracker when switching tabs
-                    if (index === 2) {
-                      videoTracker.current = new VideoProgressTracker(
-                        parsedTopic.id,
-                        courseId as string
-                      );
-                    } else if (index === 0) {
-                      scrollTracker.current = new ScrollProgressTracker(
-                        parsedTopic.id,
-                        courseId as string
-                      );
-                    }
-                  }}
+                  onPress={() => setActiveTab(index)}
                   className={`flex-1 flex-row items-center justify-center px-4 py-2 rounded-lg ${
                     isActive ? 'bg-white' : 'transparent'
                   }`}
@@ -385,11 +208,7 @@ const renderVideoContent = () => (
                     size={18}
                     color={isActive ? '#2563EB' : '#6B7280'}
                   />
-                  <Text
-                    className={`ml-2 font-medium ${
-                      isActive ? 'text-blue-600' : 'text-gray-700'
-                    }`}
-                  >
+                  <Text className={`ml-2 font-medium ${isActive ? 'text-blue-600' : 'text-gray-700'}`}>
                     {tab}
                   </Text>
                 </Pressable>
@@ -398,61 +217,19 @@ const renderVideoContent = () => (
           </View>
         </View>
 
-        {/* Cover Image (only for non-video tabs) */}
-        {activeTab !== 2 && (
-          <View className="px-4 mb-4">
-            <Image
-              source={{ uri: coverImage }}
-              className="w-full h-48 rounded-xl"
-              resizeMode="cover"
-            />
-          </View>
-        )}
+        {/* Cover Image */}
+        <View className="px-4 mb-4">
+          <Image
+            source={{ uri: activeTab === 2 && videoSource ? videoSource : coverImage }}
+            className={`w-full ${activeTab === 2 ? 'h-50' : 'h-48'}`}
+            resizeMode="cover"
+          />
+        </View>
 
         {/* Content */}
         {activeTab === 0 && renderTextContent()}
         {activeTab === 1 && renderAudioContent()}
         {activeTab === 2 && renderVideoContent()}
-
-        {/* Notes Section */}
-        <View className="px-4 mb-4">
-          <Pressable
-            onPress={() => setShowNotes(!showNotes)}
-            className="flex-row items-center bg-gray-50 p-4 rounded-xl mb-3"
-          >
-            <Ionicons name="document-text-outline" size={24} color="#2563EB" />
-            <Text className="ml-3 flex-1 font-semibold text-gray-900">
-              My Notes
-            </Text>
-            <Ionicons
-              name={showNotes ? 'chevron-up' : 'chevron-down'}
-              size={24}
-              color="#9CA3AF"
-            />
-          </Pressable>
-
-          {showNotes && (
-            <View>
-              <TextInput
-                value={notes}
-                onChangeText={setNotes}
-                placeholder="Add your notes here..."
-                multiline
-                numberOfLines={6}
-                className="bg-white border border-gray-200 rounded-xl p-4 text-base mb-3"
-                style={{ textAlignVertical: 'top' }}
-              />
-              <Pressable
-                onPress={handleSaveNotes}
-                className="bg-blue-600 py-3 rounded-xl"
-              >
-                <Text className="text-white text-center font-semibold">
-                  Save Notes
-                </Text>
-              </Pressable>
-            </View>
-          )}
-        </View>
       </ScrollView>
 
       {/* Bottom Action Buttons */}
@@ -461,22 +238,14 @@ const renderVideoContent = () => (
           onPress={() => router.back()}
           className="px-6 py-3 rounded-lg border border-gray-300"
         >
-          <Text className="text-gray-700 font-semibold">Back</Text>
-        </Pressable>
-
-        <Pressable
-          className="px-6 py-3 rounded-lg bg-green-600 flex-row items-center"
-          onPress={handleComplete}
-        >
-          <Ionicons name="checkmark-circle" size={20} color="white" />
-          <Text className="text-white font-semibold ml-2">Complete</Text>
+          <Text className="text-gray-700 font-semibold">Cancel</Text>
         </Pressable>
 
         <Pressable
           className="px-6 py-3 rounded-lg bg-blue-600 flex-row items-center"
           onPress={handleNextLesson}
         >
-          <Text className="text-white font-semibold mr-2">Next</Text>
+          <Text className="text-white font-semibold mr-2">Next Lesson</Text>
           <Ionicons name="arrow-forward" size={20} color="white" />
         </Pressable>
       </View>
