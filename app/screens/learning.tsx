@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
-
+import YoutubePlayer from 'react-native-youtube-iframe';
 export default function Learning() {
   const router = useRouter();
   const { topic, topicsList, currentIndex, courseId } = useLocalSearchParams();
@@ -12,6 +12,7 @@ export default function Learning() {
   const [activeTab, setActiveTab] = useState(0);
   const mediaTabs = ['Text', 'Audio', 'Video'];
   const [timeSpent, setTimeSpent] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Increment time every second
   useEffect(() => {
@@ -46,41 +47,95 @@ export default function Learning() {
     </View>
   );
 
-  const renderAudioContent = () => (
+const renderAudioContent = () => {
+
+  const videoId = getYoutubeId(audioSource);
+  return (
     <View className="px-4 pb-8">
       {audioSource ? (
-        <Pressable className="bg-white border border-gray-200 rounded-lg p-4 flex-row items-center mb-3">
-          <View className="bg-blue-600 w-12 h-12 rounded-full items-center justify-center mr-4">
-            <Ionicons name="play" size={24} color="white" />
-          </View>
-          <View className="flex-1">
-            <Text className="text-gray-900 font-semibold mb-1">Audio Lesson</Text>
-            <Text className="text-gray-500 text-sm">{audioSource}</Text>
-          </View>
+        <Pressable
+          onPress={() => setIsPlaying(prev => !prev)}
+          className="bg-white border border-gray-200 rounded-lg p-4 flex-row items-center mb-3"
+        >
+          <Ionicons name={isPlaying ? 'pause' : 'play'} size={24} color="blue" />
+          <Text className="ml-4 text-gray-900 font-semibold">
+            {isPlaying ? 'Pause Audio' : 'Tap to Play Audio'}
+          </Text>
         </Pressable>
       ) : (
         <Text className="text-gray-500">No audio content available for this lesson.</Text>
       )}
+
+      {/* Hidden YoutubePlayer for audio */}
+      {audioSource && (
+        <View style={{ height: 0, width: 0, overflow: 'hidden' }}>
+          <YoutubePlayer
+            height={0}
+            width={0}
+            videoId={videoId}
+            play={isPlaying}
+            onChangeState={state => {
+              if (state === 'ended') setIsPlaying(false);
+            }}
+          />
+        </View>
+      )}
     </View>
   );
+};
 
-  const renderVideoContent = () => (
-    <View className="px-4 pb-8">
-      {videoSource ? (
-        <Pressable className="bg-white border border-gray-200 rounded-lg p-4 flex-row items-center mb-3">
+
+// Utility function stays the same
+const getYoutubeId = (url: string) => {
+  const match = url.match(/(?:\?v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : '';
+};
+
+
+
+
+
+
+// Inside Learning component
+const renderVideoContent = () => (
+  <View className="px-4 pb-8">
+    {videoSource ? (
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: '/screens/video',
+            params: { videoUrl: videoSource, title: parsedTopic.title }
+          })
+        }
+        className="bg-white border border-gray-200 rounded-lg mb-3 overflow-hidden"
+      >
+        {/* Cover Image */}
+        <Image
+          source={{ uri: coverImage }}
+          className="w-full h-40"
+          resizeMode="cover"
+        />
+
+        {/* Overlay content */}
+        <View className="flex-row items-center p-4">
           <View className="bg-blue-600 w-12 h-12 rounded-full items-center justify-center mr-4">
             <Ionicons name="play" size={24} color="white" />
           </View>
           <View className="flex-1">
-            <Text className="text-gray-900 font-semibold mb-1">Video Lesson</Text>
+            <Text className="text-gray-900 font-semibold mb-1">Tap to Watch Video</Text>
             <Text className="text-gray-500 text-sm">{videoSource}</Text>
           </View>
-        </Pressable>
-      ) : (
-        <Text className="text-gray-500">No video content available for this lesson.</Text>
-      )}
-    </View>
-  );
+        </View>
+      </Pressable>
+    ) : (
+      <Text className="text-gray-500">No video content available for this lesson.</Text>
+    )}
+  </View>
+);
+
+
+
+
 
   // Navigate to next lesson
   const handleNextLesson = async () => {
