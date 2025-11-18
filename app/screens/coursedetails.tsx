@@ -188,15 +188,22 @@ export default function TopicDetail() {
       {/* Lessons */}
       <View className="px-4 mb-8">
         <Text className="text-xl font-bold text-gray-900 mb-4">Lessons</Text>
-        
-        {loading ? (
-          <ActivityIndicator size="small" color="#2563EB" />
-        ) : (
-          parsedTopic.topics?.map((lesson: any, index: number) => {
-            const lessonProgress = lessonsProgress[lesson.id] || {};
-            const progress = lessonProgress.progress || 0;
-            const status = lessonProgress.status || 'not_started';
-            const isBookmarked = lessonProgress.isBookmarked || false;
+        {parsedTopic.topics?.map(lesson => (
+          <Pressable
+            key={lesson.id}
+            className="bg-gray-50 p-4 rounded-lg mb-3 flex-row justify-between items-center"
+               onPress={() => 
+        router.push({
+          pathname: '/screens/learning',
+          params: {
+            topic: JSON.stringify(lesson),          // current lesson
+    courseId: parsedTopic.id,               // course ID
+    topicsList: JSON.stringify(parsedTopic.topics),
+    currentIndex: parsedTopic.topics.findIndex(t => t.id === lesson.id).toString(),
+
+          },
+        })
+      }
 
             return (
               <Pressable

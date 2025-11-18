@@ -90,7 +90,7 @@ export default function HomeScreen() {
 // console.log("🪙 Token:", token);
 // console.log("isLoading (Zustand):", isLoading);
 // console.log("loading (local):", loading);
-//  console.log("✅ subjectsss:", subjects);
+ console.log("✅ subjectsss:", subjects);
 //  console.log("✅ subjectsss:", subjects);
 
     if (isLoading || loading || !user) {
@@ -187,7 +187,8 @@ export default function HomeScreen() {
         pathname: '/screens/learning',
         params: { topic: JSON.stringify(topic),
         topicsList: JSON.stringify(currentSubject.topics),
-          currentIndex: topicIndex.toString()
+          currentIndex: topicIndex.toString(),
+          courseId: currentSubject.id 
          },
          // Pass topic object as string
       });
