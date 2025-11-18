@@ -1,8 +1,10 @@
 import { subjects } from '@/data/subjectData'
+import { useFocusEffect } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { BASE_URL } from '../../backendconfig'
 import { getCourses } from '../../services/courseService'
 import { useUserStore } from '../../store/userStore'
 import CourseCard from '../components/courses/CourseCard'
@@ -19,43 +21,62 @@ export default function CoursesScreen() {
     const { token } = useUserStore()
 
     // Fetch courses from API
-    useEffect(() => {
-        const fetchCourses = async () => {
-            if (!token) return
+
+// Replace your useEffect with this:
+useFocusEffect(
+  useCallback(() => {
+    const fetchCoursesWithProgress = async () => {
+      if (!token) return;
+      setLoading(true);
+      try {
+        const response = await getCourses(token);
+        const subjects = response.data?.subjects || [];
+
+        const coursesWithProgress = await Promise.all(
+          subjects.map(async (subject) => {
+            const courseId = subject.id;
+            let progressData = null;
+
             try {
-                setLoading(true)
-                const response = await getCourses(token)
-                const subjects = response.data?.subjects || []
-
-              console.log("First subject from API:", response.data?.subjects?.[0])
-      const apiCourses = subjects.map((subject, index) => {
-    const firstTopic = subject.topics?.[0] || {}
-    const totalLessons = subject.totalLessons || (subject.topics?.length || 1)
-
-    // Mark only the first course as completed
-    const completedLessons = index === 0 ? totalLessons : subject.completedLessons ?? 0
-
-    return {
-        id: subject.id || Math.random().toString(), // fallback id
-        title: subject.name || 'Untitled Course',
-        subtitle: `Completed ${completedLessons}/${totalLessons}`,
-        coverImage: firstTopic.coverImage || DEFAULT_COVER_IMAGE,
-        progress: totalLessons ? Math.floor((completedLessons / totalLessons) * 100) : 0,
-        isCompleted: completedLessons === totalLessons,
-        fullDetails: subject
-    }
-})
-                setCourses(apiCourses)
-            } catch (error) {
-                console.error('Failed to fetch courses:', error)
-                setCourses([]) // fallback to empty
-            } finally {
-                setLoading(false)
+              const progressRes = await fetch(`${BASE_URL}/progress/course/${courseId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              const json = await progressRes.json();
+              progressData = json.data;
+            } catch (err) {
+              console.warn(`Failed to fetch progress for ${courseId}`, err);
             }
-        }
 
-        fetchCourses()
-    }, [token])
+            const totalLessons = subject.totalLessons || (subject.topics?.length || 1);
+            const completedLessons = progressData?.completedLessons ?? 0;
+            const progressPercent = totalLessons ? Math.floor((completedLessons / totalLessons) * 100) : 0;
+
+            return {
+              id: subject.id || Math.random().toString(),
+              title: subject.name || 'Untitled Course',
+              subtitle: `Completed ${completedLessons}/${totalLessons}`,
+              coverImage: subject.topics?.[0]?.coverImage || DEFAULT_COVER_IMAGE,
+              progress: progressPercent,
+              isCompleted: completedLessons === totalLessons,
+              fullDetails: subject,
+              progressData,
+            };
+          })
+        );
+
+        setCourses(coursesWithProgress);
+      } catch (err) {
+        console.error('Failed to fetch courses with progress:', err);
+        setCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCoursesWithProgress();
+  }, [token])
+);
+
 console.log("courses",subjects)
     if (loading) {
         return (
