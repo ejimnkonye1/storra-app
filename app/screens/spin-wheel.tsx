@@ -35,14 +35,10 @@ export default function SpinWheelScreen() {
 
     try {
       const userRes = await getCurrentUser(token);
-      const user = userRes?.data?.user;
-
-      if (user) {
-        useUserStore.getState().setUser(user);
-        if (user?.balances?.spinChances !== undefined) {
-          setSpinsLeft(3)
-        }
-      }
+      const user = userRes?.data;
+      console.log("use spin", userRes);
+      console.log("user spin", user.spinChances);
+      setSpinsLeft(user.spinChances || 0);
     } catch (err) {
       console.log("❌ Failed to load spins:", err);
     }

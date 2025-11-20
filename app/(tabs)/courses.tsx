@@ -1,4 +1,3 @@
-import { subjects } from '@/data/subjectData'
 import { useFocusEffect } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
@@ -77,7 +76,7 @@ useFocusEffect(
   }, [token])
 );
 
-console.log("courses",subjects)
+// console.log("courses",subjects)
     if (loading) {
         return (
             <SafeAreaView className="flex-1 justify-center items-center bg-white">
