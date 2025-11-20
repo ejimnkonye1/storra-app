@@ -47,10 +47,10 @@ export default function HomeScreen() {
             // Fetch current user profile
             const userRes = await getCurrentUser(token);
                             console.log('✅ Fetched User:', userRes); 
-            if (userRes?.data?.user) {
-                useUserStore.getState().setUser(userRes.data.user);
-                console.log('✅ Fetched User:', userRes.data.user); 
-            }
+     if (userRes?.data?.profile) {
+    useUserStore.getState().setUser(userRes.data.profile);
+}
+
 
             // Fetch courses
             const coursesRes = await getCourses(token);
@@ -86,7 +86,7 @@ export default function HomeScreen() {
         toggleTopicCheck(topicId);
     };
 
-//     console.log("👤 User:", user);
+    console.log("👤 U:", user.profilePictureUrl);
 // console.log("🪙 Token:", token);
 // console.log("isLoading (Zustand):", isLoading);
 // console.log("loading (local):", loading);
@@ -123,7 +123,7 @@ export default function HomeScreen() {
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView>
-                <Header  rewards={user.rewards}/>
+                <Header  />
                 
                 <WelcomeBanner 
                     fullname={user.fullname}

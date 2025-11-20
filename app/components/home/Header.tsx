@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
 
 export default function Header() {
-  const { user, token, setUser } = useUserStore();
+  const { user, token } = useUserStore();
   const [loading, setLoading] = useState(true);
+  const [rewards, setRewards] = useState(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -17,12 +18,7 @@ export default function Header() {
         console.log("HEADER FETCH:", res);
 
         if (res?.data) {
-          setUser({
-            profile: res.data.profile,
-            rewards: res.data.rewards,
-            leaderboard: res.data.leaderboard,
-            spinChances: res.data.spinChances
-          });
+          setRewards(res.data.rewards);  // <-- correct
         }
 
       } catch (err) {
@@ -34,6 +30,7 @@ export default function Header() {
 
     loadUser();
   }, [token]);
+
 
   if (loading || !user) {
     return (
@@ -60,7 +57,7 @@ export default function Header() {
         <View className="flex-row items-center gap-1 bg-yellow-300 px-3 py-1 rounded-full">
           <Ionicons name="logo-bitcoin" size={18} color="black" />
           <Text className="font-semibold text-black">
-            {user?.rewards?.totalCoins ?? 0}
+            {rewards?.totalCoins ?? 0}
           </Text>
         </View>
 
@@ -68,7 +65,7 @@ export default function Header() {
         <View className="flex-row items-center gap-1 bg-purple-300 px-3 py-1 rounded-full">
           <Ionicons name="diamond-outline" size={18} color="black" />
           <Text className="font-semibold text-black">
-            {user?.rewards?.totalDiamonds ?? 0}
+            {rewards?.totalDiamonds ?? 0}
           </Text>
         </View>
 
