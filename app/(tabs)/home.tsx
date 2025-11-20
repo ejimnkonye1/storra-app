@@ -90,7 +90,7 @@ export default function HomeScreen() {
 // console.log("🪙 Token:", token);
 // console.log("isLoading (Zustand):", isLoading);
 // console.log("loading (local):", loading);
- console.log("✅ subjectsss:", subjects);
+//  console.log("✅ subjectsss:", subjects);
 //  console.log("✅ subjectsss:", subjects);
 
     if (isLoading || loading || !user) {
@@ -123,7 +123,7 @@ export default function HomeScreen() {
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView>
-                <Header />
+                <Header  rewards={user.rewards}/>
                 
                 <WelcomeBanner 
                     fullname={user.fullname}
