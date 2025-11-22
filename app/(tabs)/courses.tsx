@@ -17,7 +17,7 @@ export default function CoursesScreen() {
     const [courses, setCourses] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const router = useRouter()
-    const { token } = useUserStore()
+    const { user, token } = useUserStore()
 
     // Fetch courses from API
 
@@ -28,6 +28,9 @@ useFocusEffect(
       if (!token) return;
       setLoading(true);
       try {
+
+
+
         const response = await getCourses(token);
         const subjects = response.data?.subjects || [];
 
@@ -42,6 +45,7 @@ useFocusEffect(
               });
               const json = await progressRes.json();
               progressData = json.data;
+
             } catch (err) {
               console.warn(`Failed to fetch progress for ${courseId}`, err);
             }
@@ -104,10 +108,13 @@ const handleStartQuiz = (course: any) => {
 };
 
 
-
+const { rewards, } = user;
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
-            <Header />
+            <Header
+              coins={rewards?.totalCoins || 0} 
+               diamond={rewards?.totalDiamonds || 0} 
+            />
             <ScrollView className="flex-1 px-6 pt-6">
                 <Text className="text-gray-900 text-3xl font-bold mb-6">Courses</Text>
 

@@ -8,7 +8,8 @@ interface ProgressCardProps {
     onResume?: () => void
 }
 
-export default function ProgressCard({ title, subtitle, progress, onResume }: ProgressCardProps) {
+export default function ProgressCard({ title, subtitle, progress,  onResume }: ProgressCardProps) {
+
     return (
         <View 
             style={{

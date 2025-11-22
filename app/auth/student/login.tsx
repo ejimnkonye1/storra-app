@@ -113,9 +113,9 @@ setUser(formattedUser);
       setLoading(false);
     }
   };
-  if (loading) {
-    return <Loader message="Logging you in..." />;
-  }
+  // if (loading) {
+  //   return <Loader message="Logging you in..." />;
+  // }
   return (
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
@@ -233,6 +233,12 @@ setUser(formattedUser);
             </TouchableOpacity>
           </View>
         </ScrollView>
+             {loading && (
+   <View className="absolute inset-0 bg-black/30 items-center justify-center z-50">
+  <Loader />
+</View>
+
+      )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

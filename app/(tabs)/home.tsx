@@ -47,8 +47,8 @@ export default function HomeScreen() {
             // Fetch current user profile
             const userRes = await getCurrentUser(token);
                             console.log('✅ Fetched User:', userRes); 
-     if (userRes?.data?.profile) {
-    useUserStore.getState().setUser(userRes.data.profile);
+     if (userRes?.data) {
+    useUserStore.getState().setUser(userRes.data);
 }
 
 
@@ -86,7 +86,7 @@ export default function HomeScreen() {
         toggleTopicCheck(topicId);
     };
 
-    console.log("👤 U:", user.profilePictureUrl);
+    console.log("👤 U:", user);
 // console.log("🪙 Token:", token);
 // console.log("isLoading (Zustand):", isLoading);
 // console.log("loading (local):", loading);
@@ -119,16 +119,21 @@ export default function HomeScreen() {
             </SafeAreaView>
         );
     }
+const { profile, rewards, overallProgressPercent } = user;
+
 
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView>
-                <Header  />
+                <Header 
+                coins={rewards?.totalCoins || 0} 
+               diamond={rewards?.totalDiamonds || 0} 
+                />
                 
                 <WelcomeBanner 
-                    fullname={user.fullname}
+                    fullname={profile.fullname}
                     grade="Pri 1"
-                    profileImage={user.profilePictureUrl}
+                    profileImage={profile.profilePictureUrl}
                 />
                 
                 <DashboardCard 
@@ -143,7 +148,7 @@ export default function HomeScreen() {
                 <ProgressCard 
                     title="In Progress"
                     subtitle="Straight lines and curve lines"
-                    progress={45}
+                    progress={overallProgressPercent}
                     onResume={() => console.log('Resume lesson')}
                 />
 
