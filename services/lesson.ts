@@ -10,7 +10,7 @@ export const updateLessonProgress = async (
   data: Record<string, any> = {}
 ) => {
   const body = { ...data, courseId };
-  console.log('Updating lesson progress with body:', body);
+  // console.log('Updating lesson progress with body:', body);
 
   const res = await fetch(`${BASE_URL}/progress/lesson/${lessonId}`, {
     method: 'PUT',
@@ -22,7 +22,7 @@ export const updateLessonProgress = async (
   });
 
   const resData = await res.json();
-  console.log('Response from updateLessonProgress:', resData);
+  // console.log('Response from updateLessonProgress:', resData);
 
   if (!res.ok) {
     throw new Error(resData.message || 'Failed to update lesson progress');

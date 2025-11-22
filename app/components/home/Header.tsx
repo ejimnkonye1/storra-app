@@ -1,44 +1,43 @@
-import { getCurrentUser } from '@/services/userService';
 import { useUserStore } from '@/store/userStore';
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 
-export default function Header() {
+export default function Header({coins,diamond}) {
   const { user, token } = useUserStore();
-  const [loading, setLoading] = useState(true);
-  const [rewards, setRewards] = useState(null);
+  // const [loading, setLoading] = useState(true);
+  // const [rewards, setRewards] = useState(null);
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        if (!token) return;
+  // useEffect(() => {
+  //   const loadUser = async () => {
+  //     try {
+  //       if (!token) return;
 
-        const res = await getCurrentUser(token);
-        console.log("HEADER FETCH:", res);
+  //       const res = await getCurrentUser(token);
+  //       // console.log("HEADER FETCH:", res);
+  //       console.log("l", res.data.overallProgressPercent)
 
-        if (res?.data) {
-          setRewards(res.data.rewards);  // <-- correct
-        }
+  //       if (res?.data) {
+  //         setRewards(res.data.rewards);  // <-- correct
+  //       }
 
-      } catch (err) {
-        console.log("Header fetch failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //     } catch (err) {
+  //       console.log("Header fetch failed:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    loadUser();
-  }, [token]);
+  //   loadUser();
+  // }, [token]);
 
 
-  if (loading || !user) {
-    return (
-      <View className="flex items-center justify-center py-4">
-        <ActivityIndicator size="small" />
-      </View>
-    );
-  }
+  // if (loading || !user) {
+  //   return (
+  //     <View className="flex items-center justify-center py-4">
+  //       <ActivityIndicator size="small" />
+  //     </View>
+  //   );
+  // }
 
   return (
     <View className="flex-row items-center justify-between px-6">
@@ -57,7 +56,7 @@ export default function Header() {
         <View className="flex-row items-center gap-1 bg-yellow-300 px-3 py-1 rounded-full">
           <Ionicons name="logo-bitcoin" size={18} color="black" />
           <Text className="font-semibold text-black">
-            {rewards?.totalCoins ?? 0}
+            {coins?? 0}
           </Text>
         </View>
 
@@ -65,7 +64,7 @@ export default function Header() {
         <View className="flex-row items-center gap-1 bg-purple-300 px-3 py-1 rounded-full">
           <Ionicons name="diamond-outline" size={18} color="black" />
           <Text className="font-semibold text-black">
-            {rewards?.totalDiamonds ?? 0}
+            {diamond?? 0}
           </Text>
         </View>
 

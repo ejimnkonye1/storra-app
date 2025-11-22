@@ -9,6 +9,7 @@ import { useUserStore } from '../../store/userStore'
 import CourseCard from '../components/courses/CourseCard'
 import CourseTabs from '../components/courses/CourseTabs'
 import Header from '../components/home/Header'
+import Loader from '../components/loader'
 
 const DEFAULT_COVER_IMAGE = 'https://via.placeholder.com/300x150.png?text=No+Image'
 
@@ -17,7 +18,7 @@ export default function CoursesScreen() {
     const [courses, setCourses] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const router = useRouter()
-    const { token } = useUserStore()
+    const { user, token } = useUserStore()
 
     // Fetch courses from API
 
@@ -28,6 +29,9 @@ useFocusEffect(
       if (!token) return;
       setLoading(true);
       try {
+
+
+
         const response = await getCourses(token);
         const subjects = response.data?.subjects || [];
 
@@ -42,6 +46,7 @@ useFocusEffect(
               });
               const json = await progressRes.json();
               progressData = json.data;
+
             } catch (err) {
               console.warn(`Failed to fetch progress for ${courseId}`, err);
             }
@@ -77,13 +82,13 @@ useFocusEffect(
 );
 
 // console.log("courses",subjects)
-    if (loading) {
-        return (
-            <SafeAreaView className="flex-1 justify-center items-center bg-white">
-                <Text>Loading courses...</Text>
-            </SafeAreaView>
-        )
-    }
+    // if (loading) {
+    //     return (
+    //         <SafeAreaView className="flex-1 justify-center items-center bg-white">
+    //             <Text>Loading courses...</Text>
+    //         </SafeAreaView>
+    //     )
+    // }
 
     const ongoingCourses = courses.filter(course => !course.isCompleted)
     const completedCourses = courses.filter(course => course.isCompleted)
@@ -104,10 +109,13 @@ const handleStartQuiz = (course: any) => {
 };
 
 
-
+const { rewards, } = user;
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
-            <Header />
+            <Header
+              coins={rewards?.totalCoins || 0} 
+               diamond={rewards?.totalDiamonds || 0} 
+            />
             <ScrollView className="flex-1 px-6 pt-6">
                 <Text className="text-gray-900 text-3xl font-bold mb-6">Courses</Text>
 
@@ -140,6 +148,13 @@ const handleStartQuiz = (course: any) => {
                     </View>
                 )}
             </ScrollView>
+             {loading && (
+   <View className="absolute inset-0 bg-black/30 items-center justify-center z-50">
+  <Loader />
+</View>
+
+      )}
+
         </SafeAreaView>
     )
 }

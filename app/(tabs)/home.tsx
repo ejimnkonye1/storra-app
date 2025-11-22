@@ -1,7 +1,7 @@
 import { getCurrentUser } from '@/services/userService';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getCourses } from '../../services/courseService';
 import { useUserStore } from '../../store/userStore';
@@ -14,6 +14,7 @@ import StatsCards from '../components/home/StatsCards';
 import SubjectTabs from '../components/home/SubjectTabs';
 import TopicsGrid from '../components/home/TopicsGrid';
 import WelcomeBanner from '../components/home/WelcomeBanner';
+import Loader from '../components/loader';
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -47,8 +48,8 @@ export default function HomeScreen() {
             // Fetch current user profile
             const userRes = await getCurrentUser(token);
                             console.log('✅ Fetched User:', userRes); 
-     if (userRes?.data?.profile) {
-    useUserStore.getState().setUser(userRes.data.profile);
+     if (userRes?.data) {
+    useUserStore.getState().setUser(userRes.data);
 }
 
 
@@ -86,7 +87,7 @@ export default function HomeScreen() {
         toggleTopicCheck(topicId);
     };
 
-    console.log("👤 U:", user.profilePictureUrl);
+    console.log("👤 U:", user);
 // console.log("🪙 Token:", token);
 // console.log("isLoading (Zustand):", isLoading);
 // console.log("loading (local):", loading);
@@ -96,8 +97,8 @@ export default function HomeScreen() {
     if (isLoading || loading || !user) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#3b82f6" />
-                <Text style={{ marginTop: 16, color: '#6b7280' }}>Loading...</Text>
+
+<Loader />
             </SafeAreaView>
         );
     }
@@ -119,16 +120,21 @@ export default function HomeScreen() {
             </SafeAreaView>
         );
     }
+const { profile, rewards, overallProgressPercent } = user;
+
 
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView>
-                <Header  />
+                <Header 
+                coins={rewards?.totalCoins || 0} 
+               diamond={rewards?.totalDiamonds || 0} 
+                />
                 
                 <WelcomeBanner 
-                    fullname={user.fullname}
+                    fullname={profile.fullname}
                     grade="Pri 1"
-                    profileImage={user.profilePictureUrl}
+                    profileImage={profile.profilePictureUrl}
                 />
                 
                 <DashboardCard 
@@ -143,7 +149,7 @@ export default function HomeScreen() {
                 <ProgressCard 
                     title="In Progress"
                     subtitle="Straight lines and curve lines"
-                    progress={45}
+                    progress={overallProgressPercent}
                     onResume={() => console.log('Resume lesson')}
                 />
 
@@ -196,6 +202,12 @@ export default function HomeScreen() {
   }}
                 />
             </ScrollView>
+                        {loading && (
+               <View className="absolute inset-0 bg-black/30 items-center justify-center z-50">
+              <Loader />
+            </View>
+            
+                  )}
         </SafeAreaView>
     );
 }

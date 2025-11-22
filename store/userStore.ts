@@ -25,6 +25,50 @@ interface Subject {
   image?: string;
   topics: Topic[];
 }
+interface Reward {
+  totalCoins: number;
+  totalDiamonds: number;
+  spinChances?: number;
+  achievements?: any[];
+  currentStreak?: number;
+  longestStreak?: number;
+  dailyRewards?: any[];
+  lastLoginDate?: string;
+  transactionHistory?: any[];
+  trialDaysRemaining?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  userId?: string;
+  __v?: number;
+  _id?: string;
+}
+
+interface CourseProgressSummary {
+  courseId: string;
+  courseName: string;
+  overallProgress: number;
+  status: 'not_started' | 'in_progress' | 'completed';
+  completedLessons: number;
+  totalLessons: number;
+  lastAccessedAt: string | null;
+}
+interface Profile {
+  _id: string;
+  fullname: string;
+  profilePictureUrl: string;
+  email: string;
+  username?: string;
+  phoneNumber: string;
+  createdAt: string;
+  role: string;
+  classId?: string;
+  className?: string;
+  educationLevel?: string;
+  preferredLanguage?: string;
+  age?: number;
+  hasCompletedOnboarding?: boolean;
+  learningGoals?: string[];
+}
 
 interface User {
   profilePictureUrl: string;
@@ -38,6 +82,10 @@ interface User {
   classId?: string;
   className?: string;
   educationLevel?: string;
+    rewards?: Reward;
+  coursesProgress: CourseProgressSummary[];
+  overallProgressPercent?: number;
+  profile: Profile;
 }
 
 interface UserStore {
