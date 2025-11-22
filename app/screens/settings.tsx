@@ -1,3 +1,4 @@
+import { useUserStore } from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -6,7 +7,11 @@ import { Image, ScrollView, Switch, Text, TouchableOpacity, View } from "react-n
 export default function SettingsScreen() {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
-
+  const { 
+        user, 
+     
+    } = useUserStore();
+    
   const Section: React.FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
     <View className="mt-6">
       <Text className="text-xs font-semibold text-gray-500 mb-2 px-1">{title}</Text>
@@ -50,6 +55,7 @@ export default function SettingsScreen() {
       )}
     </TouchableOpacity>
   );
+const {profile} = user;
 
   return (
     <View className="flex-1 bg-gray-50 pt-12">
@@ -67,18 +73,18 @@ export default function SettingsScreen() {
         <View className="bg-white rounded-2xl px-4 py-4 flex-row items-center justify-between shadow-sm">
           <View className="flex-row items-center">
             <Image
-              source={require("../../assets/images/pro.jpg")}
+              source={{uri:profile.profilePictureUrl}}
               className="w-12 h-12 rounded-full mr-3"
               resizeMode="cover"
             />
             <View>
-              <Text className="font-semibold text-gray-800 text-base">Alex Morgan</Text>
-              <Text className="text-gray-500 text-sm">alex.morgan@example.com</Text>
+              <Text className="font-semibold text-gray-800 text-base">{profile.fullname}</Text>
+              <Text className="text-gray-500 text-sm">{profile.email}</Text>
             </View>
           </View>
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text className="text-blue-600 font-semibold text-sm">Edit</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Account */}

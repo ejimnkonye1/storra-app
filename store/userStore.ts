@@ -53,6 +53,7 @@ interface CourseProgressSummary {
   lastAccessedAt: string | null;
 }
 interface Profile {
+  _id: string;
   fullname: string;
   profilePictureUrl: string;
   email: string;

@@ -9,6 +9,7 @@ import { useUserStore } from '../../store/userStore'
 import CourseCard from '../components/courses/CourseCard'
 import CourseTabs from '../components/courses/CourseTabs'
 import Header from '../components/home/Header'
+import Loader from '../components/loader'
 
 const DEFAULT_COVER_IMAGE = 'https://via.placeholder.com/300x150.png?text=No+Image'
 
@@ -81,13 +82,13 @@ useFocusEffect(
 );
 
 // console.log("courses",subjects)
-    if (loading) {
-        return (
-            <SafeAreaView className="flex-1 justify-center items-center bg-white">
-                <Text>Loading courses...</Text>
-            </SafeAreaView>
-        )
-    }
+    // if (loading) {
+    //     return (
+    //         <SafeAreaView className="flex-1 justify-center items-center bg-white">
+    //             <Text>Loading courses...</Text>
+    //         </SafeAreaView>
+    //     )
+    // }
 
     const ongoingCourses = courses.filter(course => !course.isCompleted)
     const completedCourses = courses.filter(course => course.isCompleted)
@@ -147,6 +148,13 @@ const { rewards, } = user;
                     </View>
                 )}
             </ScrollView>
+             {loading && (
+   <View className="absolute inset-0 bg-black/30 items-center justify-center z-50">
+  <Loader />
+</View>
+
+      )}
+
         </SafeAreaView>
     )
 }

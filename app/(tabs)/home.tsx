@@ -1,7 +1,7 @@
 import { getCurrentUser } from '@/services/userService';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getCourses } from '../../services/courseService';
 import { useUserStore } from '../../store/userStore';
@@ -14,6 +14,7 @@ import StatsCards from '../components/home/StatsCards';
 import SubjectTabs from '../components/home/SubjectTabs';
 import TopicsGrid from '../components/home/TopicsGrid';
 import WelcomeBanner from '../components/home/WelcomeBanner';
+import Loader from '../components/loader';
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -96,8 +97,8 @@ export default function HomeScreen() {
     if (isLoading || loading || !user) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#3b82f6" />
-                <Text style={{ marginTop: 16, color: '#6b7280' }}>Loading...</Text>
+
+<Loader />
             </SafeAreaView>
         );
     }
@@ -201,6 +202,12 @@ const { profile, rewards, overallProgressPercent } = user;
   }}
                 />
             </ScrollView>
+                        {loading && (
+               <View className="absolute inset-0 bg-black/30 items-center justify-center z-50">
+              <Loader />
+            </View>
+            
+                  )}
         </SafeAreaView>
     );
 }
