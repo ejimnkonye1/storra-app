@@ -1,6 +1,6 @@
 import { getCurrentUser } from '@/services/userService';
-import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getCourses } from '../../services/courseService';
@@ -35,7 +35,8 @@ export default function HomeScreen() {
         getSelectedSubjectData
     } = useUserStore();
 
-   useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
     const fetchData = async () => {
         if (!token) {
             router.replace('/auth/student/login');
@@ -67,7 +68,8 @@ export default function HomeScreen() {
     };
 
     if (token) fetchData();
-}, [token]);
+}, [token])
+  );
 
     const handleSubjectSelect = (index: number) => {
         setSelectedSubject(index);
