@@ -8,7 +8,7 @@ export const getCurrentUser = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-        console.log("current user response:",response.data)
+        // console.log("current user response:",response.data)
     return response.data;
 
   } catch (error: any) {
