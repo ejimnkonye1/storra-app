@@ -32,44 +32,54 @@ export default function HomeScreen() {
         setSelectedSubject,
         toggleTopicLike,
         toggleTopicCheck,
-        getSelectedSubjectData
+        getSelectedSubjectData 
+        
     } = useUserStore();
 
-  useFocusEffect(
-    useCallback(() => {
+useFocusEffect(
+  useCallback(() => {
     const fetchData = async () => {
-        if (!token) {
-            router.replace('/auth/student/login');
-            return;
+      if (!token) {
+        router.replace('/auth/student/login');
+        return;
+      }
+
+      // ✅ check if already fetched
+      const { hasFetched, setHasFetched } = useUserStore.getState();
+      if (hasFetched) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        // Fetch current user profile
+        const userRes = await getCurrentUser(token);
+        console.log('✅ Fetched User:', userRes); 
+        if (userRes?.data) {
+          useUserStore.getState().setUser(userRes.data);
         }
 
-        try {
-            setLoading(true);
-
-            // Fetch current user profile
-            const userRes = await getCurrentUser(token);
-                            console.log('✅ Fetched User:', userRes); 
-     if (userRes?.data) {
-    useUserStore.getState().setUser(userRes.data);
-}
-
-
-            // Fetch courses
-            const coursesRes = await getCourses(token);
-            if (coursesRes.data?.subjects) {
-                setSubjects(coursesRes.data.subjects);
-            }
-
-        } catch (error) {
-            console.error('❌ Fetch failed:', error);
-        } finally {
-            setLoading(false);
+        // Fetch courses
+        const coursesRes = await getCourses(token);
+        if (coursesRes.data?.subjects) {
+          setSubjects(coursesRes.data.subjects);
         }
+
+        // ✅ mark as fetched
+        setHasFetched(true);
+
+      } catch (error) {
+        console.error('❌ Fetch failed:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     if (token) fetchData();
-}, [token])
-  );
+  }, [token])
+);
 
     const handleSubjectSelect = (index: number) => {
         setSelectedSubject(index);
@@ -123,7 +133,7 @@ export default function HomeScreen() {
         );
     }
 const { profile, rewards, overallProgressPercent } = user;
-
+ console.log("userme", user)
 
     return (
         <SafeAreaView className="flex-1 bg-white">
@@ -134,9 +144,9 @@ const { profile, rewards, overallProgressPercent } = user;
                 />
                 
                 <WelcomeBanner 
-                    fullname={profile.fullname}
+                    fullname={user.fullname}
                     grade="Pri 1"
-                    profileImage={profile.profilePictureUrl}
+                    profileImage={user.profilePictureUrl}
                 />
                 
                 <DashboardCard 

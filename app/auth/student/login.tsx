@@ -1,17 +1,17 @@
+import ErrorModal from "@/app/components/error";
 import Loader from "@/app/components/loader";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BASE_URL } from "../../../backendconfig";
@@ -27,7 +27,11 @@ export default function StudentLogin() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-
+  const [errorModal, setErrorModal] = useState({
+    visible: false,
+    title: "",
+    message: "",
+  });
   // Zustand actions
   const { setToken, setUser } = useUserStore();
 
@@ -39,9 +43,21 @@ export default function StudentLogin() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const showError = (title: string, message: string) => {
+    setErrorModal({
+      visible: true,
+      title,
+      message,
+    });
+  };
+
+  const hideError = () => {
+    setErrorModal(prev => ({ ...prev, visible: false }));
+  };
+
   const handleLogin = async () => {
     if (!formData.email || !formData.password) {
-      Alert.alert("Error", "Email and password are required");
+  showError("Missing Information", "Email and password are required");
       return;
     }
 
@@ -59,7 +75,9 @@ export default function StudentLogin() {
       // Step 2: Extract token
       const token = response.data.data?.accessToken;
       if (!token) {
-        Alert.alert("Error", "No token received from server");
+        showError("Login Failed", "No token received from server");
+
+
         return;
       }
 
@@ -103,8 +121,9 @@ setUser(formattedUser);
       // Step 9: Navigate to home
       router.push("/(tabs)/home");
     } catch (error: any) {
-      console.error("Login Error:", error.response?.data || error.message);
-      Alert.alert(
+      console.log("Login Error:", error.response?.data || error.message);
+
+            showError(
         "Login Failed",
         error.response?.data?.message ||
           "An unexpected error occurred. Please try again."
@@ -239,6 +258,13 @@ setUser(formattedUser);
 </View>
 
       )}
+
+          <ErrorModal
+          visible={errorModal.visible}
+          title={errorModal.title}
+          message={errorModal.message}
+          onClose={hideError}
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

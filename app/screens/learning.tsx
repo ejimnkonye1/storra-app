@@ -13,6 +13,7 @@ export default function Learning() {
   const mediaTabs = ['Text', 'Audio', 'Video'];
   const [timeSpent, setTimeSpent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+const triggerCoursesRefresh = useUserStore((state) => state.triggerCoursesRefresh);
 
   // Increment time every second
   useEffect(() => {
@@ -146,6 +147,7 @@ const renderVideoContent = () => (
       await updateLessonProgress(token, courseId as string, parsedTopic.id, {
         progress: 100
       });
+         triggerCoursesRefresh();
     } catch (err) {
       console.warn('Failed to update lesson progress', err);
     }
@@ -165,6 +167,7 @@ const renderVideoContent = () => (
       alert('You have completed all lessons in this course!');
       try {
         await markLessonCompleted(token, courseId as string, parsedTopic.id);
+           triggerCoursesRefresh();
       } catch (err) {
         console.warn('Failed to mark lesson completed', err);
       }

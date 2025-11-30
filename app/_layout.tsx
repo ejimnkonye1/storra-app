@@ -1,9 +1,20 @@
 // app/_layout.tsx
-import { Stack } from 'expo-router'
-import './global.css'
-import { NavigationProvider } from './context/NavigationContext'
+import { useUserStore } from '@/store/userStore';
+import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { NavigationProvider } from './context/NavigationContext';
+import './global.css';
 
 export default function RootLayout() {
+    const { loadUser,  } = useUserStore();
+
+  useEffect(() => {
+    const init = async () => {
+      await loadUser();           // Load token from AsyncStorage
+
+    };
+    init();
+  }, []);
   return (
     <NavigationProvider>
       <Stack

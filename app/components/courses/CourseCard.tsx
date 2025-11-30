@@ -1,3 +1,4 @@
+import { useUserStore } from '@/store/userStore';
 import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
 
@@ -29,11 +30,16 @@ export default function CourseCard({
 }: CourseCardProps) {
   const router = useRouter();
 
+const triggerCoursesRefresh = useUserStore((state) => state.triggerCoursesRefresh);
+
   const handleContinue = () => {
     router.push({
       pathname: '/screens/coursedetails',
       params: { topic: JSON.stringify(topicData) },
     });
+     // ✅ trigger refresh
+      triggerCoursesRefresh();
+
   };
 
   // Calculate completion status

@@ -11,7 +11,6 @@
     "ios": {
       "supportsTablet": true
     },
-    
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -20,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.billiejrn.storra"
     },
     "web": {
       "output": "static",
@@ -42,11 +42,21 @@
       ],
       "expo-web-browser"
     ],
-    
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true,
-         "tsconfigPaths": true
+      "tsconfigPaths": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "be7bb530-a52b-4d63-a1d1-80c8d8caeda2"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/be7bb530-a52b-4d63-a1d1-80c8d8caeda2"
     }
   }
 }

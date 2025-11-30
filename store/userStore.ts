@@ -25,6 +25,7 @@ interface Subject {
   image?: string;
   topics: Topic[];
 }
+
 interface Reward {
   totalCoins: number;
   totalDiamonds: number;
@@ -52,6 +53,7 @@ interface CourseProgressSummary {
   totalLessons: number;
   lastAccessedAt: string | null;
 }
+
 interface Profile {
   _id: string;
   fullname: string;
@@ -82,7 +84,7 @@ interface User {
   classId?: string;
   className?: string;
   educationLevel?: string;
-    rewards?: Reward;
+  rewards?: Reward;
   coursesProgress: CourseProgressSummary[];
   overallProgressPercent?: number;
   profile: Profile;
@@ -114,9 +116,15 @@ interface UserStore {
   getLikedTopics: () => Topic[];
   getCheckedTopics: () => Topic[];
   getCompletedTopics: () => Topic[];
+
+  // New course refresh
+  coursesUpdatedAt: number;
+  triggerCoursesRefresh: () => void;
 }
 
-export const useUserStore = create<UserStore>()(
+export const useUserStore = create<
+  UserStore & { hasFetched: boolean; setHasFetched: (val: boolean) => void }
+>()(
   persist(
     (set, get) => ({
       user: null,
@@ -124,8 +132,14 @@ export const useUserStore = create<UserStore>()(
       isLoading: true,
       subjects: [],
       selectedSubject: 0,
+      hasFetched: false,
+      coursesUpdatedAt: 0, // ✅ tracks course updates
 
-      // 🔹 Fix: Ensure loading stops when user is set
+      setHasFetched: (val: boolean) => set({ hasFetched: val }),
+
+      // ✅ refresh trigger using Date.now()
+      triggerCoursesRefresh: () => set({ coursesUpdatedAt: Date.now() }),
+
       setUser: (user) => set({ user, isLoading: false }),
 
       setToken: async (token) => {
@@ -164,7 +178,7 @@ export const useUserStore = create<UserStore>()(
             token: null,
             subjects: [],
             selectedSubject: 0,
-            isLoading: false, // ✅ important
+            isLoading: false,
           });
         } catch (error) {
           console.error('Error during logout:', error);
@@ -174,18 +188,13 @@ export const useUserStore = create<UserStore>()(
       setSubjects: (subjects) => {
         set({ subjects });
         const currentSelected = get().selectedSubject;
-        if (currentSelected >= subjects.length) {
-          set({ selectedSubject: 0 });
-        }
+        if (currentSelected >= subjects.length) set({ selectedSubject: 0 });
       },
 
       setSelectedSubject: (index) => {
         const subjects = get().subjects;
-        if (index >= 0 && index < subjects.length) {
-          set({ selectedSubject: index });
-        } else {
-          console.warn('Invalid subject index:', index);
-        }
+        if (index >= 0 && index < subjects.length) set({ selectedSubject: index });
+        else console.warn('Invalid subject index:', index);
       },
 
       clearSubjects: () => set({ subjects: [], selectedSubject: 0 }),
@@ -268,7 +277,10 @@ export const useUserStore = create<UserStore>()(
         user: state.user,
         token: state.token,
         subjects: state.subjects,
+        hasFetched: state.hasFetched,
+        coursesUpdatedAt: state.coursesUpdatedAt, // ✅ persist refresh trigger
       }),
     }
   )
 );
+
