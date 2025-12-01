@@ -69,7 +69,7 @@ export default function StudentLogin() {
         password: formData.password,
       });
 
-      console.log("🔍 Email:", formData.email);
+      // console.log("🔍 Email:", formData.email);
       console.log("Login Success:", response.data);
 
       // Step 2: Extract token
@@ -86,35 +86,9 @@ export default function StudentLogin() {
 
       // Step 4: Fetch current user
       const userResponse = await getCurrentUser(token);
-
-      // Step 5: Extract profile (handles both structures)
-        // 🧩 Step 6: Normalize and map backend fields
-        // extract from response
-const profile = response.data.data?.profile || userResponse.data;
-
-// show raw
-console.log("📦 Raw profile from backend:", profile);
-
-// map properly
-const formattedUser = {
-  ...profile,
-  classId: profile.currentClassId || "none",
-  className:
-    profile.currentClassId ||
-    profile.currentClassLevel ||
-    profile.educationLevel ||
-    "No class yet",
-};
-
-// fix capitalization and hyphen
-if (formattedUser.className && formattedUser.className.includes("-")) {
-  formattedUser.className = formattedUser.className
-    .replace("-", " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase());
-}
-
-console.log("🎓 Final formatted user:", formattedUser);
-setUser(formattedUser);
+     console.log("Fetched User after login:", userResponse)
+    const newUser = userResponse.data; // ← the real flattened user
+setUser(newUser);
 
 
 

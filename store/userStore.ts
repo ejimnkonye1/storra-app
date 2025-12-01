@@ -8,11 +8,7 @@ interface Topic {
   paragraph: string;
   coverImage: string;
   lessonType: 'text' | 'video' | 'audio';
-  content: {
-    text?: string;
-    video?: string;
-    audio?: string;
-  };
+  content: { text?: string; video?: string; audio?: string };
   isLiked?: boolean;
   isChecked?: boolean;
   progress?: number;
@@ -54,40 +50,26 @@ interface CourseProgressSummary {
   lastAccessedAt: string | null;
 }
 
-interface Profile {
+export interface User {
   _id: string;
   fullname: string;
   profilePictureUrl: string;
   email: string;
-  username?: string;
+  role: string;
   phoneNumber: string;
   createdAt: string;
-  role: string;
-  classId?: string;
-  className?: string;
+  age?: number;
+  currentClassId?: string;
+  currentClassLevel?: string;
   educationLevel?: string;
   preferredLanguage?: string;
-  age?: number;
-  hasCompletedOnboarding?: boolean;
   learningGoals?: string[];
-}
-
-interface User {
-  profilePictureUrl: string;
-  email: string;
-  username?: string;
-  fullname: string;
-  role: string;
-  phoneNumber: string;
-  createdAt: string;
-  profileImage?: string;
-  classId?: string;
-  className?: string;
-  educationLevel?: string;
+  hasCompletedOnboarding?: boolean;
   rewards?: Reward;
   coursesProgress: CourseProgressSummary[];
   overallProgressPercent?: number;
-  profile: Profile;
+  spinChances?: number;
+  leaderboard?: { totalPoints: number; rank: number };
 }
 
 interface UserStore {
@@ -96,6 +78,8 @@ interface UserStore {
   isLoading: boolean;
   subjects: Subject[];
   selectedSubject: number;
+  hasFetched: boolean;
+  coursesUpdatedAt: number;
 
   setUser: (user: User) => void;
   setToken: (token: string) => Promise<void>;
@@ -117,14 +101,11 @@ interface UserStore {
   getCheckedTopics: () => Topic[];
   getCompletedTopics: () => Topic[];
 
-  // New course refresh
-  coursesUpdatedAt: number;
   triggerCoursesRefresh: () => void;
+  setHasFetched: (val: boolean) => void;
 }
 
-export const useUserStore = create<
-  UserStore & { hasFetched: boolean; setHasFetched: (val: boolean) => void }
->()(
+export const useUserStore = create<UserStore>()(
   persist(
     (set, get) => ({
       user: null,
@@ -133,11 +114,9 @@ export const useUserStore = create<
       subjects: [],
       selectedSubject: 0,
       hasFetched: false,
-      coursesUpdatedAt: 0, // ✅ tracks course updates
+      coursesUpdatedAt: 0,
 
-      setHasFetched: (val: boolean) => set({ hasFetched: val }),
-
-      // ✅ refresh trigger using Date.now()
+      setHasFetched: (val) => set({ hasFetched: val }),
       triggerCoursesRefresh: () => set({ coursesUpdatedAt: Date.now() }),
 
       setUser: (user) => set({ user, isLoading: false }),
@@ -204,7 +183,7 @@ export const useUserStore = create<
         return subjects[selectedSubject] || null;
       },
 
-      getTopicById: (topicId: string) => {
+      getTopicById: (topicId) => {
         const { subjects } = get();
         for (const subject of subjects) {
           const topic = subject.topics.find((t) => t.id === topicId);
@@ -213,7 +192,7 @@ export const useUserStore = create<
         return null;
       },
 
-      toggleTopicLike: (topicId: string) => {
+      toggleTopicLike: (topicId) => {
         const { subjects } = get();
         set({
           subjects: subjects.map((subject) => ({
@@ -225,7 +204,7 @@ export const useUserStore = create<
         });
       },
 
-      toggleTopicCheck: (topicId: string) => {
+      toggleTopicCheck: (topicId) => {
         const { subjects } = get();
         set({
           subjects: subjects.map((subject) => ({
@@ -237,7 +216,7 @@ export const useUserStore = create<
         });
       },
 
-      updateTopicProgress: (topicId: string, progress: number) => {
+      updateTopicProgress: (topicId, progress) => {
         const { subjects } = get();
         set({
           subjects: subjects.map((subject) => ({
@@ -249,26 +228,14 @@ export const useUserStore = create<
         });
       },
 
-      getLikedTopics: () => {
-        const { subjects } = get();
-        return subjects.flatMap((subject) =>
-          subject.topics.filter((topic) => topic.isLiked)
-        );
-      },
+      getLikedTopics: () =>
+        get().subjects.flatMap((subject) => subject.topics.filter((topic) => topic.isLiked)),
 
-      getCheckedTopics: () => {
-        const { subjects } = get();
-        return subjects.flatMap((subject) =>
-          subject.topics.filter((topic) => topic.isChecked)
-        );
-      },
+      getCheckedTopics: () =>
+        get().subjects.flatMap((subject) => subject.topics.filter((topic) => topic.isChecked)),
 
-      getCompletedTopics: () => {
-        const { subjects } = get();
-        return subjects.flatMap((subject) =>
-          subject.topics.filter((topic) => topic.progress === 100)
-        );
-      },
+      getCompletedTopics: () =>
+        get().subjects.flatMap((subject) => subject.topics.filter((topic) => topic.progress === 100)),
     }),
     {
       name: 'user-storage',
@@ -278,9 +245,8 @@ export const useUserStore = create<
         token: state.token,
         subjects: state.subjects,
         hasFetched: state.hasFetched,
-        coursesUpdatedAt: state.coursesUpdatedAt, // ✅ persist refresh trigger
+        coursesUpdatedAt: state.coursesUpdatedAt,
       }),
     }
   )
 );
-

@@ -5,7 +5,8 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getCourses } from '../../services/courseService';
 import { useUserStore } from '../../store/userStore';
-// Import components
+
+// Components
 import DashboardCard from '../components/home/DashboardCard';
 import Header from '../components/home/Header';
 import ProgressCard from '../components/home/ProgressCard';
@@ -17,209 +18,202 @@ import WelcomeBanner from '../components/home/WelcomeBanner';
 import Loader from '../components/loader';
 
 export default function HomeScreen() {
-    const router = useRouter();
-    const scrollViewRef = useRef<ScrollView>(null);
-    const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [loading, setLoading] = useState(true);
 
-    // Get data from Zustand
-    const { 
-        user, 
-        token, 
-        isLoading, 
-        subjects, 
-        selectedSubject, 
-        setSubjects, 
-        setSelectedSubject,
-        toggleTopicLike,
-        toggleTopicCheck,
-        getSelectedSubjectData 
-        
-    } = useUserStore();
+  const { 
+    user, 
+    token, 
+    isLoading, 
+    subjects, 
+    selectedSubject, 
+    setSubjects, 
+    setSelectedSubject,
+    toggleTopicLike,
+    toggleTopicCheck,
+    getSelectedSubjectData
+  } = useUserStore();
 
-useFocusEffect(
-  useCallback(() => {
-    const fetchData = async () => {
-      if (!token) {
-        router.replace('/auth/student/login');
-        return;
-      }
-
-      // ✅ check if already fetched
-      const { hasFetched, setHasFetched } = useUserStore.getState();
-      if (hasFetched) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-
-        // Fetch current user profile
-        const userRes = await getCurrentUser(token);
-        console.log('✅ Fetched User:', userRes); 
-        if (userRes?.data) {
-          useUserStore.getState().setUser(userRes.data);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        if (!token) {
+          router.replace('/auth/student/login');
+          return;
         }
 
-        // Fetch courses
-        const coursesRes = await getCourses(token);
-        if (coursesRes.data?.subjects) {
-          setSubjects(coursesRes.data.subjects);
+        const { hasFetched, setHasFetched } = useUserStore.getState();
+        if (hasFetched) {
+          setLoading(false);
+          return;
         }
 
-        // ✅ mark as fetched
-        setHasFetched(true);
+        try {
+          setLoading(true);
 
-      } catch (error) {
-        console.error('❌ Fetch failed:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+          // Fetch current user
+          const userRes = await getCurrentUser(token);
+          console.log('✅ Fetched User:', userRes);
+           
+          if (userRes?.data) {
+            useUserStore.getState().setUser(userRes.data);
+          }
 
-    if (token) fetchData();
-  }, [token])
-);
+          // Fetch courses
+          const coursesRes = await getCourses(token);
+          if (coursesRes.data?.subjects) {
+            setSubjects(coursesRes.data.subjects);
+          }
 
-    const handleSubjectSelect = (index: number) => {
-        setSelectedSubject(index);
-        const ITEM_WIDTH = 100;
-        scrollViewRef.current?.scrollTo({ 
-            x: Math.max(0, ITEM_WIDTH * index - 1),
-            animated: true
-        });
-    };
+          setHasFetched(true);
+        } catch (error) {
+          console.error('❌ Fetch failed:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    // Updated to use string IDs
-    const handleLike = (topicId: string) => {
-        toggleTopicLike(topicId);
-    };
+      if (token) fetchData();
+    }, [token])
+  );
 
-    const handleCheck = (topicId: string) => {
-        toggleTopicCheck(topicId);
-    };
+  const handleSubjectSelect = (index: number) => {
+    setSelectedSubject(index);
+    const ITEM_WIDTH = 100;
+    scrollViewRef.current?.scrollTo({ 
+      x: Math.max(0, ITEM_WIDTH * index - 1),
+      animated: true
+    });
+  };
 
-    console.log("👤 U:", user);
-// console.log("🪙 Token:", token);
-// console.log("isLoading (Zustand):", isLoading);
-// console.log("loading (local):", loading);
-//  console.log("✅ subjectsss:", subjects);
-//  console.log("✅ subjectsss:", subjects);
+  const handleLike = (topicId: string) => {
+    toggleTopicLike(topicId);
+  };
 
-    if (isLoading || loading || !user) {
-        return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+  const handleCheck = (topicId: string) => {
+    toggleTopicCheck(topicId);
+  };
 
-<Loader />
-            </SafeAreaView>
-        );
-    }
-
-    if (subjects.length === 0) {
-        return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 18, color: '#6b7280' }}>No courses available</Text>
-            </SafeAreaView>
-        );
-    }
-
-    const currentSubject = getSelectedSubjectData();
-
-    if (!currentSubject) {
-        return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 18, color: '#6b7280' }}>No subject selected</Text>
-            </SafeAreaView>
-        );
-    }
-const { profile, rewards, overallProgressPercent } = user;
- console.log("userme", user)
-
+  if (isLoading || loading || !user) {
     return (
-        <SafeAreaView className="flex-1 bg-white">
-            <ScrollView>
-                <Header 
-                coins={rewards?.totalCoins || 0} 
-               diamond={rewards?.totalDiamonds || 0} 
-                />
-                
-                <WelcomeBanner 
-                    fullname={user.fullname}
-                    grade="Pri 1"
-                    profileImage={user.profilePictureUrl}
-                />
-                
-                <DashboardCard 
-                    points={500}
-                    onContinue={() => console.log('Continue learning')}
-                />
-
-                <View className="px-6 mb-1">
-                    <SectionHeader title="Your Progress" />
-                </View>
-                
-                <ProgressCard 
-                    title="In Progress"
-                    subtitle="Straight lines and curve lines"
-                    progress={overallProgressPercent}
-                    onResume={() => console.log('Resume lesson')}
-                />
-
-                <StatsCards 
-                    completedCourses={2}
-                    onNextCourse={() => console.log('Next course')}
-                    onSaved={() => console.log('Saved')}
-                    onFavorite={() => console.log('Favorite')}
-                />
-
-                <SectionHeader 
-                    title="Subject" 
-                    actionText="All subjects"
-                    onAction={() => console.log('View all subjects')}
-                />
-
-                <View className='flex-1 bg-gray-50'>
-                    <SubjectTabs 
-                        ref={scrollViewRef}
-                        subjects={subjects.map(s => ({ name: s.name, icon: s.image }))}
-                        selectedSubject={selectedSubject}
-                        onSelectSubject={handleSubjectSelect}
-                    />
-                </View>
-
-                <TopicsGrid
-                    topics={currentSubject.topics}
-                    likedTopics={Object.fromEntries(
-                        currentSubject.topics.map(topic => [topic.id, topic.isLiked || false])
-                    )}
-                    checkedTopics={Object.fromEntries(
-                        currentSubject.topics.map(topic => [topic.id, topic.isChecked || false])
-                    )}
-                    onLike={handleLike}
-                    onCheck={handleCheck}
-                onLearnMore={(topicId) => {
-                       const topicIndex = currentSubject.topics.findIndex(t => t.id === topicId);
-    const topic = currentSubject.topics.find(t => t.id === topicId);
-    if (topic) {
-      router.push({
-        pathname: '/screens/learning',
-        params: { topic: JSON.stringify(topic),
-        topicsList: JSON.stringify(currentSubject.topics),
-          currentIndex: topicIndex.toString(),
-          courseId: currentSubject.id 
-         },
-         // Pass topic object as string
-      });
-    }
-  }}
-                />
-            </ScrollView>
-                        {loading && (
-               <View className="absolute inset-0 bg-black/30 items-center justify-center z-50">
-              <Loader />
-            </View>
-            
-                  )}
-        </SafeAreaView>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+        <Loader />
+      </SafeAreaView>
     );
+  }
+
+  if (subjects.length === 0) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 18, color: '#6b7280' }}>No courses available</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const currentSubject = getSelectedSubjectData();
+  if (!currentSubject) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 18, color: '#6b7280' }}>No subject selected</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Destructure top-level user fields
+  const {
+    fullname,
+    profilePictureUrl,
+    rewards,
+    overallProgressPercent
+  } = user;
+console.log("onbbb",user)
+console.log()
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView>
+        <Header 
+          coins={rewards?.totalCoins || 0} 
+          diamond={rewards?.totalDiamonds || 0} 
+        />
+        
+        <WelcomeBanner 
+          fullname={fullname}
+          grade="Pri 1"
+          profileImage={profilePictureUrl}
+        />
+        
+        <DashboardCard 
+          points={500}
+          onContinue={() => console.log('Continue learning')}
+        />
+
+        <View className="px-6 mb-1">
+          <SectionHeader title="Your Progress" />
+        </View>
+        
+        <ProgressCard 
+          title="In Progress"
+          subtitle="Straight lines and curve lines"
+          progress={overallProgressPercent}
+          onResume={() => console.log('Resume lesson')}
+        />
+
+        <StatsCards 
+          completedCourses={2}
+          onNextCourse={() => console.log('Next course')}
+          onSaved={() => console.log('Saved')}
+          onFavorite={() => console.log('Favorite')}
+        />
+
+        <SectionHeader 
+          title="Subject" 
+          actionText="All subjects"
+          onAction={() => console.log('View all subjects')}
+        />
+
+        <View className='flex-1 bg-gray-50'>
+          <SubjectTabs 
+            ref={scrollViewRef}
+            subjects={subjects.map(s => ({ name: s.name, icon: s.image }))}
+            selectedSubject={selectedSubject}
+            onSelectSubject={handleSubjectSelect}
+          />
+        </View>
+
+        <TopicsGrid
+          topics={currentSubject.topics}
+          likedTopics={Object.fromEntries(
+            currentSubject.topics.map(topic => [topic.id, topic.isLiked || false])
+          )}
+          checkedTopics={Object.fromEntries(
+            currentSubject.topics.map(topic => [topic.id, topic.isChecked || false])
+          )}
+          onLike={handleLike}
+          onCheck={handleCheck}
+          onLearnMore={(topicId) => {
+            const topicIndex = currentSubject.topics.findIndex(t => t.id === topicId);
+            const topic = currentSubject.topics.find(t => t.id === topicId);
+            if (topic) {
+              router.push({
+                pathname: '/screens/learning',
+                params: { 
+                  topic: JSON.stringify(topic),
+                  topicsList: JSON.stringify(currentSubject.topics),
+                  currentIndex: topicIndex.toString(),
+                  courseId: currentSubject.id 
+                },
+              });
+            }
+          }}
+        />
+      </ScrollView>
+
+      {loading && (
+        <View className="absolute inset-0 bg-black/30 items-center justify-center z-50">
+          <Loader />
+        </View>
+      )}
+    </SafeAreaView>
+  );
 }
