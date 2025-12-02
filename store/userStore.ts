@@ -8,11 +8,7 @@ interface Topic {
   paragraph: string;
   coverImage: string;
   lessonType: 'text' | 'video' | 'audio';
-  content: {
-    text?: string;
-    video?: string;
-    audio?: string;
-  };
+  content: { text?: string; video?: string; audio?: string };
   isLiked?: boolean;
   isChecked?: boolean;
   progress?: number;
@@ -25,6 +21,7 @@ interface Subject {
   image?: string;
   topics: Topic[];
 }
+
 interface Reward {
   totalCoins: number;
   totalDiamonds: number;
@@ -52,40 +49,27 @@ interface CourseProgressSummary {
   totalLessons: number;
   lastAccessedAt: string | null;
 }
-interface Profile {
+
+export interface User {
   _id: string;
   fullname: string;
   profilePictureUrl: string;
   email: string;
-  username?: string;
+  role: string;
   phoneNumber: string;
   createdAt: string;
-  role: string;
-  classId?: string;
-  className?: string;
+  age?: number;
+  currentClassId?: string;
+  currentClassLevel?: string;
   educationLevel?: string;
   preferredLanguage?: string;
-  age?: number;
-  hasCompletedOnboarding?: boolean;
   learningGoals?: string[];
-}
-
-interface User {
-  profilePictureUrl: string;
-  email: string;
-  username?: string;
-  fullname: string;
-  role: string;
-  phoneNumber: string;
-  createdAt: string;
-  profileImage?: string;
-  classId?: string;
-  className?: string;
-  educationLevel?: string;
-    rewards?: Reward;
+  hasCompletedOnboarding?: boolean;
+  rewards?: Reward;
   coursesProgress: CourseProgressSummary[];
   overallProgressPercent?: number;
-  profile: Profile;
+  spinChances?: number;
+  leaderboard?: { totalPoints: number; rank: number };
 }
 
 interface UserStore {
@@ -94,6 +78,8 @@ interface UserStore {
   isLoading: boolean;
   subjects: Subject[];
   selectedSubject: number;
+  hasFetched: boolean;
+  coursesUpdatedAt: number;
 
   setUser: (user: User) => void;
   setToken: (token: string) => Promise<void>;
@@ -114,6 +100,9 @@ interface UserStore {
   getLikedTopics: () => Topic[];
   getCheckedTopics: () => Topic[];
   getCompletedTopics: () => Topic[];
+
+  triggerCoursesRefresh: () => void;
+  setHasFetched: (val: boolean) => void;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -124,8 +113,12 @@ export const useUserStore = create<UserStore>()(
       isLoading: true,
       subjects: [],
       selectedSubject: 0,
+      hasFetched: false,
+      coursesUpdatedAt: 0,
 
-      // 🔹 Fix: Ensure loading stops when user is set
+      setHasFetched: (val) => set({ hasFetched: val }),
+      triggerCoursesRefresh: () => set({ coursesUpdatedAt: Date.now() }),
+
       setUser: (user) => set({ user, isLoading: false }),
 
       setToken: async (token) => {
@@ -164,7 +157,7 @@ export const useUserStore = create<UserStore>()(
             token: null,
             subjects: [],
             selectedSubject: 0,
-            isLoading: false, // ✅ important
+            isLoading: false,
           });
         } catch (error) {
           console.error('Error during logout:', error);
@@ -174,18 +167,13 @@ export const useUserStore = create<UserStore>()(
       setSubjects: (subjects) => {
         set({ subjects });
         const currentSelected = get().selectedSubject;
-        if (currentSelected >= subjects.length) {
-          set({ selectedSubject: 0 });
-        }
+        if (currentSelected >= subjects.length) set({ selectedSubject: 0 });
       },
 
       setSelectedSubject: (index) => {
         const subjects = get().subjects;
-        if (index >= 0 && index < subjects.length) {
-          set({ selectedSubject: index });
-        } else {
-          console.warn('Invalid subject index:', index);
-        }
+        if (index >= 0 && index < subjects.length) set({ selectedSubject: index });
+        else console.warn('Invalid subject index:', index);
       },
 
       clearSubjects: () => set({ subjects: [], selectedSubject: 0 }),
@@ -195,7 +183,7 @@ export const useUserStore = create<UserStore>()(
         return subjects[selectedSubject] || null;
       },
 
-      getTopicById: (topicId: string) => {
+      getTopicById: (topicId) => {
         const { subjects } = get();
         for (const subject of subjects) {
           const topic = subject.topics.find((t) => t.id === topicId);
@@ -204,7 +192,7 @@ export const useUserStore = create<UserStore>()(
         return null;
       },
 
-      toggleTopicLike: (topicId: string) => {
+      toggleTopicLike: (topicId) => {
         const { subjects } = get();
         set({
           subjects: subjects.map((subject) => ({
@@ -216,7 +204,7 @@ export const useUserStore = create<UserStore>()(
         });
       },
 
-      toggleTopicCheck: (topicId: string) => {
+      toggleTopicCheck: (topicId) => {
         const { subjects } = get();
         set({
           subjects: subjects.map((subject) => ({
@@ -228,7 +216,7 @@ export const useUserStore = create<UserStore>()(
         });
       },
 
-      updateTopicProgress: (topicId: string, progress: number) => {
+      updateTopicProgress: (topicId, progress) => {
         const { subjects } = get();
         set({
           subjects: subjects.map((subject) => ({
@@ -240,26 +228,14 @@ export const useUserStore = create<UserStore>()(
         });
       },
 
-      getLikedTopics: () => {
-        const { subjects } = get();
-        return subjects.flatMap((subject) =>
-          subject.topics.filter((topic) => topic.isLiked)
-        );
-      },
+      getLikedTopics: () =>
+        get().subjects.flatMap((subject) => subject.topics.filter((topic) => topic.isLiked)),
 
-      getCheckedTopics: () => {
-        const { subjects } = get();
-        return subjects.flatMap((subject) =>
-          subject.topics.filter((topic) => topic.isChecked)
-        );
-      },
+      getCheckedTopics: () =>
+        get().subjects.flatMap((subject) => subject.topics.filter((topic) => topic.isChecked)),
 
-      getCompletedTopics: () => {
-        const { subjects } = get();
-        return subjects.flatMap((subject) =>
-          subject.topics.filter((topic) => topic.progress === 100)
-        );
-      },
+      getCompletedTopics: () =>
+        get().subjects.flatMap((subject) => subject.topics.filter((topic) => topic.progress === 100)),
     }),
     {
       name: 'user-storage',
@@ -268,6 +244,8 @@ export const useUserStore = create<UserStore>()(
         user: state.user,
         token: state.token,
         subjects: state.subjects,
+        hasFetched: state.hasFetched,
+        coursesUpdatedAt: state.coursesUpdatedAt,
       }),
     }
   )

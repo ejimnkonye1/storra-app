@@ -174,7 +174,7 @@ const loadWheelPreview = async () => {
                 backgroundColor: reward.color,
                 justifyContent: "center",
                 alignItems: "center",
-                transform: [{ rotate }, { translateY: -70 }, { rotate: `${360 / rewards.length / 2}deg` }],
+
                 borderRadius: 140,
               }}
             >
@@ -182,9 +182,21 @@ const loadWheelPreview = async () => {
             </View>
           );
         })}
-        <View className="w-20 h-20 bg-white rounded-full border-4 border-blue-600 justify-center items-center">
-          <Ionicons name="gift-outline" size={28} color="#2563EB" />
-        </View>
+<View className="items-center justify-center">
+
+  {/* Pointer */}
+  <View  className="absolute top-[-10px] z-10">
+    <View className="w-7 h-7
+        border-l-[12px] border-l-transparent 
+        border-r-[12px] border-r-transparent 
+        border-b-[24px] border-b-yellow-500" 
+    />
+  </View>
+
+  {/* Wheel */}
+  <View className="w-20 h-20 bg-white rounded-full border-4 border-blue-600 justify-center items-center" />
+</View>
+
       </Animated.View>
 
       <TouchableOpacity
