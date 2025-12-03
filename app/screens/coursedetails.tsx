@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
-export default function TopicDetail() {
+export default function CourseDetail() {
   const router = useRouter();
   const { topic } = useLocalSearchParams();
 
