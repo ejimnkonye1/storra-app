@@ -15,14 +15,14 @@ import {
 } from "react-native";
 const ManageAccountScreen = () => {
   const { user, token, setUser } = useUserStore();
-  const profile = user?.profile;
 
-  const [fullname, setFullname] = useState(profile?.fullname || "");
-  const [age, setAge] = useState(profile?.age?.toString() || "");
+
+  const [fullname, setFullname] = useState(user?.fullname || "");
+  const [age, setAge] = useState(user?.age?.toString() || "");
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  if (!profile) return null;
+  if (!user) return null;
 
   /** Text fields update */
   const handleSave = async () => {
@@ -49,7 +49,7 @@ const ManageAccountScreen = () => {
       // Update Zustand store
       setUser({
         ...user!,
-        profile: response.data.data,
+    
         fullname: response.data.data.fullname,
         email: response.data.data.email,
       });
@@ -98,7 +98,7 @@ const ManageAccountScreen = () => {
         name: filename,
         type,
       } as any);
- formData.append("userId", profile?._id);
+ formData.append("userId", user?._id);
       const response = await axios.post(
         `${BASE_URL}/profile/upload-profile`,
         formData,
@@ -112,10 +112,9 @@ const ManageAccountScreen = () => {
 
       setUser({
         ...user!,
-        profile: {
-          ...user!.profile,
+      
           profilePictureUrl: response.data.url,
-        },
+        
       });
 
       Alert.alert("Success", "Profile image updated successfully");
@@ -143,7 +142,7 @@ const ManageAccountScreen = () => {
       <View className="items-center mb-6">
         <View className="relative">
           <Image
-            source={{ uri: profile.profilePictureUrl }}
+            source={{ uri: user.profilePictureUrl }}
             className="w-24 h-24 rounded-full"
           />
           <Pressable
@@ -158,8 +157,8 @@ const ManageAccountScreen = () => {
             />
           </Pressable>
         </View>
-        <Text className="text-lg font-semibold mt-3">{profile.fullname}</Text>
-        <Text className="text-gray-500">{profile.email}</Text>
+        <Text className="text-lg font-semibold mt-3">{user.fullname}</Text>
+        <Text className="text-gray-500">{user.email}</Text>
       </View>
 
       {/* Form Fields */}
