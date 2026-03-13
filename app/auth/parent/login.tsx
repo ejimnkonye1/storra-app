@@ -1,17 +1,46 @@
 import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
 import { useRouter } from "expo-router";
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BASE_URL } from "../../../backendconfig";
 
 export default function ParentLogin() {
     const [ showPassword, setShowPassword ] = useState( false );
     const [ isGoogleHovered, setIsGoogleHovered ] = useState( false );
     const router = useRouter();
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [loading, setLoading] = useState(false);
 
-    const handleShowPassword = () => { 
+    const handleShowPassword = () => {
         setShowPassword( !showPassword );
     }
+
+    const updateFormData = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleLogin = async () => {
+        if (!formData.email || !formData.password) {
+            Alert.alert('Error', 'Email and password are required');
+            return;
+        }
+        setLoading(true);
+        try {
+            const response = await axios.post(`${BASE_URL}/parent/loginuser`, {
+                email: formData.email,
+                password: formData.password,
+            });
+            console.log('Login Success:', response.data);
+            router.push('/(tabs)/home');
+        } catch (error: any) {
+            console.error('Login Error:', error.response?.data || error.message);
+            Alert.alert('Login Failed', error.response?.data?.message || 'An unexpected error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <SafeAreaView className="flex-1 bg-white">
             <KeyboardAvoidingView
@@ -42,6 +71,8 @@ export default function ParentLogin() {
                         keyboardType="email-address"
                         className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4"
                         placeholderClassName='#999'
+                        value={formData.email}
+                        onChangeText={(value) => updateFormData('email', value)}
                     />
                     <Ionicons 
                         name='mail-outline'
@@ -59,6 +90,8 @@ export default function ParentLogin() {
                             secureTextEntry={!showPassword}
                             className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4 pr-12"
                             placeholderClassName='#999'
+                            value={formData.password}
+                            onChangeText={(value) => updateFormData('password', value)}
                         />
                         <View className="absolute right-0 top-0 h-full px-3 justify-center">
                             <TouchableOpacity onPress={handleShowPassword}>
@@ -76,11 +109,12 @@ export default function ParentLogin() {
                     </View>
                     {/* Login Button */}
                     <TouchableOpacity
-                        onPress={() => { /* Handle login action */ }}
-                        className="mt-12 bg-blue-600 py-4 rounded-full"
+                        onPress={handleLogin}
+                        disabled={loading}
+                        className={`mt-12 py-4 rounded-full ${loading ? 'bg-blue-400' : 'bg-blue-600'}`}
                     >
                         <Text className="text-center text-white text-lg font-semibold">
-                            Login
+                            {loading ? 'Logging in...' : 'Login'}
                         </Text>
                     </TouchableOpacity>
 

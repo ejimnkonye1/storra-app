@@ -76,6 +76,8 @@ export default function TeacherLogin() {
                         keyboardType="email-address"
                         className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4"
                         placeholderClassName='#999'
+                        value={formData.email}
+                        onChangeText={(value) => updateFormData('email', value)}
                     />
                     <Ionicons 
                         name='mail-outline'
@@ -93,6 +95,8 @@ export default function TeacherLogin() {
                             secureTextEntry={!showPassword}
                             className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4 pr-12"
                             placeholderClassName='#999'
+                            value={formData.password}
+                            onChangeText={(value) => updateFormData('password', value)}
                         />
                         <View className="absolute right-0 top-0 h-full px-3 justify-center">
                             <TouchableOpacity onPress={handleShowPassword}>
@@ -110,11 +114,12 @@ export default function TeacherLogin() {
                     </View>
                     {/* Login Button */}
                     <TouchableOpacity
-                        onPress={() => { /* Handle login action */ }}
-                        className="mt-12 bg-blue-600 py-4 rounded-full"
+                        onPress={handleLogin}
+                        disabled={loading}
+                        className={`mt-12 py-4 rounded-full ${loading ? 'bg-blue-400' : 'bg-blue-600'}`}
                     >
                         <Text className="text-center text-white text-lg font-semibold">
-                            Login
+                            {loading ? 'Logging in...' : 'Login'}
                         </Text>
                     </TouchableOpacity>
 
