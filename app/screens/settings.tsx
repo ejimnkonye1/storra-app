@@ -55,7 +55,7 @@ export default function SettingsScreen() {
       )}
     </TouchableOpacity>
   );
-const {profile} = user;
+
 
   return (
     <View className="flex-1 bg-gray-50 pt-12">
@@ -73,13 +73,13 @@ const {profile} = user;
         <View className="bg-white rounded-2xl px-4 py-4 flex-row items-center justify-between shadow-sm">
           <View className="flex-row items-center">
             <Image
-              source={{uri:profile.profilePictureUrl}}
+              source={{uri:user.profilePictureUrl}}
               className="w-12 h-12 rounded-full mr-3"
               resizeMode="cover"
             />
             <View>
-              <Text className="font-semibold text-gray-800 text-base">{profile.fullname}</Text>
-              <Text className="text-gray-500 text-sm">{profile.email}</Text>
+              <Text className="font-semibold text-gray-800 text-base">{user.fullname}</Text>
+              <Text className="text-gray-500 text-sm">{user.email}</Text>
             </View>
           </View>
           {/* <TouchableOpacity>
