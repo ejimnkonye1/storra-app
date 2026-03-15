@@ -2,172 +2,144 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BASE_URL } from "../../../backendconfig";
 
 export default function TeacherLogin() {
-    const [ showPassword, setShowPassword ] = useState( false );
-    const [ isGoogleHovered, setIsGoogleHovered ] = useState( false );
-    const router = useRouter();
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
-    const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
-    const handleShowPassword = () => { 
-        setShowPassword( !showPassword );
+  const updateFormData = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleLogin = async () => {
+    if (!formData.email || !formData.password) {
+      Alert.alert('Error', 'Email and password are required');
+      return;
     }
+    setLoading(true);
+    try {
+      const response = await axios.post(`${BASE_URL}/teacher/loginuser`, {
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log('Login Success:', response.data);
+      router.push('/(tabs)/home');
+    } catch (error: any) {
+      Alert.alert('Login Failed', error.response?.data?.message || 'An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const updateFormData = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    };
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+      >
+        <ScrollView
+          className="flex-1 px-6"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 24, paddingBottom: 32 }}
+        >
+          {/* Back button */}
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center mb-6"
+          >
+            <Ionicons name="arrow-back" size={20} color="#111827" />
+          </TouchableOpacity>
 
-    const handleLogin = async () => {
-        if (!formData.email || !formData.password) {
-            Alert.alert('Error', 'Email and password are required');
-            return;
-        }
+          {/* Title */}
+          <Text className="text-3xl font-bold text-gray-900 mb-1">Welcome Back</Text>
+          <Text className="text-gray-500 text-sm mb-8">Sign in to your teacher account</Text>
 
-        setLoading(true);
-        try {
-            const response = await axios.post(`${BASE_URL}/teacher/loginuser`, {
-                email: formData.email,
-                password: formData.password,
-            });
+          {/* Email */}
+          <Text className="text-sm font-semibold text-gray-700 mb-1">Email</Text>
+          <View className="relative w-full mb-4">
+            <TextInput
+              placeholder="you@example.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 pr-11"
+              placeholderTextColor="#9CA3AF"
+              value={formData.email}
+              onChangeText={(value) => updateFormData('email', value)}
+            />
+            <Ionicons name="mail-outline" size={18} color="#9CA3AF" style={{ position: "absolute", right: 14, top: 13 }} />
+          </View>
 
-            console.log('Login Success:', response.data);
-            router.push('/(tabs)/home');
-        } catch (error: any) {
-            console.error('Login Error:', error.response?.data || error.message);
-            Alert.alert('Login Failed', error.response?.data?.message || 'An unexpected error occurred. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
-    return (
-        <SafeAreaView className="flex-1 bg-white">
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                className="flex-1"
+          {/* Password */}
+          <Text className="text-sm font-semibold text-gray-700 mb-1">Password</Text>
+          <View className="relative w-full mb-2">
+            <TextInput
+              placeholder="Enter your password"
+              secureTextEntry={!showPassword}
+              className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 pr-11"
+              placeholderTextColor="#9CA3AF"
+              value={formData.password}
+              onChangeText={(value) => updateFormData('password', value)}
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(prev => !prev)}
+              style={{ position: "absolute", right: 14, top: 13 }}
             >
-            <ScrollView className="flex-1 px-5 pt-10">
-                {/* Title */}
-                <View className="relative flex-row items-center justify-center mb-6 mt-3">
-                    <TouchableOpacity
-                        onPress={() => router.back()}
-                        className='absolute left-0 p-2'
-                    >
-                        <Ionicons name="arrow-back" size={24} color="black" />
-                    </TouchableOpacity>
-                    {/* Title */}
-                    <Text className='text-2xl text-black font-semibold'>
-                        Teacher Account
-                    </Text>  
-                </View>
-                {/* Login Form */}
-                    <Text className='text-base font-medium text-gray-800 mb-2'>
-                        {/* Email Input */}
-                        Email
-                    </Text>
-                    <TextInput
-                        placeholder="Enter your email"
-                        keyboardType="email-address"
-                        className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4"
-                        placeholderClassName='#999'
-                        value={formData.email}
-                        onChangeText={(value) => updateFormData('email', value)}
-                    />
-                    <Ionicons 
-                        name='mail-outline'
-                        size={22}
-                        color= '#999'
-                        style={{ position: 'absolute', right: 12, top: 85}}
-                    />
-                    {/* Password Input */}
-                    <Text className='text-base font-medium text-gray-800 mb-2'>
-                        Password
-                    </Text>
-                    <View className="relative">
-                        <TextInput
-                            placeholder="Enter your password"
-                            secureTextEntry={!showPassword}
-                            className="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 mb-4 pr-12"
-                            placeholderClassName='#999'
-                            value={formData.password}
-                            onChangeText={(value) => updateFormData('password', value)}
-                        />
-                        <View className="absolute right-0 top-0 h-full px-3 justify-center">
-                            <TouchableOpacity onPress={handleShowPassword}>
-                                <Ionicons 
-                                    name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                                    size={22}
-                                    color='#999'
-                                    style={{position: 'absolute', right: 2 , bottom: -5 }}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                        <Text className=" mt-2 absolute right-0 top-12 font-light hover:underline cursor-pointer">
-                            Forget Password?
-                        </Text>
-                    </View>
-                    {/* Login Button */}
-                    <TouchableOpacity
-                        onPress={handleLogin}
-                        disabled={loading}
-                        className={`mt-12 py-4 rounded-full ${loading ? 'bg-blue-400' : 'bg-blue-600'}`}
-                    >
-                        <Text className="text-center text-white text-lg font-semibold">
-                            {loading ? 'Logging in...' : 'Login'}
-                        </Text>
-                    </TouchableOpacity>
+              <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={18} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
 
-                    <View className="flex-row items-center mt-6 px-4">
-                        <View className="flex-1 h-[1px] bg-gray-300" />
-                        <Text className="text-gray-600 px-4">
-                            Or login with
-                        </Text>
-                        <View className="flex-1 h-[1px] bg-gray-300" />
-                    </View>
-                    {/* Social Login Buttons */}
-                    <View className="flex-col justify-center mb-6 mt-6 space-y-4">
-                        <TouchableOpacity
-                            className="flex-row items-center justify-center border border-gray-100 rounded-lg py-3"
-                            style={{
-                                backgroundColor: isGoogleHovered ? '#4285F4' : 'white'
-                            }}
-                            onPress={() => { /* Handle Google login */ }}
-                            onPressIn={() => setIsGoogleHovered(true)}
-                            onPressOut={() => setIsGoogleHovered(false)}
-                        >
-                            <Ionicons 
-                                name="logo-google" 
-                                size={24}  
-                                color={isGoogleHovered ? "#ffffff" : ""}
-                            />
-                            <Text style={{
-                                marginLeft: 12,
-                                fontWeight: '500',
-                                color: isGoogleHovered ? '#ffffff' : '#374151'
-                            }}>
-                                Continue with Google
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+          {/* Forgot Password */}
+          <TouchableOpacity activeOpacity={0.7} className="self-end mb-6">
+            <Text className="text-blue-600 text-sm font-medium">Forgot Password?</Text>
+          </TouchableOpacity>
 
-                    <View className="flex-row justify-center mb-6">
-                        <Text className="text-gray-700">
-                            Don&apos;t have an account? 
-                        </Text>
-                        <TouchableOpacity onPress={() => router.push('/auth/student/register')}>
-                            <Text className="text-blue-600 font-semibold ml-1">
-                                Sign Up
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-            </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
-    )
+          {/* Login Button */}
+          <TouchableOpacity
+            onPress={handleLogin}
+            disabled={loading}
+            className={`rounded-xl py-4 items-center mb-5 ${loading ? 'bg-blue-400' : 'bg-blue-600'}`}
+          >
+            <Text className="text-white font-bold text-base">
+              {loading ? 'Signing in...' : 'Login'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View className="flex-row items-center mb-4">
+            <View className="flex-1 h-px bg-gray-200" />
+            <Text className="mx-3 text-gray-400 text-xs">or login with</Text>
+            <View className="flex-1 h-px bg-gray-200" />
+          </View>
+
+          {/* Google Button */}
+          <TouchableOpacity className="flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-3 mb-6">
+            <Ionicons name="logo-google" size={18} color="#DB4437" style={{ marginRight: 8 }} />
+            <Text className="text-gray-700 font-semibold text-sm">Continue with Google</Text>
+          </TouchableOpacity>
+
+          {/* Sign Up Link */}
+          <View className="flex-row justify-center items-center">
+            <Text className="text-gray-500 text-sm">Don't have an account? </Text>
+            <TouchableOpacity onPress={() => router.push('/auth/student/register')}>
+              <Text className="text-blue-600 font-bold text-sm">Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 }

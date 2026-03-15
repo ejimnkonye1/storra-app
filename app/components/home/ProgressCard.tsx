@@ -1,134 +1,174 @@
+import { Ionicons } from '@expo/vector-icons'
 import { Image, Pressable, Text, View } from 'react-native'
-import { moderateScale, scaleFont, scaleWidth, SCREEN } from '../../../utils/responsive'
+import { moderateScale, scaleFont, scaleWidth } from '../../../utils/responsive'
 
 interface ProgressCardProps {
     title: string
     subtitle: string
     progress: number
+    buttonLabel?: string
+    isNext?: boolean
     onResume?: () => void
 }
 
-export default function ProgressCard({ title, subtitle, progress,  onResume }: ProgressCardProps) {
+export default function ProgressCard({
+    title,
+    subtitle,
+    progress,
+    buttonLabel = 'Resume Lesson',
+    isNext = false,
+    onResume,
+}: ProgressCardProps) {
+    const accent = isNext ? '#059669' : '#2563eb'
+    const accentLight = isNext ? '#d1fae5' : '#dbeafe'
+    const accentMid = isNext ? '#6ee7b7' : '#93c5fd'
 
     return (
-        <View 
+        <View
             style={{
                 marginHorizontal: moderateScale(24),
-                borderWidth: 1,
-                borderColor: '#d1d5db',
-                borderRadius: moderateScale(16),
-                padding: moderateScale(16),
-                marginBottom: moderateScale(1),
+                borderRadius: moderateScale(20),
+                marginBottom: moderateScale(8),
+                overflow: 'hidden',
+                backgroundColor: '#fff',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.07,
+                shadowRadius: 8,
+                elevation: 3,
             }}
         >
-            {/* Icon Container */}
-            <View 
-                style={{
-                    padding: moderateScale(8),
-                    backgroundColor: '#dbeafe',
-                    borderRadius: moderateScale(24),
-                    width: scaleWidth(48),
-                    height: scaleWidth(48),
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <Image 
-                    source={require('@/assets/images/uim_analytics.png')}
-                    style={{
-                        width: scaleWidth(28),
-                        height: scaleWidth(28),
-                    }}
-                    resizeMode="contain"
-                />
-            </View>
+            {/* Coloured top stripe */}
+            <View style={{ height: 4, backgroundColor: accent }} />
 
-            {/* Title and Button Row */}
-            <View 
-                style={{
-                    flexDirection: SCREEN.isSmall ? 'column' : 'row',
-                    marginTop: moderateScale(16),
-                    alignItems: SCREEN.isSmall ? 'flex-start' : 'center',
-                }}
-            >
-                <View style={{ flex: 1, marginBottom: SCREEN.isSmall ? moderateScale(12) : 0 }}>
-                    <Text 
+            <View style={{ padding: moderateScale(18) }}>
+
+                {/* Top row: icon + progress badge */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: moderateScale(14) }}>
+                    <View
                         style={{
-                            color: '#1f2937',
-                            fontSize: scaleFont(SCREEN.isSmall ? 16 : 18),
-                            fontWeight: '600',
-                            marginBottom: moderateScale(4),
+                            width: scaleWidth(44),
+                            height: scaleWidth(44),
+                            borderRadius: scaleWidth(22),
+                            backgroundColor: accentLight,
+                            alignItems: 'center',
+                            justifyContent: 'center',
                         }}
-                        numberOfLines={1}
                     >
-                        {title}
-                    </Text>
-                    <Text 
+                        <Image
+                            source={require('@/assets/images/uim_analytics.png')}
+                            style={{ width: scaleWidth(26), height: scaleWidth(26) }}
+                            resizeMode="contain"
+                        />
+                    </View>
+
+                    {/* Progress badge */}
+                    <View
                         style={{
-                            color: '#6b7280',
-                            fontSize: scaleFont(SCREEN.isSmall ? 12 : 14),
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 4,
+                            backgroundColor: accentLight,
+                            paddingHorizontal: moderateScale(10),
+                            paddingVertical: moderateScale(4),
+                            borderRadius: moderateScale(20),
                         }}
-                        numberOfLines={2}
                     >
-                        {subtitle}
-                    </Text>
+                        <Ionicons
+                            name={isNext ? 'rocket-outline' : 'stats-chart'}
+                            size={13}
+                            color={accent}
+                        />
+                        <Text style={{ fontSize: scaleFont(12), fontWeight: '700', color: accent }}>
+                            {isNext ? 'Up Next' : `${progress}%`}
+                        </Text>
+                    </View>
                 </View>
-                
-                <Pressable 
-                    style={({ pressed }) => ({
-                        backgroundColor: pressed ? '#1e40af' : '#dbeafe',
-                        paddingHorizontal: moderateScale(SCREEN.isSmall ? 12 : 16),
-                        paddingVertical: moderateScale(SCREEN.isSmall ? 8 : 10),
-                        borderRadius: moderateScale(24),
-                        marginLeft: SCREEN.isSmall ? 0 : moderateScale(12),
-                        alignSelf: SCREEN.isSmall ? 'flex-start' : 'center',
-                    })}
-                    onPress={onResume}
-                >
-                    <Text 
-                        style={{
-                            color: '#2563eb',
-                            fontSize: scaleFont(SCREEN.isSmall ? 13 : 15),
-                            fontWeight: '600',
-                        }}
-                        numberOfLines={1}
-                    >
-                        Resume Lesson
-                    </Text>
-                </Pressable>
-            </View>
 
-            {/* Progress Text */}
-            <Text 
-                style={{
-                    color: '#6b7280',
-                    fontSize: scaleFont(12),
-                    marginTop: moderateScale(16),
-                    textAlign: 'right',
-                }}
-            >
-                {progress}% completed
-            </Text>
-
-            {/* Progress Bar */}
-            <View 
-                style={{
-                    width: '100%',
-                    height: moderateScale(8),
-                    backgroundColor: '#e5e7eb',
-                    borderRadius: moderateScale(4),
-                    marginTop: moderateScale(8),
-                    overflow: 'hidden',
-                }}
-            >
-                <View 
+                {/* Course name */}
+                <Text
                     style={{
-                        height: '100%',
-                        backgroundColor: '#2563eb',
-                        borderRadius: moderateScale(4),
-                        width: `${progress}%`,
-                    }} 
-                />
+                        fontSize: scaleFont(17),
+                        fontWeight: '700',
+                        color: '#111827',
+                        marginBottom: moderateScale(4),
+                    }}
+                    numberOfLines={1}
+                >
+                    {title}
+                </Text>
+
+                {/* Subtitle */}
+                <Text
+                    style={{
+                        fontSize: scaleFont(13),
+                        color: '#6b7280',
+                        marginBottom: moderateScale(16),
+                    }}
+                    numberOfLines={2}
+                >
+                    {subtitle}
+                </Text>
+
+                {/* Progress bar (hidden for next course) */}
+                {!isNext && (
+                    <View style={{ marginBottom: moderateScale(16) }}>
+                        <View
+                            style={{
+                                width: '100%',
+                                height: moderateScale(7),
+                                backgroundColor: '#f3f4f6',
+                                borderRadius: moderateScale(4),
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <View
+                                style={{
+                                    height: '100%',
+                                    backgroundColor: accent,
+                                    borderRadius: moderateScale(4),
+                                    width: `${progress}%`,
+                                }}
+                            />
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: moderateScale(5) }}>
+                            <Text style={{ fontSize: scaleFont(11), color: '#9ca3af' }}>Progress</Text>
+                            <Text style={{ fontSize: scaleFont(11), fontWeight: '600', color: accent }}>{progress}% completed</Text>
+                        </View>
+                    </View>
+                )}
+
+                {/* Button — hidden when all courses are done */}
+                {buttonLabel && (
+                    <Pressable
+                        onPress={onResume}
+                        style={({ pressed }) => ({
+                            backgroundColor: pressed ? (isNext ? '#047857' : '#1d4ed8') : accent,
+                            paddingVertical: moderateScale(13),
+                            borderRadius: moderateScale(14),
+                            alignItems: 'center',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            gap: 6,
+                        })}
+                    >
+                        <Ionicons
+                            name={isNext ? 'play-circle' : 'arrow-forward-circle'}
+                            size={18}
+                            color="#fff"
+                        />
+                        <Text
+                            style={{
+                                color: '#fff',
+                                fontSize: scaleFont(14),
+                                fontWeight: '700',
+                            }}
+                        >
+                            {buttonLabel}
+                        </Text>
+                    </Pressable>
+                )}
+
             </View>
         </View>
     )

@@ -55,7 +55,7 @@ export default function SettingsScreen() {
       )}
     </TouchableOpacity>
   );
-
+  if (!user) return null;
 
   return (
     <View className="flex-1 bg-gray-50 pt-12">
@@ -73,7 +73,7 @@ export default function SettingsScreen() {
         <View className="bg-white rounded-2xl px-4 py-4 flex-row items-center justify-between shadow-sm">
           <View className="flex-row items-center">
             <Image
-              source={{uri:user.profilePictureUrl}}
+              source={{uri: user.profilePictureUrl}}
               className="w-12 h-12 rounded-full mr-3"
               resizeMode="cover"
             />

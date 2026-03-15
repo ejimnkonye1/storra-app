@@ -1,32 +1,56 @@
+import { useEffect } from 'react';
+import { Image, StyleSheet } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
-import { MotiView } from "moti";
-import { Image, View } from "react-native";
+export default function Loader() {
+  const opacity = useSharedValue(1);
 
-export default function Loader({ message = "Logging you in..." }) {
+  useEffect(() => {
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.3, { duration: 900 }),
+        withTiming(1, { duration: 900 }),
+      ),
+      -1,   // loop forever
+      false // don't reverse (sequence handles direction)
+    );
+  }, []);
+
+  const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
   return (
-    <View className="flex-1  items-center justify-center">
-      {/* Animated Logo Circle */}
-      <MotiView
-        from={{ scale: 1, opacity: 0.6 }}
-        animate={{ scale: 1.2, opacity: 1 }}
-        transition={{
-          loop: true,
-          type: "timing",
-          duration: 1000,
-        }}
-        className="w-30 h-30 bg-white rounded-full items-center justify-center shadow-lg"
-      >
-        <Image
-                  source={require("@/assets/images/storra.png")}
-          style={{ width: 90, height: 90, resizeMode: "contain" }}
-        />
-      </MotiView>
-
-      {/* Text Section */}
-      {/* <Text className="text-white text-lg font-semibold mt-10">
-        {message}
-      </Text> */}
-      {/* <Text className="text-white/80 mt-2">Please wait...</Text> */}
-    </View>
+    <Animated.View style={[styles.circle, animStyle]}>
+      <Image
+        source={require('@/assets/images/storra.png')}
+        style={styles.logo}
+      />
+    </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  circle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+  },
+});

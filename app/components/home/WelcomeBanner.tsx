@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { moderateScale, scaleFont, scaleWidth, SCREEN } from '../../../utils/responsive';
 import ProfileAvatar from './ProfileAvatar';
@@ -63,7 +62,6 @@ export default function WelcomeBanner({ fullname, grade, profileImage }: Welcome
         {/* Class Display */}
         <View
           style={{
-            flexDirection: 'row',
             alignItems: 'center',
             marginTop: moderateScale(24),
             marginLeft: moderateScale(8),
@@ -78,7 +76,6 @@ export default function WelcomeBanner({ fullname, grade, profileImage }: Welcome
           >
             {grade}
           </Text>
-          <Ionicons name="chevron-down" size={scaleWidth(15)} color="#2563eb" />
         </View>
       </View>
     </View>

@@ -36,7 +36,6 @@ export default function TopicCard({
   return (
     <View
       className="bg-white w-[48%] mb-5 p-3 rounded-2xl shadow-sm border border-gray-100"
-      style={{ height: 200 }}
     >
       {/* ✅ Remote backend image only */}
       <Image
@@ -47,33 +46,33 @@ export default function TopicCard({
 
       {/* Title */}
       <Text
-        className="text-gray-900 font-semibold text-base mb-2"
+        className="text-gray-900 font-semibold text-sm mb-1"
         numberOfLines={2}
       >
         {title}
       </Text>
 
       {/* Description */}
-      <Text className="text-gray-500 text-sm flex-1" numberOfLines={3}>
+      <Text className="text-gray-500 text-xs mb-3" numberOfLines={2}>
         {paragraph}
       </Text>
 
       {/* Buttons */}
-      <View className="flex-row w-full items-center justify-between mt-3">
+      <View className="flex-row w-full items-center justify-between mt-auto">
         <Pressable
-          className="bg-blue-600 py-2 rounded-full"
+          className="bg-blue-600 py-1.5 px-3 rounded-full"
           onPress={onLearnMore}
         >
-          <Text className="text-white text-center font-semibold text-sm px-4">
+          <Text className="text-white text-center font-semibold text-xs">
             Learn More
           </Text>
         </Pressable>
 
-        <View className="flex-row gap-3">
+        <View className="flex-row gap-2">
           <Pressable onPress={onLike}>
             <Ionicons
               name={isLiked ? 'heart' : 'heart-outline'}
-              size={20}
+              size={18}
               color={isLiked ? 'red' : 'gray'}
             />
           </Pressable>
@@ -81,7 +80,7 @@ export default function TopicCard({
           <Pressable onPress={onCheck}>
             <Ionicons
               name={isChecked ? 'checkmark-circle' : 'checkmark-circle-outline'}
-              size={20}
+              size={18}
               color={isChecked ? '#60A5FA' : 'gray'}
             />
           </Pressable>

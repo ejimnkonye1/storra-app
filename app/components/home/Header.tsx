@@ -2,42 +2,15 @@ import { useUserStore } from '@/store/userStore';
 import { Ionicons } from '@expo/vector-icons';
 import { Image, Pressable, Text, View } from 'react-native';
 
-export default function Header({coins,diamond}) {
-  const { user, token } = useUserStore();
-  // const [loading, setLoading] = useState(true);
-  // const [rewards, setRewards] = useState(null);
+interface HeaderProps {
+  coins: number;
+  diamond: number;
+  onNotificationPress?: () => void;
+  notificationCount?: number;
+}
 
-  // useEffect(() => {
-  //   const loadUser = async () => {
-  //     try {
-  //       if (!token) return;
-
-  //       const res = await getCurrentUser(token);
-  //       // console.log("HEADER FETCH:", res);
-  //       console.log("l", res.data.overallProgressPercent)
-
-  //       if (res?.data) {
-  //         setRewards(res.data.rewards);  // <-- correct
-  //       }
-
-  //     } catch (err) {
-  //       console.log("Header fetch failed:", err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   loadUser();
-  // }, [token]);
-
-
-  // if (loading || !user) {
-  //   return (
-  //     <View className="flex items-center justify-center py-4">
-  //       <ActivityIndicator size="small" />
-  //     </View>
-  //   );
-  // }
+export default function Header({ coins, diamond, onNotificationPress, notificationCount = 0 }: HeaderProps) {
+  const { user } = useUserStore();
 
   return (
     <View className="flex-row items-center justify-between px-6">
@@ -56,7 +29,7 @@ export default function Header({coins,diamond}) {
         <View className="flex-row items-center gap-1 bg-yellow-300 px-3 py-1 rounded-full">
           <Ionicons name="logo-bitcoin" size={18} color="black" />
           <Text className="font-semibold text-black">
-            {coins?? 0}
+            {coins ?? 0}
           </Text>
         </View>
 
@@ -64,13 +37,33 @@ export default function Header({coins,diamond}) {
         <View className="flex-row items-center gap-1 bg-purple-300 px-3 py-1 rounded-full">
           <Ionicons name="diamond-outline" size={18} color="black" />
           <Text className="font-semibold text-black">
-            {diamond?? 0}
+            {diamond ?? 0}
           </Text>
         </View>
 
         {/* NOTIFICATIONS */}
-        <Pressable>
+        <Pressable onPress={onNotificationPress} style={{ position: 'relative' }}>
           <Ionicons name="notifications-outline" size={28} color="black" />
+          {notificationCount > 0 && (
+            <View
+              style={{
+                position: 'absolute',
+                top: -4,
+                right: -4,
+                backgroundColor: '#ef4444',
+                borderRadius: 8,
+                minWidth: 16,
+                height: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 3,
+              }}
+            >
+              <Text style={{ color: 'white', fontSize: 10, fontWeight: '700' }}>
+                {notificationCount > 9 ? '9+' : notificationCount}
+              </Text>
+            </View>
+          )}
         </Pressable>
 
       </View>
