@@ -3,70 +3,71 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
+const actions = [
+  {
+    title: "Withdraw",
+    icon: <Feather name="arrow-down-circle" size={22} color="#f97316" />,
+    bg: "#fff7ed",
+  },
+  {
+    title: "Earn More",
+    icon: <Ionicons name="gift-outline" size={22} color="#7c3aed" />,
+    bg: "#f5f3ff",
+  },
+  {
+    title: "Airtime",
+    icon: <FontAwesome5 name="mobile-alt" size={20} color="#10b981" />,
+    bg: "#ecfdf5",
+  },
+  {
+    title: "Refer & Earn",
+    icon: <Ionicons name="people-outline" size={22} color="#2563eb" />,
+    bg: "#eff6ff",
+  },
+  {
+    title: "Pay Bills",
+    icon: <MaterialIcons name="payment" size={22} color="#3b82f6" />,
+    bg: "#eff6ff",
+  },
+  {
+    title: "Send",
+    icon: <Feather name="send" size={20} color="#6366f1" />,
+    bg: "#eef2ff",
+  },
+];
+
 export default function Cards() {
   const router = useRouter();
 
-  const cards = [
-    {
-      title: "Send Money",
-      desc: "Instant transfers",
-      icon: <Feather name="send" size={24} color="#2563EB" />,
-      bg: "bg-blue-100",
-      // route: "/wallet/sendmoney",
-    },
-    {
-      title: "Earn Rewards",
-      desc: "Complete tasks and Earn",
-      icon: <Ionicons name="gift-outline" size={24} color="#7C3AED" />,
-      bg: "bg-purple-100",
-      route: "/wallet/reward",
-    },
-    {
-      title: "Withdraw Money",
-      desc: "Cash out to Bank",
-      icon: <Feather name="arrow-down-circle" size={24} color="#F97316" />,
-      bg: "bg-orange-100",
-      // route: "/wallet/withdraw",
-    },
-    {
-      title: "Buy Airtime",
-      desc: "Top-up easily",
-      icon: <FontAwesome5 name="mobile-alt" size={22} color="#10B981" />,
-      bg: "bg-green-100",
-      route: "/wallet/airtime",
-    },
-    {
-      title: "Pay Bills",
-      desc: "Electricity, Data & More",
-      icon: <MaterialIcons name="payment" size={22} color="#3B82F6" />,
-      bg: "bg-indigo-100",
-      route: "/wallet/bills",
-    },
-    {
-      title: "Referral Program",
-      desc: "Invite & Earn",
-      icon: <Ionicons name="people-outline" size={22} color="#8B5CF6" />,
-      bg: "bg-purple-100",
-      route: "/wallet/referral",
-    },
-  ];
-
   return (
-    <View className="flex flex-row flex-wrap justify-between mb-1">
-      {cards.map((item, index) => (
-        <TouchableOpacity
-          key={index}
-          onPress={() => router.push(item.route)}
-          className="bg-white w-[31%] rounded-xl shadow-sm p-4 items-center mb-4"
-          activeOpacity={0.8}
-        >
-          <View className={`${item.bg} p-3 rounded-full mb-2`}>{item.icon}</View>
-          <Text className="text-gray-800 font-semibold text-sm text-center mb-1">
-            {item.title}
-          </Text>
-          <Text className="text-gray-500 text-xs text-center">{item.desc}</Text>
-        </TouchableOpacity>
-      ))}
+    <View style={{ marginBottom: 8 }}>
+      <Text style={{ fontSize: 15, fontWeight: "700", color: "#111827", marginBottom: 12 }}>
+        Quick Actions
+      </Text>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+        {actions.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.75}
+            style={{
+              width: "30%",
+              backgroundColor: "#fff",
+              borderRadius: 14,
+              padding: 14,
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: "#f3f4f6",
+            }}
+          >
+            <View style={{ backgroundColor: item.bg, padding: 10, borderRadius: 12, marginBottom: 8 }}>
+              {item.icon}
+            </View>
+            <Text style={{ color: "#374151", fontWeight: "600", fontSize: 12, textAlign: "center" }}>
+              {item.title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 }

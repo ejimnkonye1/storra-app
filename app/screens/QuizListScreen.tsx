@@ -2,7 +2,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getCourses } from '../../services/courseService';
 import { useUserStore } from '../../store/userStore';
@@ -103,21 +103,25 @@ export default function Quizzes() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white">
-        <Text className="text-gray-700">Loading quizzes...</Text>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text style={{ marginTop: 12, color: '#6b7280', fontSize: 14 }}>Loading quizzes...</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-white">
+    <ScrollView className="flex-1 bg-gray-50">
       {/* Header */}
-      <View className="px-4 pt-12 pb-4">
-        <Pressable onPress={() => router.back()} className="mb-4">
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </Pressable>
-        <Text className="text-2xl font-bold text-gray-900">Quizzes</Text>
-      </View>
+      <SafeAreaView>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
+          <Pressable onPress={() => router.back()} style={{ backgroundColor: '#f3f4f6', padding: 8, borderRadius: 10 }}>
+            <Ionicons name="arrow-back" size={20} color="#111827" />
+          </Pressable>
+          <Text style={{ fontSize: 17, fontWeight: '700', color: '#111827' }}>Quizzes</Text>
+          <View style={{ width: 36 }} />
+        </View>
+      </SafeAreaView>
 
       {/* Filter Tabs */}
       <View className="px-4 mb-6">

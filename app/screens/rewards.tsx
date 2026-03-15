@@ -2,25 +2,19 @@ import { BASE_URL } from '@/backendconfig';
 import { useUserStore } from '@/store/userStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { fetchWithTimeout } from '../../utils/fetchWithTimeout';
 
-interface Reward {
-  type: 'coins' | 'diamond';
-  amount: number;
-}
+interface Reward { type: 'coins' | 'diamond'; amount: number }
+interface CycleDay { day: number; reward: Reward; claimed: boolean; isToday: boolean }
 
-interface CycleDay {
-  day: number;
-  reward: Reward;
-  claimed: boolean;
-  isToday: boolean;
-}
-
-interface SocialActivity {
-  platform: string;
-  reward: number;
-}
+const SOCIAL = [
+  { platform: 'Facebook', color: '#1877F2', reward: 5000 },
+  { platform: 'Instagram', color: '#C13584', reward: 5000 },
+  { platform: 'X (Twitter)', color: '#000', reward: 5000 },
+];
 
 export default function DailyRewardScreen() {
   const router = useRouter();
@@ -31,31 +25,25 @@ export default function DailyRewardScreen() {
   const [currentStreak, setCurrentStreak] = useState(0);
   const [cycle, setCycle] = useState<CycleDay[]>([]);
   const [lastReward, setLastReward] = useState<Reward | null>(null);
+  const [error, setError] = useState(false);
 
-  const socialActivities: SocialActivity[] = [
-    { platform: 'Facebook', reward: 5000 },
-    { platform: 'Instagram', reward: 5000 },
-    { platform: 'X (Twitter)', reward: 5000 },
-  ];
-
-  useEffect(() => {
-    fetchDailyInfo();
-  }, []);
+  useEffect(() => { fetchDailyInfo(); }, []);
 
   const fetchDailyInfo = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${BASE_URL}/daily/info`, {
+      setError(false);
+      const res = await fetchWithTimeout(`${BASE_URL}/daily/info`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       setClaimedToday(data.data.claimedToday);
       setCurrentStreak(data.data.streak);
       setCycle(data.data.cycle || []);
-      const claimedHistory = data.data.cycle.filter((c: any) => c.claimed);
-      setLastReward(claimedHistory.length ? claimedHistory[claimedHistory.length - 1].reward : null);
-    } catch (error) {
-      console.error('Failed to fetch daily info:', error);
+      const claimed = data.data.cycle?.filter((c: any) => c.claimed) ?? [];
+      setLastReward(claimed.length ? claimed[claimed.length - 1].reward : null);
+    } catch {
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -65,7 +53,7 @@ export default function DailyRewardScreen() {
     if (claiming || claimedToday) return;
     try {
       setClaiming(true);
-      const res = await fetch(`${BASE_URL}/daily/claim`, {
+      const res = await fetchWithTimeout(`${BASE_URL}/daily/claim`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -74,167 +62,159 @@ export default function DailyRewardScreen() {
         setClaimedToday(true);
         setCurrentStreak(data.data.streak);
         setLastReward(data.data.reward);
-        const updatedCycle = cycle.map((c) =>
-          c.day === data.data.cycleDay ? { ...c, claimed: true } : c
-        );
-        setCycle(updatedCycle);
+        setCycle(prev => prev.map(c => c.day === data.data.cycleDay ? { ...c, claimed: true } : c));
       }
-    } catch (error) {
-      console.error('Claim failed:', error);
+    } catch {
+      // silent — button will re-enable
     } finally {
       setClaiming(false);
     }
   };
 
-  const renderRewardIcon = (type: string) =>
-    type === 'coins' ? (
-<Ionicons name="logo-bitcoin" size={20} color="#FFD700" />
-    ) : (
-      <Ionicons name="diamond-outline" size={20} color="#8b5cf6" />
-    );
-
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text className="mt-4 text-gray-800 font-medium">Loading daily reward...</Text>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text style={{ marginTop: 12, color: '#6b7280', fontSize: 14 }}>Loading daily reward...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 }}>
+        <Ionicons name="wifi-outline" size={48} color="#d1d5db" />
+        <Text style={{ fontSize: 16, fontWeight: '600', color: '#374151', marginTop: 12, textAlign: 'center' }}>
+          Couldn't load rewards
+        </Text>
+        <Text style={{ color: '#9ca3af', fontSize: 13, marginTop: 4, textAlign: 'center' }}>
+          Check your connection and try again
+        </Text>
+        <TouchableOpacity
+          onPress={fetchDailyInfo}
+          style={{ marginTop: 20, backgroundColor: '#2563eb', paddingHorizontal: 28, paddingVertical: 12, borderRadius: 12 }}
+        >
+          <Text style={{ color: '#fff', fontWeight: '700' }}>Retry</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white mt-12">
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
-        {/* Header */}
-        <View className="flex-row items-center justify-between mb-6">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={26} color="#000" />
-          </TouchableOpacity>
-          <Text className="text-xl font-bold text-black">Reward</Text>
-          <View style={{ width: 26 }} />
-        </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+      {/* Header */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ backgroundColor: '#f3f4f6', padding: 8, borderRadius: 10 }}>
+          <Ionicons name="arrow-back" size={20} color="#111827" />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 17, fontWeight: '700', color: '#111827' }}>Daily Rewards</Text>
+        <View style={{ width: 36 }} />
+      </View>
 
-        {/* Streak Info */}
-        <View className="bg-blue-50 p-4 rounded-2xl mb-6 border border-blue-200">
-          <Text className="text-center text-gray-800 font-semibold text-lg">
-            Current Streak: {currentStreak} days
-          </Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20 }}>
+
+        {/* Streak card */}
+        <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: '#f1f5f9', alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <Ionicons name="flame" size={28} color="#ea580c" />
+            <Text style={{ fontSize: 32, fontWeight: '800', color: '#111827' }}>{currentStreak}</Text>
+            <Text style={{ fontSize: 16, color: '#6b7280', fontWeight: '500' }}>day streak</Text>
+          </View>
           {lastReward && (
-            <Text className="text-center text-gray-600 mt-1">
-              Last reward: {lastReward.amount} {lastReward.type}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6 }}>
+              <Ionicons
+                name={lastReward.type === 'coins' ? 'logo-bitcoin' : 'diamond'}
+                size={14}
+                color={lastReward.type === 'coins' ? '#d97706' : '#7c3aed'}
+              />
+              <Text style={{ color: '#6b7280', fontSize: 13 }}>
+                Last reward: {lastReward.amount} {lastReward.type}
+              </Text>
+            </View>
           )}
         </View>
 
-      
-
-        {/* Daily Check-in Grid */}
-        <Text className="text-gray-800 font-semibold text-lg mb-3">Daily Check-in</Text>
-        <View className="flex-row flex-wrap justify-between mb-6">
-  {cycle.map((c, index) => {
-    const totalItems = cycle.length;
-    const itemsInLastRow = totalItems % 4;
-    const isLastRow = index >= totalItems - itemsInLastRow;
-    
-    let widthClass = "w-[22%]"; // Default 4 items per row
-    
-    if (isLastRow && itemsInLastRow > 0) {
-      // Calculate width based on how many items in last row
-      switch (itemsInLastRow) {
-        case 1:
-          widthClass = "w-full"; // Single item takes full width
-          break;
-        case 2:
-          widthClass = "w-[48%]"; // Two items side by side
-          break;
-        case 3:
-          widthClass = "w-[30%]"; // Three items evenly distributed
-          break;
-        default:
-          widthClass = "w-[22%]";
-      }
-    }
-    
-    return (
-      <View
-        key={c.day}
-        className={`${widthClass} mb-3`}
-        style={{ aspectRatio: 1 }}
-      >
-        {/* Fixed border wrapper */}
-        <View
-          className={`flex-1 rounded-lg ${
-            c.isToday
-              ? 'border-2 border-green-500'
-              : 'border border-gray-300'
-          }`}
-          style={{
-            backgroundColor:
-              c.claimed
-                ? '#BBF7D0' // green-200 for claimed
-                : c.reward.type === 'diamond'
-                ? '#E9D5FF' // purple-100
-                : '#DBEAFE', // blue-100
-          }}
-        >
-          {/* Inner content with padding */}
-          <View className="flex-1 p-2 items-center justify-center rounded-lg">
-            <Text className="font-bold text-black mb-1 mt-1 text-xs">Day {c.day}</Text>
-            {renderRewardIcon(c.reward.type)}
-            <Text className="text-black font-semibold mt-1 text-xs">
-              {c.reward.amount}
-            </Text>
-          </View>
+        {/* Daily check-in grid */}
+        <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827', marginBottom: 12 }}>Daily Check-in</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+          {cycle.map((c) => (
+            <View
+              key={c.day}
+              style={{
+                width: '22%',
+                aspectRatio: 1,
+                borderRadius: 12,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: c.claimed ? '#dcfce7' : c.reward.type === 'diamond' ? '#f5f3ff' : '#eff6ff',
+                borderWidth: c.isToday ? 2 : 1,
+                borderColor: c.isToday ? '#2563eb' : c.claimed ? '#86efac' : '#e5e7eb',
+              }}
+            >
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#6b7280', marginBottom: 2 }}>Day {c.day}</Text>
+              <Ionicons
+                name={c.reward.type === 'coins' ? 'logo-bitcoin' : 'diamond'}
+                size={18}
+                color={c.claimed ? '#16a34a' : c.reward.type === 'coins' ? '#d97706' : '#7c3aed'}
+              />
+              <Text style={{ fontSize: 10, fontWeight: '600', color: '#374151', marginTop: 2 }}>{c.reward.amount}</Text>
+              {c.claimed && (
+                <View style={{ position: 'absolute', top: 4, right: 4 }}>
+                  <Ionicons name="checkmark-circle" size={12} color="#16a34a" />
+                </View>
+              )}
+            </View>
+          ))}
         </View>
-      </View>
-    );
-  })}
-</View>
 
-          {/* Claim Button */}
+        {/* Claim button */}
         <TouchableOpacity
           onPress={claimDailyReward}
           disabled={claiming || claimedToday}
-          className={`py-4 rounded-2xl mb-6 ${
-            claimedToday ? 'bg-gray-400' : 'bg-green-500'
-          } shadow-md`}
+          style={{
+            backgroundColor: claimedToday ? '#e5e7eb' : '#2563eb',
+            borderRadius: 14,
+            paddingVertical: 16,
+            alignItems: 'center',
+            marginBottom: 28,
+          }}
         >
           {claiming ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : claimedToday ? (
-            <Text className="text-white text-center font-bold text-lg">
-              Come Back Tomorrow!
-            </Text>
+            <ActivityIndicator color="#fff" />
           ) : (
-            <Text className="text-white text-center font-bold text-lg">
-              Claim Daily Reward
+            <Text style={{ color: claimedToday ? '#9ca3af' : '#fff', fontWeight: '700', fontSize: 16 }}>
+              {claimedToday ? '✓  Come Back Tomorrow' : 'Claim Daily Reward'}
             </Text>
           )}
         </TouchableOpacity>
 
-        {/* More Rewarded Activities */}
-        <Text className="text-gray-800 font-semibold text-lg mb-3">More rewarded activities</Text>
-        {socialActivities.map((activity, idx) => (
-          <View
-            key={idx}
-            className="flex-row justify-between items-center bg-white p-4 mb-4 rounded-2xl shadow-md border border-gray-200"
-          >
-            <View className="flex-row items-center space-x-3">
-              {/* Platform icon placeholder */}
-              <View className="w-5 h-5 rounded-full items-center justify-center" style={{
-                backgroundColor: activity.platform === 'Facebook' ? '#1877F2' : activity.platform === 'Instagram' ? '#C13584' : '#1DA1F2'
-              }}>
-                <Text className="text-white font-bold">{activity.platform[0]}</Text>
+        {/* More activities */}
+        <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827', marginBottom: 12 }}>More Rewarded Activities</Text>
+        <View style={{ backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#f1f5f9', overflow: 'hidden' }}>
+          {SOCIAL.map((s, i) => (
+            <View key={i}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: s.color, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ color: '#fff', fontWeight: '800', fontSize: 13 }}>{s.platform[0]}</Text>
+                  </View>
+                  <View>
+                    <Text style={{ fontWeight: '600', color: '#111827', fontSize: 14 }}>Follow on {s.platform}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 2 }}>
+                      <Ionicons name="logo-bitcoin" size={12} color="#d97706" />
+                      <Text style={{ color: '#6b7280', fontSize: 12 }}>+{s.reward.toLocaleString()} coins</Text>
+                    </View>
+                  </View>
+                </View>
+                <TouchableOpacity style={{ backgroundColor: '#2563eb', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20 }}>
+                  <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>Follow</Text>
+                </TouchableOpacity>
               </View>
-              <Text className="text-gray-800 text-sm">
-                Follow us on {activity.platform} +{activity.reward.toLocaleString()} coins
-              </Text>
+              {i < SOCIAL.length - 1 && <View style={{ height: 1, backgroundColor: '#f9fafb', marginHorizontal: 16 }} />}
             </View>
-            <TouchableOpacity className="bg-green-500 px-3 py-2 rounded-full shadow-sm">
-              <Text className="text-white font-semibold">Follow</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+          ))}
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   );

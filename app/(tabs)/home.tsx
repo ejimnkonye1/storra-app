@@ -4,12 +4,12 @@ import { useCallback, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getCourses } from '../../services/courseService';
+import { getBookmarks, getFavourites, toggleBookmark, toggleFavourite } from '../../services/progressService';
 import { useUserStore } from '../../store/userStore';
 
 // Components
 import DashboardCard from '../components/home/DashboardCard';
 import Header from '../components/home/Header';
-import NotificationModal from '../components/home/NotificationModal';
 import ProgressCard from '../components/home/ProgressCard';
 import SectionHeader from '../components/home/SectionHeader';
 import StatsCards from '../components/home/StatsCards';
@@ -23,7 +23,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
   const [loading, setLoading] = useState(false);
-  const [notifVisible, setNotifVisible] = useState(false);
 
   const {
     user,
@@ -51,20 +50,41 @@ export default function HomeScreen() {
         try {
           setLoading(true);
 
-          // Always fetch user data so rewards/coins/streak reflect in real time
-          const userRes = await getCurrentUser(token);
+          const { hasFetched, setHasFetched, subjects: storedSubjects } = useUserStore.getState();
+          const shouldFetchCourses = !hasFetched || storedSubjects.length === 0;
+
+          const [userRes, coursesRes, bookmarksRes, favouritesRes] = await Promise.all([
+            getCurrentUser(token),
+            shouldFetchCourses ? getCourses(token) : Promise.resolve(null),
+            getBookmarks(token).catch(() => null),
+            getFavourites(token).catch(() => null),
+          ]);
+
           if (userRes?.data) {
             useUserStore.getState().setUser(userRes.data);
           }
 
-          // Only fetch courses if not yet fetched (they don't change often)
-          const { hasFetched, setHasFetched } = useUserStore.getState();
-          if (!hasFetched) {
-            const coursesRes = await getCourses(token);
-            if (coursesRes.data?.subjects) {
-              setSubjects(coursesRes.data.subjects);
-            }
-            setHasFetched(true);
+          const rawSubjects = coursesRes?.data?.subjects ?? (shouldFetchCourses ? null : storedSubjects);
+
+          if (rawSubjects) {
+            const bookmarkedIds = new Set<string>(
+              (bookmarksRes?.data ?? []).map((b: any) => b.lessonId)
+            );
+            const favouritedIds = new Set<string>(
+              (favouritesRes?.data ?? []).map((f: any) => f.lessonId)
+            );
+
+            const synced = rawSubjects.map((subject: any) => ({
+              ...subject,
+              topics: subject.topics.map((topic: any) => ({
+                ...topic,
+                isLiked: bookmarkedIds.has(topic.id),
+                isChecked: favouritedIds.has(topic.id),
+              })),
+            }));
+
+            setSubjects(synced);
+            if (coursesRes?.data?.subjects) setHasFetched(true);
           }
         } catch (error) {
           console.error('❌ Fetch failed:', error);
@@ -86,8 +106,33 @@ export default function HomeScreen() {
     });
   };
 
-  const handleLike = (topicId: string) => toggleTopicLike(topicId);
-  const handleCheck = (topicId: string) => toggleTopicCheck(topicId);
+  const findCourseId = (topicId: string) => {
+    const store = useUserStore.getState();
+    for (const subject of store.subjects) {
+      if (subject.topics.find((t) => t.id === topicId)) return subject.id;
+    }
+    return null;
+  };
+
+  const handleLike = (topicId: string) => {
+    toggleTopicLike(topicId);
+    const courseId = findCourseId(topicId);
+    if (token && courseId) {
+      toggleBookmark(token, topicId, courseId).catch((e) =>
+        console.warn('Bookmark sync failed:', e)
+      );
+    }
+  };
+
+  const handleCheck = (topicId: string) => {
+    toggleTopicCheck(topicId);
+    const courseId = findCourseId(topicId);
+    if (token && courseId) {
+      toggleFavourite(token, topicId, courseId).catch((e) =>
+        console.warn('Favourite sync failed:', e)
+      );
+    }
+  };
 
   // Only show the full-screen loader when there's no user yet AND the fetch
   // has been running for more than 2 seconds — fast responses skip it entirely.
@@ -101,22 +146,7 @@ export default function HomeScreen() {
     );
   }
 
-  if (subjects.length === 0) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 18, color: '#6b7280' }}>No courses available</Text>
-      </SafeAreaView>
-    );
-  }
-
   const currentSubject = getSelectedSubjectData();
-  if (!currentSubject) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 18, color: '#6b7280' }}>No subject selected</Text>
-      </SafeAreaView>
-    );
-  }
 
   const {
     fullname,
@@ -151,18 +181,12 @@ export default function HomeScreen() {
   const showNextCourse = !inProgressCourse && !!nextCourse;
   const nextCourseIsPartial = nextCourse?.status === 'in_progress';
 
-  // Notification count = achievements + streak (if active)
-  const achievementsCount = rewards?.achievements?.length ?? 0;
-  const notifCount = achievementsCount + (rewards?.currentStreak && rewards.currentStreak > 0 ? 1 : 0);
-
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView>
         <Header
           coins={rewards?.totalCoins ?? 0}
           diamond={rewards?.totalDiamonds ?? 0}
-          onNotificationPress={() => setNotifVisible(true)}
-          notificationCount={notifCount}
         />
 
         <WelcomeBanner
@@ -280,39 +304,35 @@ export default function HomeScreen() {
           />
         </View>
 
-        <TopicsGrid
-          topics={currentSubject.topics}
-          likedTopics={Object.fromEntries(
-            currentSubject.topics.map(topic => [topic.id, topic.isLiked || false])
-          )}
-          checkedTopics={Object.fromEntries(
-            currentSubject.topics.map(topic => [topic.id, topic.isChecked || false])
-          )}
-          onLike={handleLike}
-          onCheck={handleCheck}
-          onLearnMore={(topicId) => {
-            const topicIndex = currentSubject.topics.findIndex(t => t.id === topicId);
-            const topic = currentSubject.topics.find(t => t.id === topicId);
-            if (topic) {
-              router.push({
-                pathname: '/screens/learning',
-                params: {
-                  topic: JSON.stringify(topic),
-                  topicsList: JSON.stringify(currentSubject.topics),
-                  currentIndex: topicIndex.toString(),
-                  courseId: currentSubject.id
-                },
-              });
-            }
-          }}
-        />
+        {currentSubject && (
+          <TopicsGrid
+            topics={currentSubject.topics}
+            likedTopics={Object.fromEntries(
+              currentSubject.topics.map(topic => [topic.id, topic.isLiked || false])
+            )}
+            checkedTopics={Object.fromEntries(
+              currentSubject.topics.map(topic => [topic.id, topic.isChecked || false])
+            )}
+            onLike={handleLike}
+            onCheck={handleCheck}
+            onLearnMore={(topicId) => {
+              const topicIndex = currentSubject.topics.findIndex(t => t.id === topicId);
+              const topic = currentSubject.topics.find(t => t.id === topicId);
+              if (topic) {
+                router.push({
+                  pathname: '/screens/learning',
+                  params: {
+                    topic: JSON.stringify(topic),
+                    topicsList: JSON.stringify(currentSubject.topics),
+                    currentIndex: topicIndex.toString(),
+                    courseId: currentSubject.id
+                  },
+                });
+              }
+            }}
+          />
+        )}
       </ScrollView>
-
-      <NotificationModal
-        visible={notifVisible}
-        onClose={() => setNotifVisible(false)}
-        user={user}
-      />
     </SafeAreaView>
   );
 }

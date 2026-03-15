@@ -5,12 +5,13 @@ import { Image, Pressable, Text, View } from 'react-native';
 interface HeaderProps {
   coins: number;
   diamond: number;
-  onNotificationPress?: () => void;
-  notificationCount?: number;
 }
 
-export default function Header({ coins, diamond, onNotificationPress, notificationCount = 0 }: HeaderProps) {
-  const { user } = useUserStore();
+export default function Header({ coins, diamond }: HeaderProps) {
+  const { user, setNotifVisible } = useUserStore();
+
+  const achievementsCount = user?.rewards?.achievements?.length ?? 0;
+  const notificationCount = achievementsCount + ((user?.rewards?.currentStreak ?? 0) > 0 ? 1 : 0);
 
   return (
     <View className="flex-row items-center justify-between px-6">
@@ -42,7 +43,7 @@ export default function Header({ coins, diamond, onNotificationPress, notificati
         </View>
 
         {/* NOTIFICATIONS */}
-        <Pressable onPress={onNotificationPress} style={{ position: 'relative' }}>
+        <Pressable onPress={() => setNotifVisible(true)} style={{ position: 'relative' }}>
           <Ionicons name="notifications-outline" size={28} color="black" />
           {notificationCount > 0 && (
             <View

@@ -90,7 +90,7 @@ export default function CoursesScreen() {
     router.push(`/screens/quiz/${courseId}/${quizId}`);
   };
 
-  const { rewards } = user;
+  const rewards = user?.rewards;
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">

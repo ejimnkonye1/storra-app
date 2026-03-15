@@ -24,7 +24,7 @@ export default function StudentLogin() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [errorModal, setErrorModal] = useState({ visible: false, title: "", message: "" });
-  const { setToken, setUser } = useUserStore();
+  const { setToken, setUser, setRefreshToken } = useUserStore();
 
   const updateFormData = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -51,12 +51,14 @@ export default function StudentLogin() {
       });
 
       const token = response.data.data?.accessToken;
+      const rToken = response.data.data?.refreshToken;
       if (!token) {
         showError("Login Failed", "No token received from server");
         return;
       }
 
       await setToken(token);
+      if (rToken) setRefreshToken(rToken);
       const userResponse = await getCurrentUser(token);
       setUser(userResponse.data);
       router.push("/(tabs)/home");

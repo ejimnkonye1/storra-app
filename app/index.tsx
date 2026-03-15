@@ -1,18 +1,33 @@
 //index.tsx
-import { Ionicons } from "@expo/vector-icons"; 
-import { useNavigation } from "@react-navigation/native";
-import { useRouter } from "expo-router"; 
-import React, { useRef, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { Redirect, useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Swiper from "react-native-swiper";
+import { useUserStore } from "../store/userStore";
 
 export default function Onboarding() {
   const swiperRef = useRef<Swiper>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
-  const navigation = useNavigation();
+
+  // Track hydration so we don't render <Redirect> before Zustand has loaded from storage
+  const [hydrated, setHydrated] = useState(useUserStore.persist.hasHydrated());
+  const token = useUserStore((s) => s.token);
 
   const totalScreens = 4;
+
+  useEffect(() => {
+    if (hydrated) return;
+    const unsub = useUserStore.persist.onFinishHydration(() => setHydrated(true));
+    return () => unsub();
+  }, []);
+
+  // Blank while waiting for storage hydration
+  if (!hydrated) return null;
+
+  // Let expo-router handle the navigation safely via <Redirect>
+  if (token) return <Redirect href="/(tabs)/home" />;
 
   const handleSkip = () => {
     swiperRef.current?.scrollBy(totalScreens - currentIndex - 1, true);
@@ -20,9 +35,7 @@ export default function Onboarding() {
 
   const handleNext = () => {
     if (currentIndex === totalScreens - 1) {
-      // ✅ last screen → go to app
-      // @ts-ignore
-       navigation.navigate("auth/choose-account");
+      router.push("/auth/choose-account" as any);
     } else {
       swiperRef.current?.scrollBy(1, true);
     }
@@ -43,7 +56,7 @@ export default function Onboarding() {
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
         ) : (
-          <View className="w-6" /> // placeholder so "skip" stays aligned
+          <View className="w-6" />
         )}
 
         {currentIndex < totalScreens - 1 && (
@@ -78,7 +91,7 @@ export default function Onboarding() {
             className="w-80 h-80 w-full mb-8"
             resizeMode="contain"
           />
-          <Text className=" font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
+          <Text className="font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
             Fun, gamified learning for every age group.
           </Text>
           <Text className="text-[15px] text-gray-500 text-center">
@@ -93,7 +106,7 @@ export default function Onboarding() {
             className="w-80 h-80 w-full mb-8"
             resizeMode="contain"
           />
-          <Text className=" font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
+          <Text className="font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
             Earn & Collect Rewards As You Earn
           </Text>
           <Text className="text-[15px] text-gray-500 text-center">
@@ -109,7 +122,7 @@ export default function Onboarding() {
             className="w-80 h-80 w-full mb-8"
             resizeMode="contain"
           />
-          <Text className=" font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
+          <Text className="font-grotesk font-semibold text-[25px] text-gray-800 mb-4 text-center">
             Play, Compete, Win
           </Text>
           <Text className="text-[15px] text-gray-500 text-center">
@@ -120,14 +133,14 @@ export default function Onboarding() {
       </Swiper>
 
       {/* Continue / Next Button */}
-<View className="px-6 pb-10">
-  <TouchableOpacity
-    onPress={handleNext}
-    className="mt-6 w-16 h-16 bg-blue-600 rounded-full items-center justify-center self-center"
-  >
-    <Ionicons name="arrow-forward" size={28} color="white" />
-  </TouchableOpacity>
-</View>
+      <View className="px-6 pb-10">
+        <TouchableOpacity
+          onPress={handleNext}
+          className="mt-6 w-16 h-16 bg-blue-600 rounded-full items-center justify-center self-center"
+        >
+          <Ionicons name="arrow-forward" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

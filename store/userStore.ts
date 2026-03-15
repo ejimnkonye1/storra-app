@@ -75,14 +75,18 @@ export interface User {
 interface UserStore {
   user: User | null;
   token: string | null;
+  refreshToken: string | null;
   isLoading: boolean;
   subjects: Subject[];
   selectedSubject: number;
   hasFetched: boolean;
   coursesUpdatedAt: number;
+  notifVisible: boolean;
 
   setUser: (user: User) => void;
+  setNotifVisible: (v: boolean) => void;
   setToken: (token: string) => Promise<void>;
+  setRefreshToken: (token: string) => void;
   clearUser: () => void;
   loadUser: () => Promise<void>;
   logout: () => Promise<void>;
@@ -110,12 +114,16 @@ export const useUserStore = create<UserStore>()(
     (set, get) => ({
       user: null,
       token: null,
+      refreshToken: null,
       isLoading: true,
       subjects: [],
       selectedSubject: 0,
       hasFetched: false,
       coursesUpdatedAt: 0,
+      notifVisible: false,
 
+      setNotifVisible: (v) => set({ notifVisible: v }),
+      setRefreshToken: (token) => set({ refreshToken: token }),
       setHasFetched: (val) => set({ hasFetched: val }),
       triggerCoursesRefresh: () => set({ coursesUpdatedAt: Date.now() }),
 
@@ -134,6 +142,7 @@ export const useUserStore = create<UserStore>()(
         set({
           user: null,
           token: null,
+          refreshToken: null,
           subjects: [],
           selectedSubject: 0,
           isLoading: false,
@@ -155,6 +164,7 @@ export const useUserStore = create<UserStore>()(
           set({
             user: null,
             token: null,
+            refreshToken: null,
             subjects: [],
             selectedSubject: 0,
             isLoading: false,
@@ -243,6 +253,7 @@ export const useUserStore = create<UserStore>()(
       partialize: (state) => ({
         user: state.user,
         token: state.token,
+        refreshToken: state.refreshToken,
         subjects: state.subjects,
         hasFetched: state.hasFetched,
         coursesUpdatedAt: state.coursesUpdatedAt,

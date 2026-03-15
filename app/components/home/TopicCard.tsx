@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import React from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 interface TopicCardProps {
   title: string;
@@ -40,8 +41,10 @@ export default function TopicCard({
       {/* ✅ Remote backend image only */}
       <Image
         source={imageSource}
-        className="w-full h-24 rounded-lg mb-3"
-        resizeMode="contain"
+        style={{ width: '100%', height: 96, borderRadius: 8, marginBottom: 12 }}
+        contentFit="contain"
+        cachePolicy="memory-disk"
+        priority="high"
       />
 
       {/* Title */}
